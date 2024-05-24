@@ -2,7 +2,7 @@ import React from 'react'
 import { Item, TableType } from '../vite-env'
 
 type Props = {
-    currentTable: TableType
+    currentTable: TableType | undefined
 }
 
 export default function TableCount({currentTable}: Props) {
@@ -11,13 +11,15 @@ export default function TableCount({currentTable}: Props) {
             "open": "green", "paying": "blue", "closed": "red"
         }
         return <header>
-            <div style={{backgroundColor: colorSelector[currentTable.state]}}>{currentTable.state}</div>
-            <h2>Mesa {currentTable.number}</h2>
-            <p>{"("+ currentTable.tag +")"}</p>
+            {currentTable && <> 
+                <div style={{backgroundColor: colorSelector[currentTable.state]}}>{currentTable.state}</div>
+                <h2>Mesa {currentTable.number}</h2>
+                <p>{"("+ currentTable.tag +")"}</p>
+            </>}
         </header>
     }
     const List = ()=>{
-        const products: Item[] = currentTable.products
+        const products: Item[] | undefined = currentTable?.products
 
         const columns = ["name","amount","price"]
 
@@ -28,7 +30,7 @@ export default function TableCount({currentTable}: Props) {
                 })}
             </header>
             <ul>
-                {products.length !== 0 && products.map(item=>{
+                {products && products.length !== 0 && products.map(item=>{
                     return <li key={Math.random()}>
                         <div>{item.name}</div>
                         <div>{item.amount}</div>
@@ -41,10 +43,12 @@ export default function TableCount({currentTable}: Props) {
 
     const TableCommands =()=>{
         return <section>
-            <p>{currentTable.opened}</p>
-            <button>Cobrar</button>
-            <button>Historial</button>
-            <button>Cerrar</button>
+            {currentTable && <>
+                <p>{currentTable.opened}</p>
+                <button>Cobrar</button>
+                <button>Historial</button>
+                <button>Cerrar</button>
+            </>}
         </section>
     }
 

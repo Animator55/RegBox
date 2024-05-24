@@ -1,0 +1,311 @@
+
+/**/
+
+.auth-screen {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #444444;
+}
+
+.auth-section {
+    position: relative;
+    z-index: 1;
+    background-color: var(--cdarkgray);
+    padding: 0 3rem;
+    height: 85%;
+    min-width: 35%;
+    max-width: 50%;
+    border-radius: 10px;
+    color: var(--cwhite);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    user-select: none;
+}
+.auth-section > h1 {
+    font-size: 2.1rem;
+    margin: 1rem 0 0;
+    text-align: center;
+}
+
+.auth-section > p {
+    font-size: 0.8rem;
+    color: var(--cgray);
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.error-box {
+    height: fit-content;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 3px;
+    border: 1px solid var(--cred);
+    color:var(--cred);
+}
+.error-box:empty {
+    border: none;
+    padding: 0;
+}
+
+.divisor {
+    margin: 1rem 0;
+    width: 100%;
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+.divisor::before {
+    content: "";
+    display: block;
+    width: 100%;
+    background-color: var(--cgray);
+    height: 1px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 0 1rem;
+}
+
+.labeled-input {
+    flex-wrap: wrap;
+    display: flex;
+}
+.labeled-input > label {
+    font-size: 0.8rem;
+    color: var(--clightgray);
+}
+.labeled-input > a {
+    background-color: transparent;
+    margin-left: auto;
+    color: var(--corange);
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: color 100ms;
+}
+.labeled-input > a:hover {
+    color: var(--clightgray);
+    transition: color 100ms;
+}
+.labeled-input input {
+    width: -webkit-fill-available;
+    background-color: var(--cgray);
+    padding: 1rem 0.7rem;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    color: var(--cwhite);
+    padding-right: 3rem;
+}
+.labeled-input .input-container {
+    position: relative;
+    width: 100%;
+}
+.labeled-input .input-container > button {
+    position: absolute;
+    background-color: var(--cdarkgray);
+    border-radius: 5px;
+    width: 2rem;
+    height: 2rem;
+    color: var(--cwhite);
+    top: 19%;
+    right: 2%;
+}
+
+.labeled-input .input-container > button:hover {
+    box-shadow: 0 0 5px var(--cwhite);
+}
+
+
+.labeled-input .input-container > button.check > *:first-child, 
+.labeled-input .input-container > button:not(.check) > *:last-child {
+    display:none
+}
+
+.form > button[type="submit"]{
+    background-color: var(--corange);
+    padding: 1rem 2rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cwhite);
+    border-radius: 6px;
+    font-size: larger;
+}
+.form > button[type="submit"]:hover {
+    box-shadow: 0 0 5px var(--cwhite);
+}
+
+.form > button[type="submit"]:not(.loading-button)::before {
+    content: attr(data-text);
+    color: var(--cwhite);
+    position: relative;
+}
+
+/***/
+
+.info-background {
+    position: absolute;
+    inset: 0;
+}
+.info-background .ball-1 {
+    background-color: #302c2a;
+    position:absolute;
+    height: 14rem;
+    width: 13rem;
+    rotate: 30deg;
+    border-radius: 50%;
+    bottom: 0rem;
+    left: -40%;
+    animation: ball-1 15s 2s infinite linear;
+}
+.info-background .ball-2 {
+    background-color: #2c2927;
+    position:absolute;
+    height: 8rem;
+    width: 6.5rem;
+    rotate: 30deg;
+    border-radius: 50%;
+    top: 2rem;
+    left: 110%;
+    animation: ball-2 12s infinite linear;
+}
+.info-background .ball-3 {
+    background-color: #3d3936;
+    position:absolute;
+    height: 20rem;
+    width: 25rem;
+    rotate: 30deg;
+    border-radius: 50%;
+    top: -60%;
+    left: 10%;
+    animation: ball-3 20s 5s infinite linear;
+}
+.info-background .ball-4 {
+    background-color: #1a1817;
+    position:absolute;
+    height: 30rem;
+    width: 32rem;
+    rotate: 30deg;
+    border-radius: 50%;
+    top: 130%;
+    left: 70%;
+    animation: ball-4 20s 7s infinite linear;
+}
+
+@keyframes ball-1 {
+    from {
+        rotate: 30deg;
+        left: -40%;
+        bottom: 0rem;
+    }
+    to {
+        left: 110%;
+        bottom: 10rem;
+        rotate: 1200deg;
+    }
+}
+@keyframes ball-2 {
+    from {
+        rotate: 30deg;
+        left: 110%;
+        top: 2rem;
+    }
+    to {
+        left: -40%;
+        top: 3rem;
+        rotate: 1200deg;
+    }
+}
+@keyframes ball-3 {
+    from {
+        rotate: 30deg;
+        left: 10%;
+        top: -60%;
+    }
+    to {
+        left: 40%;
+        top: 130%;
+        rotate: 500deg;
+    }
+}
+@keyframes ball-4 {
+    from {
+        rotate: 30deg;
+        left: 70%;
+        top: 110%;
+    }
+    to {
+        left: -100%;
+        top: 25%;
+        rotate: 300deg;
+    }
+}
+
+/***/
+
+.loading-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-button::before {
+    content: attr(data-text);
+    color: var(--cwhite);
+    position: relative;
+    animation: beforeFade 300ms forwards;
+}
+@keyframes beforeFade {
+    from {
+        top: 0;
+        opacity: 1;
+    }
+    to{
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+@keyframes loading {
+    0%, 100% {
+        top: 1.4rem;
+        box-shadow: -1.5rem -0.5rem, 1.5rem 0.5rem;
+    }
+    25% {
+        top: 0.8rem;
+        box-shadow: -1.5rem 0.5rem, 1.5rem 0.5rem;
+    }
+    50% {
+        top: 1.4rem;
+        box-shadow: -1.5rem 0.5rem, 1.5rem -0.5rem;
+    }
+    75% {
+        top: 1.8rem;
+        box-shadow: -1.5rem 0.5rem, 1.5rem -0.5rem;
+    }
+}
+
+.loading-button::after {
+    content: "";
+    background-color: var(--cwhite);
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    top: 1.4rem;
+    box-shadow: -1.5rem 0.5rem, 1.5rem -0.5rem;
+    animation: loading 1s infinite ease-in-out;
+}
+
+.fade-in {
+    opacity: 1;
+    transition: opacity 300ms;
+}
+
+/**/

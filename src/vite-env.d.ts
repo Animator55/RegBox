@@ -20,7 +20,15 @@ export type Item = {
 
 export type sessionType = {
     _id: string
+    name: string
     role: string
     opened: string
     domain: string
+    url: string
+}
+export type userType = {
+    _id: string
+    role: string
+    name: string
+    password: string
 }
