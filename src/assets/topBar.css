@@ -1,0 +1,51 @@
+.main-top-bar {
+    background-color: var(--cdarkgray);
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+hr {
+    margin: 0;
+    margin-left: auto;
+    background-color: var(--clight);
+}
+.main-top-bar>button {
+    display: flex;
+    align-items: center;
+    gap:0.5rem ;
+    padding: 0.35rem 0.5rem;
+    background-color: transparent;
+    color: var(--cwhite);
+}
+.main-top-bar>.text-button {
+    border: 2px solid var(--clightgray);
+    border-radius: 5px;
+}
+.main-top-bar>.text-button:hover {
+    color: var(--cdarkgray);
+    border-color: var(--cdarkgray);
+    background-color: var(--cwhite);
+    transition: color 300ms, border-color 300ms, background-color 300ms;
+}
+
+.main-top-bar > .text-button > svg {
+    font-size: 1.3rem;
+}
+
+.user, .option{
+    padding: 0!important;
+    font-size: 1.3rem;
+    margin: 0 0.2rem;
+    border: none!important;
+}
+.main-top-bar>.user:hover,
+.main-top-bar>.option:hover {
+    scale: 1.2;
+    transition: scale 300ms, color 300ms;
+    color: var(--corange);
+}
+.user>* {
+    color: var(--corange);
+    font-size: 2rem;
+}

@@ -4,8 +4,11 @@ import AuthScreen from './components/AuthScreen'
 import { sessionType } from './vite-env'
 import "./assets/App.css"
 
+// {_id: "", role: "", opened: "", domain: "", url: "", name: ""}
 export default function App() {
-  const [session, setSession] = React.useState<sessionType>({_id: "", role: "", opened: "", domain: "", url: "", name: ""})
+  const [session, setSession] = React.useState<sessionType>(
+    {_id: "gnidkasgm", role: "main", opened: "", domain: "domain-1", url: "", name: "Caja"}
+  )
   
   
 

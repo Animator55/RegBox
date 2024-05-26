@@ -1,5 +1,6 @@
 import React from 'react'
 import { Item, TableType } from '../vite-env'
+import "../assets/tableCount.css"
 
 type Props = {
     currentTable: TableType | undefined
@@ -10,7 +11,7 @@ export default function TableCount({currentTable}: Props) {
         const colorSelector = {
             "open": "green", "paying": "blue", "closed": "red"
         }
-        return <header>
+        return <header className='table-head'>
             {currentTable && <> 
                 <div style={{backgroundColor: colorSelector[currentTable.state]}}>{currentTable.state}</div>
                 <h2>Mesa {currentTable.number}</h2>
@@ -24,12 +25,12 @@ export default function TableCount({currentTable}: Props) {
         const columns = ["name","amount","price"]
 
         return <section>
-            <header>
+            <header className='table-columns'>
                 {columns.map(str=>{
                     return <div key={Math.random()}>{str}</div>
                 })}
             </header>
-            <ul>
+            <ul className='table-list'>
                 {products && products.length !== 0 && products.map(item=>{
                     return <li key={Math.random()}>
                         <div>{item.name}</div>
@@ -42,7 +43,7 @@ export default function TableCount({currentTable}: Props) {
     }
 
     const TableCommands =()=>{
-        return <section>
+        return <section className='table-commands'>
             {currentTable && <>
                 <p>{currentTable.opened}</p>
                 <button>Cobrar</button>
@@ -52,7 +53,7 @@ export default function TableCount({currentTable}: Props) {
         </section>
     }
 
-    return <section>
+    return <section className='table-count'>
         <Top/>
         <List/>
         <TableCommands/>
