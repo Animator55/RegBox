@@ -1,6 +1,8 @@
 import React from 'react'
 import { Item, TableType } from '../vite-env'
 import "../assets/tableCount.css"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckToSlot, faClockRotateLeft, faMinus, faPen, faPlus, faReceipt } from '@fortawesome/free-solid-svg-icons'
 
 type Props = {
     currentTable: TableType | undefined
@@ -9,11 +11,11 @@ type Props = {
 export default function TableCount({currentTable}: Props) {
     const Top = ()=>{
         const colorSelector = {
-            "open": "green", "paying": "blue", "closed": "red"
+            "open": "var(--cgreen)", "paying": "blue", "closed": "red"
         }
         return <header className='table-head'>
             {currentTable && <> 
-                <div style={{backgroundColor: colorSelector[currentTable.state]}}>{currentTable.state}</div>
+                <div className='after' style={{backgroundColor: colorSelector[currentTable.state]}}></div>
                 <h2>Mesa {currentTable.number}</h2>
                 <p>{"("+ currentTable.tag +")"}</p>
             </>}
@@ -22,9 +24,9 @@ export default function TableCount({currentTable}: Props) {
     const List = ()=>{
         const products: Item[] | undefined = currentTable?.products
 
-        const columns = ["name","amount","price"]
+        const columns = ["", "Nombre","Cantidad","Precio", ""]
 
-        return <section>
+        return <section className='content'>
             <header className='table-columns'>
                 {columns.map(str=>{
                     return <div key={Math.random()}>{str}</div>
@@ -33,9 +35,14 @@ export default function TableCount({currentTable}: Props) {
             <ul className='table-list'>
                 {products && products.length !== 0 && products.map(item=>{
                     return <li key={Math.random()}>
+                        <button className='edit-button'><FontAwesomeIcon icon={faPen}/></button>
                         <div>{item.name}</div>
                         <div>{item.amount}</div>
                         <div>{item.price}</div>
+                        <div className='amount-buttons'>
+                            <button><FontAwesomeIcon icon={faPlus}/></button>
+                            <button><FontAwesomeIcon icon={faMinus}/></button>
+                        </div>
                     </li>
                 })}
             </ul>
@@ -45,10 +52,14 @@ export default function TableCount({currentTable}: Props) {
     const TableCommands =()=>{
         return <section className='table-commands'>
             {currentTable && <>
-                <p>{currentTable.opened}</p>
-                <button>Cobrar</button>
-                <button>Historial</button>
-                <button>Cerrar</button>
+                <div>
+                    <p>Caja abierta a las {currentTable.opened}</p>
+                    <button><FontAwesomeIcon icon={faClockRotateLeft}/>Historial</button>
+                </div>
+                <div>
+                    <button><FontAwesomeIcon icon={faReceipt}/>Cobrar</button>
+                    <button><FontAwesomeIcon icon={faCheckToSlot}/>Cerrar</button>
+                </div>
             </>}
         </section>
     }

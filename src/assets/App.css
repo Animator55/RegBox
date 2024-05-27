@@ -7,8 +7,9 @@ body {
     --cgray: #6d655f;
     --clightgray: #cfcbc7;
     --cwhite: #ffffff;
+    --cgreen: #2be061;
     --corange: #f07f34;
-    --cred: #be4848;
+    --cred: #f36c6c;
     height: 100vh;
     max-height: 100vh;
     max-width: 100%;
@@ -17,6 +18,19 @@ body {
 
 * {
     font-family: 'Kanit', sans-serif;
+}
+
+::-webkit-scrollbar {
+    background-color: transparent;
+    width: 5px;
+}
+
+::-webkit-scrollbar-button {
+    display: none;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: var(--cgray);
 }
 
 h5, h4 {
@@ -50,4 +64,9 @@ button:not(.disabled) {
 
 .d-flex {
     display: flex;
+}
+
+main > .d-flex {
+    height: 100%;
+    padding: 1%;
 }

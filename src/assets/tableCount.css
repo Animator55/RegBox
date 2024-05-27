@@ -4,17 +4,207 @@
 }
 
 .table-head {
+    background-color: var(--cdarkgray);
+    color: var(--cwhite);
+    padding: 0.7rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+    gap: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
 
+.table-head .after {
+    position: absolute;
+    right: -10%;
+    top: -50%;
+    width: 8rem;
+    height: 250%;
+    rotate: 30deg;
+}
+.table-head > *:not(.after) {
+    position: relative;
+    z-index: 0;
+}
+.table-head h2 {
+    margin: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 50%;
+    max-height: 2rem;
+}
+.table-head p {
+    color: var(--clightgray);
+    margin: 0;text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 50%;
+    max-height: 1.2rem;
+}
+
+/***/
+
+.content {
+    height: 100%;   
+    display: flex;
+    flex-direction: column;
+    max-height: 57%;
+    background-color: var(--cdarkgray);
+    padding: 0.7rem 0.5rem;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .table-columns {
-
+    display: grid;
+    grid-template-columns: 8% 30% 15% 25% 15%;
+    gap: 1%;
+    padding: 0.1rem 0.5rem;
+    background-color: var(--cdarkgray);
+    color: var(--cwhite);
+}
+.table-columns > * {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.table-columns > :last-child {
+    text-align: end;
 }
 
 .table-list {
-
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background-color: var(--cdarkgray);
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+.table-list > li {
+    display: grid;   
+    grid-template-columns: 8% 30% 15% 25% 15%;
+    gap: 1%;
+    padding: 0.1rem 0.5rem;
+    border-radius: 5px;
+}
+.table-list > li > *{
+    background-color: var(--cwhite);
+    color: var(--cblack);
+    padding-left: 0.2rem;
+}
+.table-list > li > :nth-child(2) {
+    border-radius: 5px 0 0 5px;
+}
+.table-list > li > :nth-child(4) {
+    border-radius: 0 5px 5px 0;
+}
+.table-list > li:hover > .edit-button {
+    background-color: var(--corange);
+    opacity: 1;
+}
+.table-list > li:hover > .amount-buttons > * {
+    background-color: var(--cgreen);
+    opacity: 1;
+}
+.table-list > li:hover > .amount-buttons > :last-child {
+    background-color: var(--cred);
+    opacity: 1;
+}
+.edit-button {
+    border-radius: 5px;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0!important;
+    opacity: 0.5;
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+}
+.edit-button:hover {
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+    border-color: var(--corange);
+    background-color: transparent!important;
+    color: var(--corange);
 }
 
-.table-commands {
+.amount-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    justify-content: space-around;
+    padding: 0!important;
+    overflow: hidden;
+    background-color: transparent!important;
+}
+.amount-buttons > * {
+    width: 50%;
+    height: 100%;
+    background-color: var(--cgreen);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+}
+.amount-buttons > :last-child {
+    background-color: var(--cred);
+}
+.amount-buttons > *:hover {
+    border-color: var(--cgreen);
+    background-color: transparent!important;
+    color: var(--cgreen);
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+}
+.amount-buttons > :last-child:hover {
+    border-color: var(--cred);
+    color: var(--cred);
+}
 
+
+/**/
+
+.table-commands {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--cdarkgray);
+    border-radius: 7px;
+    margin-top: 0.5rem;
+}
+.table-commands p {
+    margin: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    max-height: 0.9rem;
+    font-size: .85rem;
+    padding: calc(0.4rem + 3px) 0;
+    color: var(--clightgray)
+}
+.table-commands > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.table-commands button {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border: 3px solid transparent;
+    background-color: var(--corange);
+    color: var(--cblack);
+    border-radius: 5px;
+    padding: 0.4rem;
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+}
+.table-commands button:hover {
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+    border-color: var(--corange);
+    color: var(--corange);
+    background-color: transparent;
 }
