@@ -74,7 +74,7 @@
 }
 
 .pickeable-item {
-    padding: 0.5rem;
+    padding: 0.2rem;
     background-color: var(--cgray);
     color: var(--cwhite);
     border-radius: 3px;
@@ -83,10 +83,6 @@
     align-items: center;
     gap: 1rem;
     font-size: 0.9rem;
-}
-
-.pickeable-item:not(.selected) {
-    padding: 1rem 0.5rem;
 }
 
 .pickeable-item>*:last-child {

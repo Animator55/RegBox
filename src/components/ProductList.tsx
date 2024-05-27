@@ -50,14 +50,6 @@ const ProductPicker = ()=>{
               {RenderProducts(ProductPage)}
           </div>
       </div>
-      <button 
-          className='select-confirm' 
-          onClick={()=>{
-              // confirmSelect()
-          }}
-      >
-          <FontAwesomeIcon icon={faCheck}/>
-      </button>
   </section>
 }
 
@@ -71,28 +63,11 @@ const RenderProducts = (page: string)=>{
       // let [boolean, index] = checkItemBuy(selectedProds, item._id)
       return <div
           key={Math.random()}
-          id={item._id}
-          // onClick={()=>{if(!boolean) addItemToSelected(item, 1)}}
-          // className={boolean ? 'pickeable-item selected' :'pickeable-item'}
+          className='pickeable-item'
       >
-          {/* {boolean ? <>
-          <button onClick={()=>{addItemToSelected(item, -1)}}><FontAwesomeIcon icon={faMinus}/></button>
-          <div>
-              <div>
-                  <b style={{color: "var(--cgreen)"}}>{selectedProds[index as number].amount}</b> 
-                  {" X $" + selectedProds[index as number].price}
-              </div>
-              <p>{item.name}</p>
-          </div>
-          <button onClick={()=>{addItemToSelected(item, 1)}}><FontAwesomeIcon icon={faPlus}/></button>
-          </> 
-          : <> */}
           <FontAwesomeIcon icon={faArrowCircleLeft}/>
           <p>{item.name}</p>
-          {/* {item.tags !== undefined && item.tags.includes("vegan") && <FontAwesomeIcon icon={faSeedling}/>}
-          {item.tags !== undefined && item.tags.includes("no-tacc") && <FontAwesomeIcon icon={faWheatAlt}/>} */}
           <p>${item.price}</p>
-          {/* </>} */}
           
       </div>
   })
