@@ -49,7 +49,7 @@
     height: 100%;   
     display: flex;
     flex-direction: column;
-    max-height: 57%;
+    max-height: calc(100dvh - 18rem);
     background-color: var(--cdarkgray);
     padding: 0.7rem 0.5rem;
     border-radius: 10px;

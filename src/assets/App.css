@@ -70,3 +70,24 @@ main > .d-flex {
     height: 100%;
     padding: 1%;
 }
+
+.prod-map-container {
+    width: 50%;
+}
+
+.nav-page{
+    display: flex;
+    width: 100%;
+}
+.nav-page > button {
+    width: 100%;
+    background-color: var(--corange);
+    color: var(--cdarkgray);
+    border: 2px solid var(--cdarkgray);
+    border-radius: 8px 8px 0 0;
+}
+.nav-page > button.active {
+    background-color: var(--cdarkgray);
+    color: var(--corange);
+    border-color: transparent;
+}
