@@ -2,9 +2,26 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import TableCount from '../components/TableCount'
 import ProdAndMap from '../components/ProdAndMap'
-import { TableType } from '../vite-env'
+import { TablePlaceType, TableType, configType } from '../vite-env'
+import { TablePlacesDefault } from '../defaults/tableplaces'
+import getTableData from '../logic/getTableData'
 
-type Props = {}
+type Props = {
+}
+
+
+export const Configuration = React.createContext({
+    config: {
+        prodsAsList: true,
+        map: {
+            zoom: 1,
+            x: 0,
+            y: 0
+        }
+    }, setConfig: (val: configType) => { console.log(val) }
+})
+
+export const TablesPlaces = React.createContext({ tables: [] as TablePlaceType[], set: (val: TablePlaceType[]) => { console.log(val) } })
 
 
 let defProds = [
@@ -60,20 +77,80 @@ let defProds = [
 ]
 
 export default function Main({ }: Props) {
-    const [current, setCurrent] = React.useState<TableType>({
-        _id: "gdshdshds",
-        number: 11,
-        tag: "Unknown name",
-        products: [...defProds, ...defProds, ...defProds],
-        opened: `${new Date().getHours()+":"+new Date().getMinutes()}`,
-        state: "open"
+    const [config, setConfig] = React.useState({
+        prodsAsList: true,
+        map: {
+            zoom: 1,
+            x: 0,
+            y: 0
+        }
+    })
+
+    const setConfigHandle = (val: configType) => {
+        setConfig(val)
+    }
+
+    const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(TablePlacesDefault)
+
+    const [tables, setTables] = React.useState<TableType[]>([
+        {
+            _id: "gdsghdsh",
+            number: 1,
+            tag: "",
+            products: [...defProds],
+            opened: `${new Date().getHours() + ":" + new Date().getMinutes()}`,
+            state: "open",
+        },
+        {
+            _id: "ggdagagasghdash",
+            number: 2,
+            tag: "Unknown name",
+            products: [...defProds, ...defProds, ...defProds],
+            opened: `${new Date().getHours() + ":" + new Date().getMinutes()}`,
+            state: "paying",
+        },
+    ])
+    const [current, setCurrent] = React.useState<string>()
+
+    const setCurrentHandler = (id: string) => {
+        let index = -1
+        for (let i = 0; i < tables.length; i++) {
+            if (tables[i]._id === id) { index = i; break }
+        }
+        if (index !== -1) setCurrent(id)
+        else {
+            let data = getTableData(id ,tablesPlacesPH) 
+            if(!data) return
+            let newTable: TableType = {
+                _id: data._id,
+                number: data.number,
+                tag: "",
+                products: [],
+                opened: `${new Date().getHours() + ":" + new Date().getMinutes()}`,
+                state: "open",
+            }
+            setTables([...tables, newTable])
+        }
+    }
+
+    let currentTableData
+    for (let i = 0; i < tables.length; i++) {
+        if (tables[i]._id === current) { currentTableData = tables[i]; break }
+    }
+
+    let tablesMin = tables.map(tbl => {
+        return { _id: tbl._id, state: tbl.state }
     })
 
     return <>
-        <TopBar />
-        <section className='d-flex'>
-            <TableCount currentTable={current} />
-            <ProdAndMap setCurrent={setCurrent}/>
-        </section>
+        <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces }}>
+            <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
+                <TopBar />
+                <section className='d-flex'>
+                    <TableCount currentTable={currentTableData} />
+                    <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} />
+                </section>
+            </Configuration.Provider>
+        </TablesPlaces.Provider>
     </>
 }

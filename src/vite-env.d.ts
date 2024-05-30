@@ -9,6 +9,18 @@ export type TableType = {
     opened: string
     state: "open" | "paying" | "closed"
 }
+export type TablePlaceType = {
+    _id: string
+    number: number
+    coords: {
+        x: number
+        y: number
+    }
+    size: {
+        x: number
+        y: number
+    }
+}
 
 export type Item = {
     _id: string
@@ -31,4 +43,13 @@ export type userType = {
     role: string
     name: string
     password: string
+}
+
+export type configType = {
+    prodsAsList: boolean
+    map: {
+        x: number
+        y: number
+        zoom: number
+    }
 }

@@ -1,8 +1,8 @@
-import React from 'react'
 import { Item, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckToSlot, faClockRotateLeft, faMinus, faPen, faPlus, faReceipt } from '@fortawesome/free-solid-svg-icons'
+import { colorSelector } from '../logic/colorSelector'
 
 type Props = {
     currentTable: TableType | undefined
@@ -10,9 +10,6 @@ type Props = {
 
 export default function TableCount({currentTable}: Props) {
     const Top = ()=>{
-        const colorSelector = {
-            "open": "var(--cgreen)", "paying": "blue", "closed": "red"
-        }
         return <header className='table-head'>
             {currentTable && <> 
                 <div className='after' style={{backgroundColor: colorSelector[currentTable.state]}}></div>
@@ -51,16 +48,14 @@ export default function TableCount({currentTable}: Props) {
 
     const TableCommands =()=>{
         return <section className='table-commands'>
-            {currentTable && <>
-                <div>
-                    <p>Caja abierta a las {currentTable.opened}</p>
-                    <button><FontAwesomeIcon icon={faClockRotateLeft}/>Historial</button>
-                </div>
-                <div>
-                    <button><FontAwesomeIcon icon={faReceipt}/>Cobrar</button>
-                    <button><FontAwesomeIcon icon={faCheckToSlot}/>Cerrar</button>
-                </div>
-            </>}
+            <div>
+                <p>{currentTable && `Caja abierta a las ${currentTable.opened}`}</p>
+                <button><FontAwesomeIcon icon={faClockRotateLeft}/>Historial</button>
+            </div>
+            <div>
+                <button><FontAwesomeIcon icon={faReceipt}/>Imprimir</button>
+                <button><FontAwesomeIcon icon={faCheckToSlot}/>Cerrar</button>
+            </div>
         </section>
     }
 

@@ -1,25 +1,32 @@
 import React from 'react'
 import { products } from '../defaults/products'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowCircleLeft, faBottleWater, faCookie, faDrumstickBite, faIceCream, faMartiniGlassCitrus, faPlateWheat, faWineBottle } from '@fortawesome/free-solid-svg-icons'
+import { faArrowCircleLeft, faBottleWater, faCircle, faCookie, faDrumstickBite, faIceCream, faList, faMartiniGlassCitrus, faPlateWheat, faTableCells, faWineBottle } from '@fortawesome/free-solid-svg-icons'
 import "../assets/productList.css"
+import SearchBar from './SearchBar'
+import checkSearch from '../logic/checkSearch'
 
-type Props = {}
+type Props = {
+  displayList: boolean
+  changeDisplay: Function
+}
 
 export type pagesRouter = {
   [key: string]: any
 }
-export default function ProductList({ }: Props) {
+export default function ProductList({displayList, changeDisplay}: Props) {
+  const [search, setSearch] = React.useState("")
   const [ProductPage, setProductPage] = React.useState("Entrada")
-  // const pages: pagesRouter = {
-  //   "Entrada": faCookie,
-  //   "Montadito": faPlateWheat,
-  //   "Principal": faDrumstickBite,
-  //   "Postres": faIceCream,
-  //   "Bebidas": faBottleWater,
-  //   "Vinos": faWineBottle,
-  //   "Tragos": faMartiniGlassCitrus,
-  // }
+  const icons: pagesRouter = {
+    "cookie": faCookie,
+    "plate": faPlateWheat,
+    "bite": faDrumstickBite,
+    "ice": faIceCream,
+    "water": faBottleWater,
+    "wine": faWineBottle,
+    "cocktail": faMartiniGlassCitrus,
+    "": faCircle
+  }
   const pages = [
     {name: "Entrada", icon: ""},
     {name: "Principal", icon: ""},
@@ -44,24 +51,36 @@ export default function ProductList({ }: Props) {
             onClick={() => { setProductPage(page.name) }}
             style={bool ? { color: "var(--cgreen)" } : {}}
           >
-            {/* <FontAwesomeIcon icon={pages[page]} /> */}
+            <FontAwesomeIcon icon={icons[page.icon]} />
             <p>{page.name}</p>
           </button>
         })}
       </nav>
     }
 
+    const Top = ()=>{
+      return <section className='products-top'>
+        <SearchBar searchButton={setSearch} placeholder={"Buscar producto"} defaultValue={search} onChange={true}/>
+        <button className='default-button' title='Cambiar disposición' onClick={()=>{
+          changeDisplay()
+        }}>
+          <FontAwesomeIcon icon={displayList ? faList : faTableCells}/>
+        </button>
+      </section>
+    }
+
     const RenderProducts = () => {
       if(!products[ProductPage]) return []
 
       return products[ProductPage].map(item => {
-        // let [boolean, index] = checkItemBuy(selectedProds, item._id)
+        let check = checkSearch(item.name, search)
+
         return <div
           key={Math.random()}
-          className='pickeable-item'
+          className={search !== "" && check === item.name ? "d-none" : 'pickeable-item'}
         >
           <FontAwesomeIcon icon={faArrowCircleLeft} />
-          <p>{item.name}</p>
+          <p dangerouslySetInnerHTML={{ __html: check }}></p>
           <p>${item.price}</p>
 
         </div>
@@ -71,7 +90,8 @@ export default function ProductList({ }: Props) {
     return <section className='picker-section'>
       <Router />
       <div className='product-paging'>
-        <div className='product-picker' id='product-picker'>
+        <Top/>
+        <div className={displayList ? 'product-picker' : "product-picker grid"} id='product-picker'>
           <RenderProducts/>
         </div>
       </div>
