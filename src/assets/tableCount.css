@@ -208,3 +208,11 @@
     color: var(--corange);
     background-color: transparent;
 }
+
+
+/****/
+
+
+.reciept {
+    display: none;
+}

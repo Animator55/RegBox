@@ -1,7 +1,7 @@
 import React from 'react'
 import { TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGear, faMinus, faPlus, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faGear, faMinus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Configuration, TablesPlaces } from '../roleMains/Main'
 
 import "../assets/map.css"
