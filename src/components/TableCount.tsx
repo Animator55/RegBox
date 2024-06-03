@@ -8,37 +8,40 @@ type Props = {
     currentTable: TableType | undefined
 }
 
-export default function TableCount({currentTable}: Props) {
-    const Top = ()=>{
+export default function TableCount({ currentTable }: Props) {
+    const Top = () => {
         return <header className='table-head'>
-            {currentTable && <> 
-                <div className='after' style={{backgroundColor: colorSelector[currentTable.state]}}></div>
+            {currentTable && <>
+                <div className='after' style={{ backgroundColor: colorSelector[currentTable.state] }}></div>
                 <h2>Mesa {currentTable.number}</h2>
-                <p>{"("+ currentTable.tag +")"}</p>
+                <p>{"(" + currentTable.tag + ")"}</p>
             </>}
         </header>
     }
-    const List = ()=>{
+
+ /**** LIST ****/
+
+    const List = () => {
         const products: Item[] | undefined = currentTable?.products
 
-        const columns = ["", "Nombre","Cantidad","Precio", ""]
+        const columns = ["", "Nombre", "Cantidad", "Precio", ""]
 
         return <section className='content'>
             <header className='table-columns'>
-                {columns.map(str=>{
+                {columns.map(str => {
                     return <div key={Math.random()}>{str}</div>
                 })}
             </header>
             <ul className='table-list'>
-                {products && products.length !== 0 && products.map(item=>{
+                {products && products.length !== 0 && products.map(item => {
                     return <li key={Math.random()}>
-                        <button className='edit-button'><FontAwesomeIcon icon={faPen}/></button>
+                        <button className='edit-button'><FontAwesomeIcon icon={faPen} /></button>
                         <div>{item.name}</div>
                         <div>{item.amount}</div>
                         <div>{item.price}</div>
                         <div className='amount-buttons'>
-                            <button><FontAwesomeIcon icon={faPlus}/></button>
-                            <button><FontAwesomeIcon icon={faMinus}/></button>
+                            <button><FontAwesomeIcon icon={faPlus} /></button>
+                            <button><FontAwesomeIcon icon={faMinus} /></button>
                         </div>
                     </li>
                 })}
@@ -46,58 +49,65 @@ export default function TableCount({currentTable}: Props) {
         </section>
     }
 
-    const TableCommands =()=>{
+    const TableCommands = () => {
         return <section className='table-commands'>
             <div>
                 <p>{currentTable && `Caja abierta a las ${currentTable.opened}`}</p>
-                <button><FontAwesomeIcon icon={faClockRotateLeft}/>Historial</button>
+                <button><FontAwesomeIcon icon={faClockRotateLeft} />Historial</button>
             </div>
             <div>
-                <button onClick={()=>{
+                <button onClick={() => {
                     let prtContent = document.querySelector(".reciept");
-                    if(!prtContent) return
+                    if (!prtContent) return
                     var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-                    if(!WinPrint) return
+                    if (!WinPrint) return
                     WinPrint.document.write(prtContent.innerHTML);
                     WinPrint.document.close();
                     WinPrint.focus();
                     WinPrint.print();
                     WinPrint.close();
-                }}><FontAwesomeIcon icon={faReceipt}/>Imprimir</button>
-                <button><FontAwesomeIcon icon={faCheckToSlot}/>Cerrar</button>
+                }}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
+                <button><FontAwesomeIcon icon={faCheckToSlot} />Cerrar</button>
             </div>
         </section>
+    }
+
+    /*** */
+
+    const Reciept = () => {
+        return <div className='reciept'>
+            <h1>Club Vermut</h1>
+            <div style={{ display: "flex", gap: "1rem" }}>
+                <p>{new Date().getDay() + "/" + new Date().getMonth() + "/" + new Date().getFullYear()}</p>
+            </div>
+            <div style={{ display: "flex", gap: "1rem" }}>
+                <p>Mesa {currentTable?.number}</p>
+            </div>
+            <hr></hr>
+            {currentTable && currentTable?.products && currentTable?.products.map(el => {
+                total += el.price * el.amount!
+
+                return <div style={{ display: "flex" }}>
+                    <p>{el.name}</p>
+                    <p style={{ marginLeft: "auto" }}>{"(" + el.amount + ") * $" + el.price + " | $" + el.price * el.amount!}</p>
+                </div>
+            })}
+            <hr />
+            <div style={{ display: "flex" }}>
+                <p>Total</p>
+                <p style={{ marginLeft: "auto" }}>${total}</p>
+            </div>
+        </div>
     }
 
     let total = 0
 
     return <section className='table-count'>
-        <div className='reciept'>
-            <h1>Club Vermut</h1>
-            <div style={{display:"flex", gap: "1rem"}}>
-                <p>{new Date().getDay()+"/"+new Date().getMonth()+"/"+new Date().getFullYear()}</p>
-                <p>{new Date().getDay()+"/"+new Date().getMonth()+"/"+new Date().getFullYear()}</p>
-            </div>
-            <div style={{display:"flex", gap: "1rem"}}>
-                <p>Mesa {currentTable?.number}</p>
-            </div>
-            <hr></hr>
-            {currentTable && currentTable?.products && currentTable?.products.map(el=>{
-                total += el.price*el.amount!
-
-                return <div style={{display:"flex"}}>
-                    <p>{el.name}</p>
-                    <p style={{marginLeft: "auto"}}>{"("+el.amount+") * $"+el.price+ " | $"+el.price*el.amount!}</p>
-                </div>
-            })}
-            <hr />
-            <div style={{display:"flex"}}>
-                <p>Total</p>
-                <p style={{marginLeft: "auto"}}>{total}</p>
-            </div>
-        </div>
-        <Top/>
-        <List/>
-        <TableCommands/>
+        <Reciept/>
+        <Top />
+        <List />
+        <TableCommands />
     </section>
 }
+
+
