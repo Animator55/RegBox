@@ -67,6 +67,7 @@ input:focus, select:focus {
 
 .disabled {
     opacity: 0.7;
+    pointer-events: none;
 }
 
 button:not(.disabled) {

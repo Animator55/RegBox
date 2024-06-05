@@ -9,12 +9,13 @@ import checkSearch from '../logic/checkSearch'
 type Props = {
   displayList: boolean
   changeDisplay: Function
+  addItem: Function
 }
 
 export type pagesRouter = {
   [key: string]: any
 }
-export default function ProductList({displayList, changeDisplay}: Props) {
+export default function ProductList({displayList, changeDisplay, addItem}: Props) {
   const [search, setSearch] = React.useState("")
   const [ProductPage, setProductPage] = React.useState("Entrada")
   const icons: pagesRouter = {
@@ -78,9 +79,10 @@ export default function ProductList({displayList, changeDisplay}: Props) {
         return <div
           key={Math.random()}
           className={search !== "" && check === item.name ? "d-none" : 'pickeable-item'}
+          onClick={()=>{addItem(item)}}
         >
           <FontAwesomeIcon icon={faArrowCircleLeft} />
-          <p dangerouslySetInnerHTML={{ __html: check }}></p>
+          <p className='name' dangerouslySetInnerHTML={{ __html: check }}></p>
           <p>${item.price}</p>
 
         </div>

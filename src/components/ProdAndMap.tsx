@@ -8,9 +8,10 @@ type Props = {
     setCurrentID: Function
     current: TableType | undefined
     tablesMin: {_id: string, state: "open" | "paying" | "closed" | "unnactive"}[]
+    addItem: Function
 }
 
-export default function ProdAndMap({current, setCurrentID, tablesMin}: Props) {
+export default function ProdAndMap({current, setCurrentID, tablesMin,addItem}: Props) {
     let c = React.useContext(Configuration)
     const [page, setPage] = React.useState("map")
     
@@ -28,6 +29,6 @@ export default function ProdAndMap({current, setCurrentID, tablesMin}: Props) {
 
     return <section className='prod-map-container'>
         <NavBar/>
-        {page === "map" ? <Map current={current} setCurrentID={setCurrentID} tablesOpenMin={tablesMin}/>: <ProductList displayList={c.config.prodsAsList} changeDisplay={changeProdDisplay}/>}
+        {page === "map" ? <Map current={current} setCurrentID={setCurrentID} tablesOpenMin={tablesMin}/>: <ProductList displayList={c.config.prodsAsList} changeDisplay={changeProdDisplay} addItem={addItem}/>}
     </section>
 }

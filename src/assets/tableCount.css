@@ -42,6 +42,12 @@
     max-width: 50%;
     max-height: 1.2rem;
 }
+.table-head > .expand-button {
+    background: transparent;
+    font-size: 1.3rem;
+    color: var(--cwhite);
+    margin-left: 0.5rem;
+}
 
 /***/
 
@@ -93,6 +99,9 @@
     background-color: var(--cwhite);
     color: var(--cblack);
     padding-left: 0.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .table-list > li > :nth-child(2) {
     border-radius: 5px 0 0 5px;
@@ -169,7 +178,7 @@
 
 .table-commands {
     display: flex;
-    justify-content: space-between;
+    gap: 0.5rem; 
     padding: 1rem;
     background-color: var(--cdarkgray);
     border-radius: 7px;
@@ -190,6 +199,9 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 0.5rem;
+}
+.table-commands > div:first-child {
+    margin-right: auto;
 }
 .table-commands button {
     display: flex;
