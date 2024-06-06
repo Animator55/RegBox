@@ -108,18 +108,24 @@
 }
 .table-list > li > :nth-child(4) {
     border-radius: 0 5px 5px 0;
+    width: calc(160% - 10px);
+    transition: width 300ms;
+    text-align: right;
+    padding-right: 10px;
 }
 .table-list > li:hover > .edit-button {
     background-color: var(--corange);
     opacity: 1;
 }
-.table-list > li:hover > .amount-buttons > * {
-    background-color: var(--cgreen);
+.table-list > li:hover > :nth-child(4)  {
+    transition: width 50ms;
+    width: calc(97% - 10px);
+}
+.table-list > li:hover > .amount-buttons {
     opacity: 1;
 }
-.table-list > li:hover > .amount-buttons > :last-child {
-    background-color: var(--cred);
-    opacity: 1;
+.table-list > li:hover > .amount-buttons > * {
+    color: var(--cwhite);
 }
 .edit-button {
     border-radius: 5px;
@@ -145,22 +151,20 @@
     justify-content: space-around;
     padding: 0!important;
     overflow: hidden;
-    background-color: transparent!important;
+    border-radius: 5px;
+    background-color: var(--cgray)!important;
+    opacity: 0;
 }
 .amount-buttons > * {
     width: 50%;
     height: 100%;
-    background-color: var(--cgreen);
     border-radius: 5px;
+    background-color: transparent;
     border: 2px solid transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.5;
-    transition: border-color 300ms, background-color 300ms, color 300ms;
-}
-.amount-buttons > :last-child {
-    background-color: var(--cred);
+    transition: border-color 300ms, background-color 300ms;
 }
 .amount-buttons > *:hover {
     border-color: var(--cgreen);
@@ -173,6 +177,16 @@
     color: var(--cred);
 }
 
+.content hr {
+    width: 100%;
+}
+
+.total {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 3rem 0 1.5rem;
+    color: var(--cwhite);
+}
 
 /**/
 

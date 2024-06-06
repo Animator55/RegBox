@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightArrowLeft, faCaretDown, faCheckToSlot, faClockRotateLeft, faMinus, faPen, faPercentage, faPlus, faReceipt } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
+import fixNum from '../logic/fixDateNumber'
 
 type Props = {
     currentTable: TableType | undefined
@@ -59,6 +60,8 @@ export default function TableCount({ currentTable, EditTable }: Props) {
 
         let isProds = products && products.length !== 0
 
+        let total = 0
+
         return <section className='content'>
             <header className='table-columns'>
                 {isProds && columns.map(str => {
@@ -67,6 +70,7 @@ export default function TableCount({ currentTable, EditTable }: Props) {
             </header>
             <ul className='table-list'>
                 {isProds && products && products.map(item => {
+                    total += item.amount! * item.price
                     return <li key={Math.random()}>
                         <button className='edit-button'><FontAwesomeIcon icon={faPen} /></button>
                         <div>{item.name}</div>
@@ -79,6 +83,13 @@ export default function TableCount({ currentTable, EditTable }: Props) {
                     </li>
                 })}
             </ul>
+            {isProds && <>
+                <hr></hr>
+                <div className="total">
+                    <div>Total</div>
+                    <div>{total}</div>
+                </div>
+            </>}
         </section>
     }
 
@@ -122,39 +133,42 @@ export default function TableCount({ currentTable, EditTable }: Props) {
         let date = new Date()
 
         return <div className='reciept'>
-            <style>{"*{font-family:'Kanit', sans-serif;} p{margin: 5px 0}"}</style>
-            <h1 style={{textAlign: "center"}}>Club Vermut</h1>
-            <p style={{textAlign: "right"}}>Recibo no valido como factura</p>
-            <hr></hr>
-            <div style={{ display: "flex", gap: "1rem" }}>
-                <p>Mesa {currentTable?.number}</p>
-                <p>{currentTable.tag !== "" && currentTable.tag}</p>
-            </div>
-            <p>Mesa abierta a las {date.getHours() + ":" + date.getMinutes()}</p>
-            <p>Mesa cerrada a las {date.getHours() + ":" + date.getMinutes()}</p>
-            <p style={{marginTop: 3}}>Fecha: {date.getDate() + "/" + (date.getMonth()+1) + "/" + date.getFullYear()}</p>
-            <hr></hr>
-            <div style={{ display: "flex" }}>
-                <p>Articulo</p>
-                <p style={{ marginLeft: "auto" }}>Precio</p>
-            </div>
-            <hr></hr>
-            <div style={{display: "grid", gridTemplateColumns: "70% 30%"}}>
-                {currentTable && currentTable?.products && currentTable?.products.map(el => {
-                    total += el.price * el.amount!
+            <style>{"*{font-family:'Kanit', sans-serif;} .content-reciept p{font-size:0.65rem;margin: 3px 0}"}</style>
+            <div className='content-reciept'>
+                <h3 style={{textAlign: "center"}}>CLUB VERMUT</h3>
+                <h6 style={{marginBottom: 2, textAlign: "right"}}>RECIBO NO VALIDO COMO FACTURA</h6>
+                <hr></hr>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                    <p>Mesa {currentTable?.number}</p>
+                    <p>{currentTable.tag !== "" && currentTable.tag}</p>
+                </div>
+                <p>Abierta a las {currentTable.opened}</p>
+                <p>Cerrada a las {fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}</p>
+                <p style={{marginTop: 3}}>Fecha: {
+                    fixNum(date.getDate()) + "/" + fixNum(date.getMonth()+1) + "/" + date.getFullYear()}</p>
+                <hr></hr>
+                <div style={{ display: "flex" }}>
+                    <p>Articulo</p>
+                    <p style={{ marginLeft: "auto" }}>Precio</p>
+                </div>
+                <hr></hr>
+                <div style={{display: "grid", gridTemplateColumns: "70% 30%"}}>
+                    {currentTable && currentTable?.products && currentTable?.products.map(el => {
+                        total += el.price * el.amount!
 
-                    let prefix = el.amount === 1 ? "" : `${el.amount + "*$" + el.price + " "}`
+                        let prefix = el.amount === 1 ? "" : `${el.amount + "*$" + el.price + " "}`
 
-                    return <React.Fragment key={Math.random()}>
-                        <p>{el.name}</p>
-                        <p style={{ textAlign: "right" }}>{prefix + "$" + el.price * el.amount!}</p>
-                    </React.Fragment>
-                })}
-            </div>
-            <hr />
-            <div style={{ display: "flex" }}>
-                <p>Total</p>
-                <p style={{ marginLeft: "auto" }}>${total}</p>
+                        return <React.Fragment key={Math.random()}>
+                            <p>{el.name}</p>
+                            <p style={{ textAlign: "right" }}>{prefix + "$" + el.price * el.amount!}</p>
+                        </React.Fragment>
+                    })}
+                </div>
+                <hr />
+                <div style={{ display: "flex"}}>
+                    <p style={{fontSize: "0.9rem"}}>Total</p>
+                    <p style={{ marginLeft: "auto", fontSize: "0.9rem"}}>${total}</p>
+                </div>
             </div>
         </div>
     }

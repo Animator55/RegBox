@@ -5,6 +5,7 @@ import ProdAndMap from '../components/ProdAndMap'
 import { Item, TablePlaceType, TableType, configType } from '../vite-env'
 import { TablePlacesDefault } from '../defaults/tableplaces'
 import getTableData from '../logic/getTableData'
+import fixNum from '../logic/fixDateNumber'
 
 type Props = {
 }
@@ -23,59 +24,6 @@ export const Configuration = React.createContext({
 
 export const TablesPlaces = React.createContext({ tables: [] as TablePlaceType[], set: (val: TablePlaceType[]) => { console.log(val) } })
 
-
-let defProds = [
-    {
-        _id: "fasfgfdasga",
-        name: "product1",
-        price: 2000,
-        type: "food",
-        amount: 1
-    },
-    {
-        _id: "fasfasfasgf",
-        name: "product1",
-        price: 2540,
-        type: "food",
-        amount: 1
-    },
-    {
-        _id: "fasfgfgfdsgdsdasga",
-        name: "product1",
-        price: 7960,
-        type: "food",
-        amount: 1
-    },
-    {
-        _id: "dfsgds",
-        name: "product5",
-        price: 300,
-        type: "food",
-        amount: 1
-    },
-    {
-        _id: "gdsg",
-        name: "product6",
-        price: 400,
-        type: "food",
-        amount: 1
-    },
-    {
-        _id: "gdsg",
-        name: "product2",
-        price: 2240,
-        type: "food",
-        amount: 3
-    },
-    {
-        _id: "gsdg",
-        name: "product5",
-        price: 4000,
-        type: "food",
-        amount: 2
-    },
-]
-
 export default function Main({ }: Props) {
     const [config, setConfig] = React.useState({
         prodsAsList: true,
@@ -92,24 +40,7 @@ export default function Main({ }: Props) {
 
     const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(TablePlacesDefault)
 
-    const [tables, setTables] = React.useState<TableType[]>([
-        {
-            _id: "gdsghdsh",
-            number: 1,
-            tag: "",
-            products: [...defProds],
-            opened: `${new Date().getHours() + ":" + new Date().getMinutes()}`,
-            state: "open",
-        },
-        {
-            _id: "ggdagagasghdash",
-            number: 2,
-            tag: "Unknown name",
-            products: [...defProds, ...defProds, ...defProds],
-            opened: `${new Date().getHours() + ":" + new Date().getMinutes()}`,
-            state: "paying",
-        },
-    ])
+    const [tables, setTables] = React.useState<TableType[]>([])
     const [current, setCurrent] = React.useState<string>()
 
     const setCurrentHandler = (id: string) => {
@@ -119,6 +50,7 @@ export default function Main({ }: Props) {
         }
         if (index !== -1) setCurrent(id)
         else {
+            let date = new Date()
             let data = getTableData(id ,tablesPlacesPH) 
             if(!data) return
             let newTable: TableType = {
@@ -126,7 +58,7 @@ export default function Main({ }: Props) {
                 number: data.number,
                 tag: "",
                 products: [],
-                opened: `${new Date().getHours() + ":" + new Date().getMinutes()}`,
+                opened: `${fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}`,
                 state: "open",
             }
             setTables([...tables, newTable])
