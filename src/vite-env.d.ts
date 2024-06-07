@@ -28,6 +28,7 @@ export type Item = {
     price: number
     type: string
     amount?: number
+    header?: boolean
 }
 
 export type sessionType = {
@@ -47,6 +48,7 @@ export type userType = {
 
 export type configType = {
     prodsAsList: boolean
+    orderedLists: boolean
     map: {
         x: number
         y: number

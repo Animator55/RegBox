@@ -1,0 +1,100 @@
+.pop {
+    background-color: var(--cwhite);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.pop>header {
+    background-color: var(--corange);
+    padding: 1rem;
+}
+
+.pop-top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.pop-top>h2 {
+    margin: .5rem 0;
+}
+
+.pop-top>button {
+    background-color: transparent;
+    font-size: 1.8rem;
+}
+
+.pop-options {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.pop-content {
+    display: flex;
+}
+
+.pop-content>nav {
+    display: flex;
+    flex-direction: column;
+    min-height: 60vh;
+    max-height: 60vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 0.5rem;
+    gap: 0.3rem;
+}
+
+.pop-content>nav>button {
+    display: flex;
+    gap: 1rem;
+    background-color: transparent;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    border: 2px solid transparent;
+    border-radius: 3px;
+    transition: background-color 200ms;
+}
+.pop-content>nav>button:first-child {
+    border-color: var(--corange);
+}
+.pop-content>nav>button:hover {
+    background-color: var(--clightgray);
+    transition: background-color 200ms;
+}
+.pop-content>nav>.active {
+    background-color: var(--corange)!important;
+}
+
+.pop-content>nav>button>p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--cdarkgray)
+}
+
+.pop ul {
+    width: 50dvw;
+    max-width: 50dvw;
+    min-height: 60vh;
+    max-height: 60vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 0 calc(0.5rem - 4px) 0 0.5rem;
+}
+
+.pop .item {
+    display: flex;
+    background-color: var(--clightgray);
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+}
+
+.pop .item>* {
+    margin: 0.2rem 0;
+}
+
+.pop .item> :last-child {
+    margin-left: auto;
+}

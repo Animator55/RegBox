@@ -6,6 +6,10 @@ import { Item, TablePlaceType, TableType, configType } from '../vite-env'
 import { TablePlacesDefault } from '../defaults/tableplaces'
 import getTableData from '../logic/getTableData'
 import fixNum from '../logic/fixDateNumber'
+import { products, productsType } from '../defaults/products'
+import ProductEditor from '../components/ProductEditor'
+import Notifications from '../components/Notifications'
+import ConfigurationComp from '../components/Configuration'
 
 type Props = {
 }
@@ -13,6 +17,7 @@ type Props = {
 
 export const Configuration = React.createContext({
     config: {
+        orderedLists: true,
         prodsAsList: true,
         map: {
             zoom: 1,
@@ -21,12 +26,18 @@ export const Configuration = React.createContext({
         }
     }, setConfig: (val: configType) => { console.log(val) }
 })
+export const Products = React.createContext({
+    list: {} as productsType, setProds: (val: productsType) => { console.log(val) }
+})
 
 export const TablesPlaces = React.createContext({ tables: [] as TablePlaceType[], set: (val: TablePlaceType[]) => { console.log(val) } })
+
+let lastChanged = ""
 
 export default function Main({ }: Props) {
     const [config, setConfig] = React.useState({
         prodsAsList: true,
+        orderedLists: true,
         map: {
             zoom: 1,
             x: 0,
@@ -38,10 +49,21 @@ export default function Main({ }: Props) {
         setConfig(val)
     }
 
+    const [ProductsState, setProdsState] = React.useState<productsType>(products)
+
     const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(TablePlacesDefault)
 
     const [tables, setTables] = React.useState<TableType[]>([])
     const [current, setCurrent] = React.useState<string>()
+    const [popUp, setCurrentPop] = React.useState("")
+
+    const close = ()=>{setCurrentPop("")}
+
+    const popUps: {[key: string]: any} = {
+        "products" : <ProductEditor close={close}/>,
+        "configuration" : <ConfigurationComp />,
+        "notifications": <Notifications/>
+    }
 
     const setCurrentHandler = (id: string) => {
         let index = -1
@@ -51,8 +73,8 @@ export default function Main({ }: Props) {
         if (index !== -1) setCurrent(id)
         else {
             let date = new Date()
-            let data = getTableData(id ,tablesPlacesPH) 
-            if(!data) return
+            let data = getTableData(id, tablesPlacesPH)
+            if (!data) return
             let newTable: TableType = {
                 _id: data._id,
                 number: data.number,
@@ -65,15 +87,14 @@ export default function Main({ }: Props) {
         }
     }
 
-    const EditTable = (table_id: string, entry: string, value: any)=>{
-        console.log(table_id, entry, value)
+    const EditTable = (table_id: string, entry: string, value: any) => {
         let table
-        for(let i=0; i<tables.length;i++) {
-            if(tables[i]._id === table_id) table = tables[i]
+        for (let i = 0; i < tables.length; i++) {
+            if (tables[i]._id === table_id) table = tables[i]
         }
-        if(!table) return
-        setTables([...tables.filter(el=>{if(el._id !== table._id)return el}),
-            {...table, [entry]: value}
+        if (!table) return
+        setTables([...tables.filter(el => { if (el._id !== table._id) return el }),
+        { ...table, [entry]: value }
         ])
     }
 
@@ -85,29 +106,46 @@ export default function Main({ }: Props) {
     let tablesMin = tables.map(tbl => {
         return { _id: tbl._id, state: tbl.state }
     })
-    
-    const addItem = (item: Item)=>{
-        if(!currentTableData) return
+
+    const addItem = (item: Item) => {
+        if (!currentTableData) return
         let prods = currentTableData.products
 
         let index = -1
-        for(let i=0;i<prods.length;i++) if(prods[i]._id === item._id) {index = i; break}
+        for (let i = 0; i < prods.length; i++) if (prods[i]._id === item._id) { index = i; break }
 
-        if(index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, {...item, amount: 1}])
-        else EditTable(currentTableData?._id, "products", prods.map(el=>{
-            if(el._id === item._id) return {...item, amount: prods[index].amount! + 1}
+        lastChanged = item._id 
+
+        if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: 1 }])
+        else EditTable(currentTableData?._id, "products", prods.map(el => {
+            if (el._id === item._id) return { ...item, amount: prods[index].amount! + 1 }
             else return el
         }))
     }
 
+    React.useEffect(()=>{
+        if(lastChanged !== "") {
+            let item = document.getElementById(lastChanged)
+            lastChanged = ""
+            if(!item) return 
+            item.classList.add("added")
+            let ul = item.parentElement
+            if(!ul) return
+            ul.scrollTo({left: 0, top: item.offsetTop - 211})
+        }
+    }, [tables])
+
     return <>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
-                <TopBar />
-                <section className='d-flex'>
-                    <TableCount currentTable={currentTableData} EditTable={EditTable}/>
-                    <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem}/>
-                </section>
+                <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
+                    <TopBar setCurrentPop={setCurrentPop}/>
+                    <section className='d-flex'>
+                        <TableCount currentTable={currentTableData} EditTable={EditTable} />
+                        <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
+                    </section>
+                    {popUp !== "" && popUps[popUp]}
+                </Products.Provider>
             </Configuration.Provider>
         </TablesPlaces.Provider>
     </>

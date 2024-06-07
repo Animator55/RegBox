@@ -1,10 +1,12 @@
 import { Item, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faCaretDown, faCheckToSlot, faClockRotateLeft, faMinus, faPen, faPercentage, faPlus, faReceipt } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faBars, faCaretDown, faCheckToSlot, faClockRotateLeft, faList, faMinus, faPercentage, faPlus, faReceipt } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import fixNum from '../logic/fixDateNumber'
+import { Configuration, Products } from '../roleMains/Main'
+import orderByTypes from '../logic/orderByTypes'
 
 type Props = {
     currentTable: TableType | undefined
@@ -12,7 +14,10 @@ type Props = {
 }
 
 export default function TableCount({ currentTable, EditTable }: Props) {
-    const expandList = ()=>{
+    const c = React.useContext(Configuration)
+    const p = Object.keys(React.useContext(Products).list)
+
+    const expandList = () => {
 
     }
 
@@ -20,35 +25,35 @@ export default function TableCount({ currentTable, EditTable }: Props) {
         return <header className='table-head'>
             {currentTable && <>
                 <div className='after' style={{ backgroundColor: colorSelector[currentTable.state] }}></div>
-                <button className='expand-button' onClick={expandList}><FontAwesomeIcon icon={faCaretDown}/></button>
+                <button className='expand-button' onClick={expandList}><FontAwesomeIcon icon={faCaretDown} /></button>
                 <h2>Mesa {currentTable.number}</h2>
                 <p>{currentTable.tag !== "" && "(" + currentTable.tag + ")"}</p>
             </>}
-            <h2 style={{opacity: 0}}>Empty</h2>
+            <h2 style={{ opacity: 0 }}>Empty</h2>
         </header>
     }
 
     /**** LIST ****/
 
-    const addAmount = (value: 1 | -1, item_id: string) =>{
+    const addAmount = (value: 1 | -1, item_id: string) => {
         let list = currentTable?.products
-        if(!list || list.length === 0) return
+        if (!list || list.length === 0) return
 
         let item
         let index = -1
-        for(let i = 0; i<list.length; i++) {
-            if(item_id === list[i]._id) {
-                item = list[i]; index = i; break                
+        for (let i = 0; i < list.length; i++) {
+            if (item_id === list[i]._id) {
+                item = list[i]; index = i; break
             }
         }
-        if(!item || !item.amount) return
+        if (!item || !item.amount) return
 
-        let newItem = {...item, amount: item.amount + value}
+        let newItem = { ...item, amount: item.amount + value }
 
-        if(newItem.amount === 0 
-        && index !== -1) EditTable(currentTable?._id, "products", list.filter(el=>{if(el._id !== item._id) return el}))
-        else EditTable(currentTable?._id, "products", list.map(el=>{
-            if(el._id === item._id) return newItem
+        if (newItem.amount === 0
+            && index !== -1) EditTable(currentTable?._id, "products", list.filter(el => { if (el._id !== item._id) return el }))
+        else EditTable(currentTable?._id, "products", list.map(el => {
+            if (el._id === item._id) return newItem
             else return el
         }))
     }
@@ -56,31 +61,42 @@ export default function TableCount({ currentTable, EditTable }: Props) {
     const List = () => {
         let products: Item[] | undefined = currentTable?.products
 
-        const columns = ["", "Nombre", "Cantidad", "Precio", ""]
+        const columns = ["Nombre", "Cantidad", "Precio"]
 
         let isProds = products && products.length !== 0
 
         let total = 0
 
+        let titles = c.config.orderedLists
+        let reOrdered = titles ? orderByTypes(products, p, true) : products
+
         return <section className='content'>
             <header className='table-columns'>
-                {isProds && columns.map(str => {
-                    return <div key={Math.random()}>{str}</div>
-                })}
+                {isProds && <>
+                    {columns.map(str => {
+                        return <div key={Math.random()}>{str}</div>
+                    })}
+                    <button className='default-button' onClick={() => { c.setConfig({ ...c.config, orderedLists: !titles }) }}>
+                        <FontAwesomeIcon icon={titles ? faList : faBars} />
+                    </button>
+                </>}
             </header>
             <ul className='table-list'>
-                {isProds && products && products.map(item => {
-                    total += item.amount! * item.price
-                    return <li key={Math.random()}>
-                        <button className='edit-button'><FontAwesomeIcon icon={faPen} /></button>
-                        <div>{item.name}</div>
-                        <div>{item.amount}</div>
-                        <div>{item.price}</div>
-                        <div className='amount-buttons'>
-                            <button onClick={()=>{addAmount(1, item._id)}}><FontAwesomeIcon icon={faPlus} /></button>
-                            <button onClick={()=>{addAmount(-1, item._id)}}><FontAwesomeIcon icon={faMinus} /></button>
-                        </div>
-                    </li>
+                {isProds && reOrdered && reOrdered.map(item => {
+                    let header = false
+                    if (titles && item.header) header = true
+                    else total += item.amount! * item.price
+                    return header ? <div className='title' key={Math.random()}>{item.type}</div>
+                        :
+                        <li id={item._id} key={Math.random()}>
+                            <div>{item.name}</div>
+                            <div>{item.amount}</div>
+                            <div>{item.price}</div>
+                            <div className='amount-buttons'>
+                                <button onClick={() => { addAmount(1, item._id) }}><FontAwesomeIcon icon={faPlus} /></button>
+                                <button onClick={() => { addAmount(-1, item._id) }}><FontAwesomeIcon icon={faMinus} /></button>
+                            </div>
+                        </li>
                 })}
             </ul>
             {isProds && <>
@@ -129,14 +145,16 @@ export default function TableCount({ currentTable, EditTable }: Props) {
     /*** */
 
     const Reciept = () => {
-        if(!currentTable)return
+        if (!currentTable) return
         let date = new Date()
+
+        let result = orderByTypes(currentTable.products, p, false)
 
         return <div className='reciept'>
             <style>{"*{font-family:'Kanit', sans-serif;} .content-reciept p{font-size:0.65rem;margin: 3px 0}"}</style>
             <div className='content-reciept'>
-                <h3 style={{textAlign: "center"}}>CLUB VERMUT</h3>
-                <h6 style={{marginBottom: 2, textAlign: "right"}}>RECIBO NO VALIDO COMO FACTURA</h6>
+                <h3 style={{ textAlign: "center" }}>CLUB VERMUT</h3>
+                <h6 style={{ marginBottom: 2, textAlign: "right" }}>RECIBO NO VALIDO COMO FACTURA</h6>
                 <hr></hr>
                 <div style={{ display: "flex", gap: "1rem" }}>
                     <p>Mesa {currentTable?.number}</p>
@@ -144,16 +162,16 @@ export default function TableCount({ currentTable, EditTable }: Props) {
                 </div>
                 <p>Abierta a las {currentTable.opened}</p>
                 <p>Cerrada a las {fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}</p>
-                <p style={{marginTop: 3}}>Fecha: {
-                    fixNum(date.getDate()) + "/" + fixNum(date.getMonth()+1) + "/" + date.getFullYear()}</p>
+                <p style={{ marginTop: 3 }}>Fecha: {
+                    fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}</p>
                 <hr></hr>
                 <div style={{ display: "flex" }}>
                     <p>Articulo</p>
                     <p style={{ marginLeft: "auto" }}>Precio</p>
                 </div>
                 <hr></hr>
-                <div style={{display: "grid", gridTemplateColumns: "70% 30%"}}>
-                    {currentTable && currentTable?.products && currentTable?.products.map(el => {
+                <div style={{ display: "grid", gridTemplateColumns: "70% 30%" }}>
+                    {result && result.map(el => {
                         total += el.price * el.amount!
 
                         let prefix = el.amount === 1 ? "" : `${el.amount + "*$" + el.price + " "}`
@@ -165,9 +183,9 @@ export default function TableCount({ currentTable, EditTable }: Props) {
                     })}
                 </div>
                 <hr />
-                <div style={{ display: "flex"}}>
-                    <p style={{fontSize: "0.9rem"}}>Total</p>
-                    <p style={{ marginLeft: "auto", fontSize: "0.9rem"}}>${total}</p>
+                <div style={{ display: "flex" }}>
+                    <p style={{ fontSize: "0.9rem" }}><b>Total</b></p>
+                    <p style={{ marginLeft: "auto", fontSize: "0.9rem" }}><b>${total}</b></p>
                 </div>
             </div>
         </div>
@@ -176,7 +194,7 @@ export default function TableCount({ currentTable, EditTable }: Props) {
     let total = 0
 
     return <section className='table-count'>
-        <Reciept/>
+        <Reciept />
         <Top />
         <List />
         <TableCommands />

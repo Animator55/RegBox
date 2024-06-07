@@ -1,10 +1,10 @@
 import React from 'react'
-import { products } from '../defaults/products'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowCircleLeft, faBottleWater, faCircle, faCookie, faDrumstickBite, faIceCream, faList, faMartiniGlassCitrus, faPlateWheat, faTableCells, faWineBottle } from '@fortawesome/free-solid-svg-icons'
 import "../assets/productList.css"
 import SearchBar from './SearchBar'
 import checkSearch from '../logic/checkSearch'
+import { Products } from '../roleMains/Main'
 
 type Props = {
   displayList: boolean
@@ -16,6 +16,8 @@ export type pagesRouter = {
   [key: string]: any
 }
 export default function ProductList({displayList, changeDisplay, addItem}: Props) {
+  const p = React.useContext(Products).list
+
   const [search, setSearch] = React.useState("")
   const [ProductPage, setProductPage] = React.useState("Entrada")
   const icons: pagesRouter = {
@@ -71,9 +73,9 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
     }
 
     const RenderProducts = () => {
-      if(!products[ProductPage]) return []
+      if(!p[ProductPage]) return []
 
-      return products[ProductPage].map(item => {
+      return p[ProductPage].map(item => {
         let check = checkSearch(item.name, search)
 
         return <div

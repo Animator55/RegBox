@@ -1,6 +1,6 @@
 import { Item } from "../vite-env"
 
-type productsType = {
+export type productsType = {
     [key:string] : Item[]
 }
 

@@ -1,8 +1,9 @@
-import { faFilter, faList, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faFilter, faList, faPlus, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
 import { products } from '../defaults/products'
+import "../assets/productEditor.css"
 
 type Props = {
     close: Function
@@ -10,9 +11,9 @@ type Props = {
 
 export default function ProductEditor({ close }: Props) {
     const [search, setSearch] = React.useState("")
-
     const types = Object.keys(products)
 
+    const [page, setPage] = React.useState(types[0] !== undefined ? types[0] : "")
 
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
@@ -20,11 +21,11 @@ export default function ProductEditor({ close }: Props) {
     }}>
         <section className='pop'>
             <header>
-                <div className='top'>
+                <div className='pop-top'>
                     <h2>Editar Productos</h2>
                     <button onClick={() => { close() }}><FontAwesomeIcon icon={faXmark} /></button>
                 </div>
-                <div className='options'>
+                <div className='pop-options'>
                     <SearchBar
                         onChange={true}
                         searchButton={setSearch}
@@ -47,21 +48,37 @@ export default function ProductEditor({ close }: Props) {
                     </button>
                 </div>
             </header>
-            <ul>
-                {types.map(type=>{
-                    return <section key={Math.random()}>
-                        <h3>{type}</h3>
-                        <hr></hr>
-                        {products[type].map(el=>{
-                            return <div key={Math.random()}>
-                                <p>{el._id}</p>
-                                <p>{el.name}</p>
-                                <p>{el.price}</p>
+            <section className='pop-content'>
+                <nav>
+                    <button>
+                        <FontAwesomeIcon icon={faPlus} />
+                        <p>Nuevo tipo</p>
+                    </button>
+                    {types.map(type => {
+                        return <button
+                            key={Math.random()}
+                            className={type === page ? "active" : ""}
+                            onClick={() => { setPage(type) }}
+                        >
+                            <FontAwesomeIcon icon={faCircle} />
+                            <p>{type}</p>
+                        </button>
+                    })}
+                </nav>
+                <section key={Math.random()}>
+                    <h3>{page}</h3>
+                    <hr></hr>
+                    <ul>
+                        {products[page].map(item => {
+                            return <div className='item' key={Math.random()}>
+                                <p>{item._id}</p>
+                                <p>{item.name}</p>
+                                <p>{item.price}</p>
                             </div>
                         })}
-                    </section>
-                })}
-            </ul>
+                    </ul>
+                </section>
+            </section>
         </section>
     </section>
 }
