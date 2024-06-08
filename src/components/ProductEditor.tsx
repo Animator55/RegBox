@@ -1,4 +1,4 @@
-import { faCircle, faFilter, faList, faPlus, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faList, faPlus, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
@@ -33,16 +33,6 @@ export default function ProductEditor({ close }: Props) {
                         placeholder='Buscar Producto...'
                     />
                     <button><FontAwesomeIcon icon={faUpload} /></button>
-                    <div className='filter-zone'>
-                        <FontAwesomeIcon icon={faFilter} />
-                        <select>
-                            {types.map(el => {
-                                return <option key={Math.random()}>
-                                    {el}
-                                </option>
-                            })}
-                        </select>
-                    </div>
                     <button className='default-button' title='Cambiar disposición'>
                         <FontAwesomeIcon icon={faList} />
                     </button>

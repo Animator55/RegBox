@@ -31,6 +31,7 @@
 
 .pop-content {
     display: flex;
+    padding: 0.5rem;
 }
 
 .pop-content>nav {
@@ -49,20 +50,37 @@
     gap: 1rem;
     background-color: transparent;
     align-items: center;
-    padding: 0.3rem 0.6rem;
+    padding: 0.3rem 0.9rem;
     border: 2px solid transparent;
     border-radius: 3px;
     transition: background-color 200ms;
 }
+
 .pop-content>nav>button:first-child {
     border-color: var(--corange);
 }
+
 .pop-content>nav>button:hover {
     background-color: var(--clightgray);
     transition: background-color 200ms;
 }
+
+.pop-content>nav>button:first-child:hover {
+    background-color: var(--corange);
+    color: var(--cwhite);
+    transition: color 200ms, background-color 200ms;
+}
+.pop-content>nav>button:first-child:hover > p {
+    color: var(--cwhite);
+    transition: color 200ms;
+}
+
 .pop-content>nav>.active {
-    background-color: var(--corange)!important;
+    background-color: var(--corange) !important;
+    color: var(--cwhite);
+}
+.pop-content>nav>.active>p {
+    color: var(--cwhite);
 }
 
 .pop-content>nav>button>p {

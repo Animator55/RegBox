@@ -61,8 +61,8 @@ export default function Main({ }: Props) {
 
     const popUps: {[key: string]: any} = {
         "products" : <ProductEditor close={close}/>,
-        "configuration" : <ConfigurationComp />,
-        "notifications": <Notifications/>
+        "configuration" : <ConfigurationComp close={close} />,
+        "notifications": <Notifications close={close}/>
     }
 
     const setCurrentHandler = (id: string) => {
