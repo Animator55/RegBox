@@ -142,3 +142,8 @@ main>.d-flex {
     justify-content: center;
     align-items: center;
 }
+
+.buttons-confirm {
+    display:flex;
+    justify-content: space-between;
+}

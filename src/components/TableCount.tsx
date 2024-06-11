@@ -7,6 +7,7 @@ import React from 'react'
 import fixNum from '../logic/fixDateNumber'
 import { Configuration, Products } from '../roleMains/Main'
 import orderByTypes from '../logic/orderByTypes'
+import ConfirmPop from './ConfirmPop'
 
 type Props = {
     currentTable: TableType | undefined
@@ -14,6 +15,8 @@ type Props = {
 }
 
 export default function TableCount({ currentTable, EditTable }: Props) {
+    const [endPop, endTablePop] = React.useState(false)
+
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
 
@@ -137,7 +140,9 @@ export default function TableCount({ currentTable, EditTable }: Props) {
                     WinPrint.print();
                     WinPrint.close();
                 }}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
-                <button><FontAwesomeIcon icon={faCheckToSlot} />Cerrar</button>
+                <button onClick={()=>{
+                    endTablePop(true)
+                }}><FontAwesomeIcon icon={faCheckToSlot } />Cerrar</button>
             </div>
         </section>
     }
@@ -194,6 +199,11 @@ export default function TableCount({ currentTable, EditTable }: Props) {
     let total = 0
 
     return <section className='table-count'>
+        {endPop && <ConfirmPop 
+            title={"¿Cerrar mesa?"} 
+            confirm={()=>{console.log("confirm")}}
+            close={()=>{endTablePop(false)}}
+        />}
         <Reciept />
         <Top />
         <List />
