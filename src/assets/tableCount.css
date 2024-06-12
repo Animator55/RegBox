@@ -17,12 +17,11 @@
 }
 
 .table-head .after {
-    position: absolute;
-    right: -10%;
-    top: -50%;
-    width: 8rem;
-    height: 250%;
-    rotate: 30deg;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .table-head>*:not(.after) {
@@ -53,6 +52,11 @@
     color: var(--cwhite);
     margin-left: 0.5rem;
 }
+.table-head>.expand-list {
+    position: absolute;
+    bottom:0;
+}
+
 
 /***/
 

@@ -12,9 +12,11 @@ import ConfirmPop from './ConfirmPop'
 type Props = {
     currentTable: TableType | undefined
     EditTable: Function
+    setCurrentTable: Function
+    tablesMin: {_id: string, number: number, state: "open" | "paying" | "closed" | "unnactive"}[]
 }
 
-export default function TableCount({ currentTable, EditTable }: Props) {
+export default function TableCount({ currentTable, EditTable, tablesMin, setCurrentTable }: Props) {
     const [endPop, endTablePop] = React.useState(false)
 
     const c = React.useContext(Configuration)
@@ -26,13 +28,25 @@ export default function TableCount({ currentTable, EditTable }: Props) {
 
     const Top = () => {
         return <header className='table-head'>
-            {currentTable && <>
-                <div className='after' style={{ backgroundColor: colorSelector[currentTable.state] }}></div>
+            {currentTable ? <>
                 <button className='expand-button' onClick={expandList}><FontAwesomeIcon icon={faCaretDown} /></button>
+                <span className="expand-list">
+                    {tablesMin.map(el=>{
+                        return <button
+                        key={Math.random()}
+                        onClick={()=>{setCurrentTable(el._id)}}
+                        >
+                            {el.number}
+                        </button>
+                    })}
+                </span>
                 <h2>Mesa {currentTable.number}</h2>
                 <p>{currentTable.tag !== "" && "(" + currentTable.tag + ")"}</p>
-            </>}
+                <div className='after' style={{ backgroundColor: colorSelector[currentTable.state] }}></div>
+            </> 
+            :
             <h2 style={{ opacity: 0 }}>Empty</h2>
+            }
         </header>
     }
 

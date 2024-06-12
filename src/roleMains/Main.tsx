@@ -104,7 +104,7 @@ export default function Main({ }: Props) {
     }
 
     let tablesMin = tables.map(tbl => {
-        return { _id: tbl._id, state: tbl.state }
+        return { _id: tbl._id, number: tbl.number, state: tbl.state }
     })
 
     const addItem = (item: Item) => {
@@ -141,7 +141,7 @@ export default function Main({ }: Props) {
                 <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
                     <TopBar setCurrentPop={setCurrentPop}/>
                     <section className='d-flex'>
-                        <TableCount currentTable={currentTableData} EditTable={EditTable} />
+                        <TableCount currentTable={currentTableData} EditTable={EditTable} tablesMin={tablesMin} setCurrentTable={setCurrentHandler}/>
                         <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                     </section>
                     {popUp !== "" && popUps[popUp]}

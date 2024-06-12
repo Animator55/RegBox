@@ -10,7 +10,7 @@ import { colorSelector } from '../logic/colorSelector'
 type Props = {
   setCurrentID: Function
   current: TableType | undefined
-  tablesOpenMin: {_id: string, state: "open" | "paying" | "closed" | "unnactive"}[]
+  tablesOpenMin: {_id: string, number: number, state: "open" | "paying" | "closed" | "unnactive"}[]
 }
 
 export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {

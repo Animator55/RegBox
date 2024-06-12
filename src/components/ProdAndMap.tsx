@@ -7,7 +7,7 @@ import { TableType } from '../vite-env'
 type Props = {
     setCurrentID: Function
     current: TableType | undefined
-    tablesMin: {_id: string, state: "open" | "paying" | "closed" | "unnactive"}[]
+    tablesMin: {_id: string, number: number, state: "open" | "paying" | "closed" | "unnactive"}[]
     addItem: Function
 }
 
