@@ -89,6 +89,19 @@
     color: var(--cdarkgray)
 }
 
+.product-editor-content > div:first-child {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+}
+
+.product-editor-content > div > button {
+    width: 1.8rem;
+    height: 1.8rem;
+    background-color: var(--clightgray);
+    border-radius: 5px;
+}
+
 .pop ul {
     width: 50dvw;
     max-width: 50dvw;
@@ -100,17 +113,26 @@
 }
 
 .pop .item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 15% 58% 25%;
     background-color: var(--clightgray);
     border-radius: 5px;
     padding: 0.5rem 1rem;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1%;
     margin-bottom: 0.3rem;
 }
 
 .pop .item>* {
     margin: 0.2rem 0;
+}
+
+.pop .item>input {
+    background-color: var(--cdarkgray);
+    color: var(--cwhite);
+    padding: 0.2rem;
+    font-size: 1rem;
+    border-radius: 5px;
 }
 
 .pop .item> :last-child {

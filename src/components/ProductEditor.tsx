@@ -1,4 +1,4 @@
-import { faCircle, faList, faPlus, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faList, faPen, faPlus, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
@@ -55,15 +55,18 @@ export default function ProductEditor({ close }: Props) {
                         </button>
                     })}
                 </nav>
-                <section key={Math.random()}>
-                    <h3>{page}</h3>
+                <section className='product-editor-content' key={Math.random()}>
+                    <div>
+                        <h3>{page}</h3>
+                        <button><FontAwesomeIcon icon={faPen}/></button>
+                    </div>
                     <hr></hr>
                     <ul>
                         {products[page].map(item => {
                             return <div className='item' key={Math.random()}>
                                 <p>{item._id}</p>
-                                <p>{item.name}</p>
-                                <p>{item.price}</p>
+                                <input defaultValue={item.name}/>
+                                <input defaultValue={item.price}/>
                             </div>
                         })}
                     </ul>
