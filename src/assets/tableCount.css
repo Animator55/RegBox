@@ -12,8 +12,10 @@
     position: relative;
     gap: 1rem;
     border-radius: 8px;
-    overflow: hidden;
     margin-bottom: 0.5rem;
+}
+.table-head:has(.expand-list.expanded) {
+    border-bottom-left-radius: 0;
 }
 
 .table-head .after {
@@ -54,7 +56,40 @@
 }
 .table-head>.expand-list {
     position: absolute;
-    bottom:0;
+    background-color: var(--cdarkgray);
+    top: 100%;
+    border-radius: 0 0 5px 0;
+    height: fit-content;
+    max-height: 0vh;
+    overflow: hidden;
+    width: 60%;
+    left: 0;
+    padding: 0;
+}
+
+.table-head>.expand-list.expanded {
+    max-height: 40vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-right: 5px solid var(--cwhite);
+    border-bottom: 5px solid var(--cwhite);
+    padding: 0.5rem;
+}
+.table-head>.expand-list > button {
+    background-color: transparent;
+    color: var(--cwhite);
+    padding: 0.5rem .5rem 0.5rem 2.55rem;
+    font-size: 1.2rem;
+    text-align: left;
+    border-radius: 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.table-head>.expand-list > button:hover {
+    background-color: var(--corange);
 }
 
 

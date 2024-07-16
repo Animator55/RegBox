@@ -131,6 +131,7 @@
     background-color: var(--cdarkgray);
     color: var(--cwhite);
     padding: 0.2rem;
+    width: 95%;
     font-size: 1rem;
     border-radius: 5px;
 }

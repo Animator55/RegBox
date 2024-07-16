@@ -2,28 +2,41 @@ import { faCircle, faList, faPen, faPlus, faUpload, faXmark } from '@fortawesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
-import { products } from '../defaults/products'
 import "../assets/productEditor.css"
+import { Products } from '../roleMains/Main'
 
 type Props = {
     close: Function
 }
 
 export default function ProductEditor({ close }: Props) {
+    const p = React.useContext(Products)
     const [search, setSearch] = React.useState("")
-    const types = Object.keys(products)
+    const [resultProducts, setResult] = React.useState(p.list)
+    const types = Object.keys(p.list)
 
     const [page, setPage] = React.useState(types[0] !== undefined ? types[0] : "")
 
+    const changeProd = (key: string, value:string, page:string, index: number)=>{
+        setResult({...resultProducts, [page]: resultProducts[page].map((el, i)=>{
+            return i !== index ? el : {...el, [key]: value} 
+        })})
+    }
+
+    const closeHandle = ()=>{
+        p.setProds(resultProducts)
+        close()
+    }
+
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
-        if (target.className === "back-blur") close()
+        if (target.className === "back-blur") closeHandle()
     }}>
         <section className='pop'>
-            <header>
+            <header> 
                 <div className='pop-top'>
                     <h2>Editar Productos</h2>
-                    <button onClick={() => { close() }}><FontAwesomeIcon icon={faXmark} /></button>
+                    <button onClick={() => { closeHandle() }}><FontAwesomeIcon icon={faXmark} /></button>
                 </div>
                 <div className='pop-options'>
                     <SearchBar
@@ -62,11 +75,11 @@ export default function ProductEditor({ close }: Props) {
                     </div>
                     <hr></hr>
                     <ul>
-                        {products[page].map(item => {
+                        {resultProducts[page].map((item, i) => {
                             return <div className='item' key={Math.random()}>
                                 <p>{item._id}</p>
-                                <input defaultValue={item.name}/>
-                                <input defaultValue={item.price}/>
+                                <input defaultValue={item.name} onBlur={(e)=>{changeProd("name", e.currentTarget.value, page, i)}}/>
+                                <input defaultValue={item.price} onBlur={(e)=>{changeProd("price", e.currentTarget.value, page, i)}}/>
                             </div>
                         })}
                     </ul>

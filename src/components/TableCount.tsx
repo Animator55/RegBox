@@ -22,21 +22,28 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
 
-    const expandList = () => {
+    let spanListlength = !currentTable ? tablesMin.length : tablesMin.length -1
+    let disabled = spanListlength <= 0 ? " disabled" : ""
 
+    const expandList = (e: React.MouseEvent) => {
+        let button = e.currentTarget as HTMLButtonElement
+        let list = button.nextElementSibling as HTMLSpanElement
+
+        list.classList.toggle("expanded")
     }
 
     const Top = () => {
         return <header className='table-head'>
             {currentTable ? <>
-                <button className='expand-button' onClick={expandList}><FontAwesomeIcon icon={faCaretDown} /></button>
+                <button className={'expand-button' + disabled} onClick={expandList}><FontAwesomeIcon icon={faCaretDown} /></button>
                 <span className="expand-list">
                     {tablesMin.map(el=>{
-                        return <button
+                        return el._id !== currentTable._id && <button
                         key={Math.random()}
                         onClick={()=>{setCurrentTable(el._id)}}
                         >
-                            {el.number}
+                            Mesa {el.number}
+                            <div className='after' style={{ backgroundColor: colorSelector[el.state] }}></div>
                         </button>
                     })}
                 </span>
