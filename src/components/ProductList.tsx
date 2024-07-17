@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowCircleLeft, faBottleWater, faCircle, faCookie, faDrumstickBite, faIceCream, faList, faMartiniGlassCitrus, faPlateWheat, faTableCells, faWineBottle } from '@fortawesome/free-solid-svg-icons'
+import { faArrowCircleLeft, faCircle, faList, faTableCells } from '@fortawesome/free-solid-svg-icons'
 import "../assets/productList.css"
 import SearchBar from './SearchBar'
 import checkSearch from '../logic/checkSearch'
@@ -20,25 +20,8 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
 
   const [search, setSearch] = React.useState("")
   const [ProductPage, setProductPage] = React.useState("Entrada")
-  const icons: pagesRouter = {
-    "cookie": faCookie,
-    "plate": faPlateWheat,
-    "bite": faDrumstickBite,
-    "ice": faIceCream,
-    "water": faBottleWater,
-    "wine": faWineBottle,
-    "cocktail": faMartiniGlassCitrus,
-    "": faCircle
-  }
-  const pages = [
-    {name: "Entrada", icon: ""},
-    {name: "Principal", icon: ""},
-    {name: "Postres", icon: ""},
-    {name: "Bebidas", icon: ""},
-    {name: "Other", icon: ""},
-    {name: "Vinos", icon: ""},
-  ]
 
+  const pages = Object.keys(p)
 
   const ProductPicker = () => {
     const Router = () => {
@@ -50,12 +33,12 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
           // })
           return <button
             key={Math.random()}
-            className={ProductPage === page.name ? "active" : ""}
-            onClick={() => { setProductPage(page.name) }}
+            className={ProductPage === page ? "active" : ""}
+            onClick={() => { setProductPage(page) }}
             style={bool ? { color: "var(--cgreen)" } : {}}
           >
-            <FontAwesomeIcon icon={icons[page.icon]} />
-            <p>{page.name}</p>
+            <FontAwesomeIcon icon={faCircle} />
+            <p>{page}</p>
           </button>
         })}
       </nav>

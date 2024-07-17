@@ -93,6 +93,7 @@
     display: flex;
     gap: 0.7rem;
     align-items: center;
+    padding: 0 0.8rem;
 }
 
 .product-editor-content > div > button {
@@ -100,6 +101,15 @@
     height: 1.8rem;
     background-color: var(--clightgray);
     border-radius: 5px;
+}
+
+.add-prod {
+    width: fit-content!important;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0 0.5rem;
+    margin-left: auto;
 }
 
 .pop ul {
