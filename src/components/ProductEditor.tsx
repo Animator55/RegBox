@@ -110,7 +110,7 @@ export default function ProductEditor({ close }: Props) {
                         defaultValue={search}
                         placeholder='Buscar Producto...'
                     />
-                    <button><FontAwesomeIcon icon={faUpload} /></button>
+                    <button className='upload-button'><FontAwesomeIcon icon={faUpload} /></button>
                     <button className='default-button' title='Cambiar disposición'>
                         <FontAwesomeIcon icon={faList} />
                     </button>

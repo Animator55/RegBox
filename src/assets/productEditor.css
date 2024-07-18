@@ -29,6 +29,13 @@
     gap: 0.8rem;
 }
 
+.upload-button {
+    background-color: var(--corange);
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
 .pop-content {
     display: flex;
     padding: 0.5rem;
