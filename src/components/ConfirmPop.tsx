@@ -13,8 +13,8 @@ export default function ConfirmPop({ title, confirm, close }: Props) {
             <h2>{title}</h2>
             <hr></hr>
             <div className='buttons-confirm'>
-                <button onClick={()=>{confirm()}}>Si</button>
-                <button onClick={()=>{close()}}>No</button>
+                <button className="default-button" onClick={()=>{confirm()}}>Si</button>
+                <button className="secondary-button" onClick={()=>{close()}}>No</button>
             </div>
         </section>
     </section>

@@ -8,6 +8,7 @@ import fixNum from '../logic/fixDateNumber'
 import { Configuration, Products } from '../roleMains/Main'
 import orderByTypes from '../logic/orderByTypes'
 import ConfirmPop from './ConfirmPop'
+import PayMethodsPop from './PayMethodsPop'
 
 type Props = {
     currentTable: TableType | undefined
@@ -24,6 +25,10 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
 
     let spanListlength = !currentTable ? tablesMin.length : tablesMin.length -1
     let disabled = spanListlength <= 0 ? " disabled" : ""
+
+    const changeTableState = (state: "open" | "paying" | "closed" | "unnactive")=>{
+        if(currentTable) EditTable(currentTable._id, "state", state)
+    }
 
     const expandList = (e: React.MouseEvent) => {
         let button = e.currentTarget as HTMLButtonElement
@@ -94,7 +99,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         let titles = c.config.orderedLists
         let reOrdered = titles ? orderByTypes(products, p, true) : products
 
-        return <section className='content'>
+        return <section className={currentTable?.state !== "closed" ? 'content':"content disabled-c"}>
             <header className='table-columns'>
                 {isProds && <>
                     {columns.map(str => {
@@ -141,7 +146,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                     <FontAwesomeIcon icon={faClockRotateLeft} />Historial
                 </button>
             </div>
-            <div className={currentTable ? "" : 'disabled'}>
+            <div className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
                 <button>
                     <FontAwesomeIcon icon={faArrowRightArrowLeft} />Cambiar
                 </button>
@@ -161,9 +166,11 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                     WinPrint.print();
                     WinPrint.close();
                 }}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
-                <button onClick={()=>{
+                <button className={currentTable?.state !== "closed" ? "": "confirm"} onClick={()=>{
                     endTablePop(true)
-                }}><FontAwesomeIcon icon={faCheckToSlot } />Cerrar</button>
+                }}><FontAwesomeIcon icon={faCheckToSlot } />
+                    {currentTable?.state !== "closed" ? "Cerrar" : "Cobrar"}
+                </button>
             </div>
         </section>
     }
@@ -220,9 +227,14 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
     let total = 0
 
     return <section className='table-count'>
-        {endPop && <ConfirmPop 
+        {endPop && currentTable?.state !== "closed" && <ConfirmPop 
             title={"¿Cerrar mesa?"} 
-            confirm={()=>{console.log("confirm")}}
+            confirm={()=>{changeTableState("closed"); endTablePop(false)}}
+            close={()=>{endTablePop(false)}}
+        />}
+        {endPop && currentTable?.state === "closed" && <PayMethodsPop 
+            total={total}
+            confirm={()=>{changeTableState("unnactive"); endTablePop(false)}}
             close={()=>{endTablePop(false)}}
         />}
         <Reciept />

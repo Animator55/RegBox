@@ -17,9 +17,6 @@
 .edit-container {
     display: flex;
 }
-.edit-buttons{
-
-}
 
 .activate-edit-button {
     background-color: transparent;
@@ -108,6 +105,9 @@
     position: absolute;
     cursor: pointer;
 }
-.table.selected {
-    background-color: var(--corange);
+.table.selected::after {
+    content: "";
+    border: 1px solid var(--cwhite);
+    position: absolute;
+    inset: -0.35rem;
 }

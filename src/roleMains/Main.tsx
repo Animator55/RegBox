@@ -57,12 +57,12 @@ export default function Main({ }: Props) {
     const [current, setCurrent] = React.useState<string>()
     const [popUp, setCurrentPop] = React.useState("")
 
-    const close = ()=>{setCurrentPop("")}
+    const close = () => { setCurrentPop("") }
 
-    const popUps: {[key: string]: any} = {
-        "products" : <ProductEditor close={close}/>,
-        "configuration" : <ConfigurationComp close={close} />,
-        "notifications": <Notifications close={close}/>
+    const popUps: { [key: string]: any } = {
+        "products": <ProductEditor close={close} />,
+        "configuration": <ConfigurationComp close={close} />,
+        "notifications": <Notifications close={close} />
     }
 
     const setCurrentHandler = (id: string) => {
@@ -84,6 +84,7 @@ export default function Main({ }: Props) {
                 state: "open",
             }
             setTables([...tables, newTable])
+            setCurrent(data._id)
         }
     }
 
@@ -93,7 +94,14 @@ export default function Main({ }: Props) {
             if (tables[i]._id === table_id) table = tables[i]
         }
         if (!table) return
-        setTables([...tables.filter(el => { if (el._id !== table._id) return el }),
+
+        ///if is deleting table
+        if (entry === "state" && value === "unnactive") {
+            setTables([...tables.filter(el => { if (el._id !== table._id) return el })])
+            setCurrent(undefined)
+        }
+        ///if is only changing any entry
+        else setTables([...tables.filter(el => { if (el._id !== table._id) return el }),
         { ...table, [entry]: value }
         ])
     }
@@ -114,7 +122,7 @@ export default function Main({ }: Props) {
         let index = -1
         for (let i = 0; i < prods.length; i++) if (prods[i]._id === item._id) { index = i; break }
 
-        lastChanged = item._id 
+        lastChanged = item._id
 
         if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: 1 }])
         else EditTable(currentTableData?._id, "products", prods.map(el => {
@@ -123,15 +131,15 @@ export default function Main({ }: Props) {
         }))
     }
 
-    React.useEffect(()=>{
-        if(lastChanged !== "") {
+    React.useEffect(() => {
+        if (lastChanged !== "") {
             let item = document.getElementById(lastChanged)
             lastChanged = ""
-            if(!item) return 
+            if (!item) return
             item.classList.add("added")
             let ul = item.parentElement
-            if(!ul) return
-            ul.scrollTo({left: 0, top: item.offsetTop - 211})
+            if (!ul) return
+            ul.scrollTo({ left: 0, top: item.offsetTop - 211 })
         }
     }, [tables])
 
@@ -139,9 +147,9 @@ export default function Main({ }: Props) {
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
-                    <TopBar setCurrentPop={setCurrentPop}/>
+                    <TopBar setCurrentPop={setCurrentPop} />
                     <section className='d-flex'>
-                        <TableCount currentTable={currentTableData} EditTable={EditTable} tablesMin={tablesMin} setCurrentTable={setCurrentHandler}/>
+                        <TableCount currentTable={currentTableData} EditTable={EditTable} tablesMin={tablesMin} setCurrentTable={setCurrentHandler} />
                         <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                     </section>
                     {popUp !== "" && popUps[popUp]}

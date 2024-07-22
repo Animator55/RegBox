@@ -7,7 +7,7 @@ export type TableType = {
     tag: string
     products: Item[]
     opened: string
-    state: "open" | "paying" | "closed"
+    state: "open" | "paying" | "closed" | "unnactive"
 }
 export type TablePlaceType = {
     _id: string

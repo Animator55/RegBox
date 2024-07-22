@@ -299,6 +299,15 @@
     background-color: transparent;
 }
 
+.table-commands button.confirm {
+    background-color: var(--cred);
+}
+.table-commands button.confirm:hover {
+    background-color: transparent;
+    border-color: var(--cred);
+    color: var(--cred);
+}
+
 
 /****/
 
