@@ -70,6 +70,11 @@ input:focus, select:focus {
     pointer-events: none;
 }
 
+.disabled-c > * {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
 button:not(.disabled) {
     cursor: pointer;
 }
@@ -131,7 +136,37 @@ main>.d-flex {
     color: var(--corange);
     background-color: transparent;
 }
-
+.default-button-2 {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border: 3px solid var(--cwhite);
+    background-color: var(--corange);
+    color: var(--cwhite);
+    border-radius: 5px;
+    padding: 0.4rem;
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+}
+.default-button-2:hover {
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+    border-color: var(--corange);
+    color: var(--corange);
+    background-color: var(--cwhite);
+}
+.secondary-button{
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background-color: transparent;
+    color: var(--cdarkgray);
+    padding: 0.4rem;
+    transition: color 300ms, scale 300ms;
+}
+.secondary-button:hover {
+    scale: 1.2;
+    transition: color 300ms, scale 300ms;
+    color: var(--corange);
+}
 .back-blur {
     position: fixed;
     z-index: 50;
@@ -145,4 +180,13 @@ main>.d-flex {
 .buttons-confirm {
     display:flex;
     justify-content: space-between;
+}
+
+.buttons-confirm > button {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

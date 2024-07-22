@@ -7,9 +7,10 @@ type Props = {
   placeholder: string
   defaultValue: string
   onChange: boolean
+  id?: string
 }
 
-export default function SearchBar({ searchButton, placeholder, defaultValue, onChange }: Props) {
+export default function SearchBar({ searchButton, placeholder, defaultValue, onChange, id }: Props) {
   const cleanInput = (e: React.MouseEvent) => {
     let input = e.currentTarget.previousSibling as HTMLInputElement
     input.value = ""
@@ -17,7 +18,7 @@ export default function SearchBar({ searchButton, placeholder, defaultValue, onC
   }
 
   React.useEffect(() => {
-    let input = document.querySelector(".input-expand") as HTMLInputElement
+    let input = !id ? document.querySelector(".input-expand") as HTMLInputElement : document.getElementById(id) as HTMLInputElement
     if (input) input.focus()
   })
 
@@ -26,6 +27,7 @@ export default function SearchBar({ searchButton, placeholder, defaultValue, onC
       <FontAwesomeIcon icon={faMagnifyingGlass} size='xl' />
     </button>
     <input
+      id={id}
       className={defaultValue !== "" ? "input-expand expanded" : "input-expand"}
       defaultValue={defaultValue}
       onChange={(e) => {

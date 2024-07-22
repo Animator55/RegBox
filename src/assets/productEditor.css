@@ -12,6 +12,7 @@
 .pop-top {
     display: flex;
     justify-content: space-between;
+    padding: 0 1rem 0.5rem;
 }
 
 .pop-top>h2 {
@@ -108,6 +109,11 @@
     height: 1.8rem;
     background-color: var(--clightgray);
     border-radius: 5px;
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+}
+.product-editor-content > div > .change:not(.awaiting) > :last-child,
+.awaiting > :first-child{
+    display: none;
 }
 
 .add-prod {
@@ -117,6 +123,13 @@
     align-items: center;
     padding: 0 0.5rem;
     margin-left: auto;
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+}
+
+.add-prod:hover, .product-editor-content > div > button:hover {
+    transition: border-color 300ms, background-color 300ms, color 300ms;
+    background-color: var(--corange);
+    color: var(--cwhite);
 }
 
 .pop ul {
@@ -131,10 +144,10 @@
 
 .pop .item {
     display: grid;
-    grid-template-columns: 15% 58% 25%;
+    grid-template-columns: 45% 54%;
     background-color: var(--clightgray);
     border-radius: 5px;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2%;
     align-items: center;
     gap: 1%;
     margin-bottom: 0.3rem;
@@ -144,13 +157,20 @@
     margin: 0.2rem 0;
 }
 
-.pop .item>input {
+.pop .item>input,.pop .item>p {
     background-color: var(--cdarkgray);
     color: var(--cwhite);
     padding: 0.2rem;
     width: 95%;
     font-size: 1rem;
     border-radius: 5px;
+    white-space: nowrap;
+    overflow-y: hidden;
+    height: 1.6rem;
+}
+
+.pop .item>p::-webkit-scrollbar {
+    height: 5px;
 }
 
 .pop .item> :last-child {

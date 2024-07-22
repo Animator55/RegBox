@@ -1,9 +1,10 @@
-import { faCircle, faList, faPen, faPlus, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faCircle, faList, faPen, faPlus, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
 import "../assets/productEditor.css"
 import { Products } from '../roleMains/Main'
+import checkSearch from '../logic/checkSearch'
 
 type Props = {
     close: Function
@@ -54,6 +55,7 @@ export default function ProductEditor({ close }: Props) {
     }
 
     const editTypeName = (e: React.MouseEvent<HTMLButtonElement>)=>{
+        e.currentTarget.classList.toggle("awaiting")
         let div = e.currentTarget.previousSibling as HTMLDivElement
         div.contentEditable = "true"
         div.focus() 
@@ -105,13 +107,14 @@ export default function ProductEditor({ close }: Props) {
                 </div>
                 <div className='pop-options'>
                     <SearchBar
+                        id={"prods-editor-search"}
                         onChange={true}
                         searchButton={setSearch}
                         defaultValue={search}
                         placeholder='Buscar Producto...'
                     />
-                    <button className='upload-button'><FontAwesomeIcon icon={faUpload} /></button>
-                    <button className='default-button' title='Cambiar disposición'>
+                    <button className='default-button-2'><FontAwesomeIcon icon={faUpload} /></button>
+                    <button className='default-button-2' title='Cambiar disposición'>
                         <FontAwesomeIcon icon={faList} />
                     </button>
                 </div>
@@ -141,7 +144,10 @@ export default function ProductEditor({ close }: Props) {
                                 if(e.key === "Enter") confirmName(e.currentTarget)
                             }}
                         >{page}</h3>
-                        <button onClick={(e)=>{editTypeName(e)}}><FontAwesomeIcon icon={faPen}/></button>
+                        <button className='change' onClick={(e)=>{editTypeName(e)}}>
+                            <FontAwesomeIcon icon={faPen}/>
+                            <FontAwesomeIcon icon={faCheck}/>
+                        </button>
                         <button
                             className='add-prod'
                             onClick={()=>{newProduct()}}
@@ -153,9 +159,20 @@ export default function ProductEditor({ close }: Props) {
                     <hr></hr>
                     <ul id="prod-list">
                         {resultProducts[page].map((item, i) => {
-                            return <div className='item' key={Math.random()}>
-                                <p>{item._id}</p>
-                                <input defaultValue={item.name} onBlur={(e)=>{changeProd("name", e.currentTarget.value, page, i)}}/>
+                            let check = checkSearch(item.name, search)
+                            return <div
+                                className={search !== "" && check === item.name ? "d-none" : 'item'} 
+                                key={Math.random()}
+                            >
+                                <p
+                                    dangerouslySetInnerHTML={{ __html: check }}
+                                    onBlur={(e)=>{
+                                        let div = e.target as HTMLDivElement
+                                        let val = div.textContent === null ? "" : div.textContent 
+                                        changeProd("name", val, page, i)
+                                    }}
+                                    contentEditable
+                                ></p>
                                 <input defaultValue={item.price} onBlur={(e)=>{changeProd("price", e.currentTarget.value, page, i)}}/>
                             </div>
                         })}
