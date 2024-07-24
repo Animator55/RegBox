@@ -10,7 +10,9 @@ type Props = {
     close: Function
 }
 
-let scrollBottom = false
+let lastChanged: null | number = null
+
+let scrollHeight = 0
 
 export default function ProductEditor({ close }: Props) {
     const p = React.useContext(Products)
@@ -21,6 +23,10 @@ export default function ProductEditor({ close }: Props) {
     const [page, setPage] = React.useState(types[0] !== undefined ? types[0] : "")
 
     const changeProd = (key: string, value:string, page:string, index: number)=>{
+        let ul = document.getElementById("prod-list")
+        if(!ul) return
+        lastChanged = index
+        scrollHeight = ul.scrollTop
         setResult({...resultProducts, [page]: resultProducts[page].map((el, i)=>{
             return i !== index ? el : {...el, [key]: value} 
         })})
@@ -49,8 +55,11 @@ export default function ProductEditor({ close }: Props) {
             price: 0,
             type: page,
         }
-
-        scrollBottom = true
+        
+        let ul = document.getElementById("prod-list")
+        if(!ul) return
+        scrollHeight = 9999999
+        lastChanged = resultProducts[page].length
         setResult({...resultProducts, [page]: [...resultProducts[page], Item]})
     }
 
@@ -84,13 +93,15 @@ export default function ProductEditor({ close }: Props) {
     }
 
     React.useEffect(()=>{
-        if(scrollBottom) {
-            scrollBottom = false
+        if(scrollHeight !== 0) {
             let ul = document.getElementById("prod-list")
             ul?.scrollTo({
-                top: ul.clientHeight,
+                top: scrollHeight,
             })
-            let added = ul?.lastChild as HTMLDivElement
+            scrollHeight = 0
+            if(!lastChanged) return
+            let added = ul?.children[lastChanged] as HTMLDivElement
+            console.log(added)
             if(added) added.classList.add("added")
         }
     })

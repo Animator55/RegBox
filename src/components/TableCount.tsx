@@ -1,7 +1,7 @@
 import { Item, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faBars, faCaretDown, faCheckToSlot, faClockRotateLeft, faList, faMinus, faPercentage, faPlus, faReceipt } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faBars, faCaretDown, faCheckToSlot, faClockRotateLeft, faList, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import fixNum from '../logic/fixDateNumber'
@@ -16,8 +16,9 @@ type Props = {
     setCurrentTable: Function
     tablesMin: {_id: string, number: number, state: "open" | "paying" | "closed" | "unnactive"}[]
 }
+let scrollHeight = 0
 
-export default function TableCount({ currentTable, EditTable, tablesMin, setCurrentTable }: Props) {
+export default function TableCount({ currentTable, EditTable, tablesMin, setCurrentTable}: Props) {
     const [endPop, endTablePop] = React.useState(false)
 
     const c = React.useContext(Configuration)
@@ -35,6 +36,17 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         let list = button.nextElementSibling as HTMLSpanElement
 
         list.classList.toggle("expanded")
+    }
+
+    const goTo = (page: string)=>{
+        let nav = document.getElementById("main-router")
+        if(!nav) return
+        let element
+
+        if(page === "products") element = nav.children[0] as HTMLButtonElement
+        else element = nav.children[1] as HTMLButtonElement
+
+        element.click()
     }
 
     const Top = () => {
@@ -78,6 +90,9 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         if (!item || !item.amount) return
 
         let newItem = { ...item, amount: item.amount + value }
+        
+        let ul = document.querySelector(".table-list") as HTMLDivElement
+        scrollHeight = ul.scrollTop
 
         if (newItem.amount === 0
             && index !== -1) EditTable(currentTable?._id, "products", list.filter(el => { if (el._id !== item._id) return el }))
@@ -90,7 +105,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
     const List = () => {
         let products: Item[] | undefined = currentTable?.products
 
-        const columns = ["Nombre", "Cantidad", "Precio"]
+        const columns = ["Nombre", "Precio", "Total", "Cantidad", ]
 
         let isProds = products && products.length !== 0
 
@@ -111,7 +126,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 </>}
             </header>
             <ul className='table-list'>
-                {isProds && reOrdered && reOrdered.map(item => {
+                {isProds ? reOrdered && reOrdered.map(item => {
                     let header = false
                     if (titles && item.header) header = true
                     else total += item.amount! * item.price
@@ -119,14 +134,26 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                         :
                         <li id={item._id} key={Math.random()}>
                             <div>{item.name}</div>
+                            <div>${item.price}</div>
+                            <div>${item.price*item.amount}</div>
                             <div>{item.amount}</div>
-                            <div>{item.price}</div>
                             <div className='amount-buttons'>
                                 <button onClick={() => { addAmount(1, item._id) }}><FontAwesomeIcon icon={faPlus} /></button>
                                 <button onClick={() => { addAmount(-1, item._id) }}><FontAwesomeIcon icon={faMinus} /></button>
                             </div>
                         </li>
-                })}
+                })
+                : 
+                <section className='alert'>
+                    <FontAwesomeIcon icon={faWarning}/>
+                    <h2>{!currentTable ? "No hay mesa seleccionada."
+                        : "No hay productos añadidos a esta mesa."
+                    }</h2>
+                    <button className='default-button' onClick={()=>{goTo(!currentTable ? "map" : "products")}}>
+                        {!currentTable ? "Ir al mapa":"Ir a la lista"}
+                    </button>
+                </section>
+                }
             </ul>
             {isProds && <>
                 <hr></hr>
@@ -141,7 +168,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
     const TableCommands = () => {
         return <section className='table-commands'>
             <div>
-                <p>{currentTable && `Caja abierta a las ${currentTable.opened}`}</p>
+                <p>{currentTable && `Caja abierta a las ${currentTable.opened[0]} el ${currentTable.opened[1]}`}</p>
                 <button className={currentTable ? "" : 'disabled'}>
                     <FontAwesomeIcon icon={faClockRotateLeft} />Historial
                 </button>
@@ -187,16 +214,14 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
             <style>{"*{font-family:'Kanit', sans-serif;} .content-reciept p{font-size:0.65rem;margin: 3px 0}"}</style>
             <div className='content-reciept'>
                 <h3 style={{ textAlign: "center" }}>CLUB VERMUT</h3>
-                <h6 style={{ marginBottom: 2, textAlign: "right" }}>RECIBO NO VALIDO COMO FACTURA</h6>
+                <h6 style={{ marginBottom: 2, textAlign: "right" }}>NO VALIDO COMO FACTURA</h6>
                 <hr></hr>
                 <div style={{ display: "flex", gap: "1rem" }}>
                     <p>Mesa {currentTable?.number}</p>
                     <p>{currentTable.tag !== "" && currentTable.tag}</p>
                 </div>
-                <p>Abierta a las {currentTable.opened}</p>
-                <p>Cerrada a las {fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}</p>
-                <p style={{ marginTop: 3 }}>Fecha: {
-                    fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}</p>
+                <p>Abierta a las {currentTable.opened[0]} el {currentTable.opened[1]}</p>
+                <p>Cerrada a las {fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())} el {fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}</p>
                 <hr></hr>
                 <div style={{ display: "flex" }}>
                     <p>Articulo</p>
@@ -225,6 +250,16 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
     }
 
     let total = 0
+
+
+    React.useEffect(() => {
+        if (scrollHeight !== null && scrollHeight !== 0) {
+            console.log(scrollHeight)
+            let ul = document.querySelector(".table-list")
+            ul?.scrollTo({top: scrollHeight})
+            scrollHeight = 0
+        }
+    })
 
     return <section className='table-count'>
         {endPop && currentTable?.state !== "closed" && <ConfirmPop 

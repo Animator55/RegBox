@@ -15,6 +15,7 @@ type Props = {
 export type pagesRouter = {
   [key: string]: any
 }
+
 export default function ProductList({displayList, changeDisplay, addItem}: Props) {
   const p = React.useContext(Products).list
 

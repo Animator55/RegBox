@@ -33,6 +33,7 @@ export const Products = React.createContext({
 export const TablesPlaces = React.createContext({ tables: [] as TablePlaceType[], set: (val: TablePlaceType[]) => { console.log(val) } })
 
 let lastChanged = ""
+let productPickerScroll = 0
 
 export default function Main({ }: Props) {
     const [config, setConfig] = React.useState({
@@ -80,7 +81,9 @@ export default function Main({ }: Props) {
                 number: data.number,
                 tag: "",
                 products: [],
-                opened: `${fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}`,
+                opened: [`${fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}`, 
+                    `${fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}`
+                ],
                 state: "open",
             }
             setTables([...tables, newTable])
@@ -123,6 +126,7 @@ export default function Main({ }: Props) {
         for (let i = 0; i < prods.length; i++) if (prods[i]._id === item._id) { index = i; break }
 
         lastChanged = item._id
+        productPickerScroll = document.getElementById("product-picker")?.scrollTop!
 
         if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: 1 }])
         else EditTable(currentTableData?._id, "products", prods.map(el => {
@@ -139,9 +143,14 @@ export default function Main({ }: Props) {
             item.classList.add("added")
             let ul = item.parentElement
             if (!ul) return
-            ul.scrollTo({ left: 0, top: item.offsetTop - 211 })
+            ul.scrollTo({top: item.offsetTop - 211 })
+        }
+        if(productPickerScroll !== 0) {
+            let ul = document.getElementById("product-picker")
+            ul?.scrollTo({top: productPickerScroll,})
         }
     }, [tables])
+
 
     return <>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces }}>
