@@ -16,6 +16,12 @@
 
 .edit-container {
     display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.edit-container > button.default-button {
+    padding: 0.3rem;
 }
 
 .activate-edit-button {
@@ -35,9 +41,9 @@
 .trash {
     position: absolute;
     z-index: 2;
-    left: -3rem;
-    bottom: 1rem;
-    background-color: var(--cred);
+    left: 1.5rem;
+    bottom: 1.5rem;
+    background-color: transparent;
     color: var(--cwhite);
     border-radius: 6px;
     width: 2.5rem;
@@ -46,6 +52,12 @@
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    transition: scale 300ms, background-color 300ms;
+}
+.trash.hover {
+    transition: scale 300ms, background-color 300ms;
+    scale: 1.1;
+    background-color: var(--cred);
 }
 
 .map-display.edit > .trash {
@@ -110,4 +122,10 @@
     border: 1px solid var(--cwhite);
     position: absolute;
     inset: -0.35rem;
+}
+[data-edit="true"] .table {
+    cursor: grab;
+}
+[data-edit="true"] .table:focus {
+    cursor: grabbing;
 }

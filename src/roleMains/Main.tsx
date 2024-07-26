@@ -98,14 +98,15 @@ export default function Main({ }: Props) {
         }
         if (!table) return
 
-        ///if is deleting table
+        ///if is deleting table => after closing table, it must return to "unnactive" state to repeat the process
         if (entry === "state" && value === "unnactive") {
             setTables([...tables.filter(el => { if (el._id !== table._id) return el })])
             setCurrent(undefined)
         }
         ///if is only changing any entry
-        else setTables([...tables.filter(el => { if (el._id !== table._id) return el }),
-        { ...table, [entry]: value }
+        else if(table.state !== "closed" && table.state !== "unnactive") setTables([
+            ...tables.filter(el => { if (el._id !== table._id) return el }),
+            { ...table, [entry]: value }
         ])
     }
 

@@ -176,3 +176,15 @@
 .pop .item> :last-child {
     margin-left: auto;
 }
+
+
+.added {
+    animation: added 300ms forwards;
+}
+
+@keyframes added {
+    50% {
+        background-color: var(--corange);
+        scale: 1.02;
+    }
+}

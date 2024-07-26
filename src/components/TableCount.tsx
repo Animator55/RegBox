@@ -201,6 +201,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
             </div>
         </section>
     }
+    let total = 0
 
     /*** */
 
@@ -249,8 +250,6 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         </div>
     }
 
-    let total = 0
-
 
     React.useEffect(() => {
         if (scrollHeight !== null && scrollHeight !== 0) {
@@ -268,7 +267,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
             close={()=>{endTablePop(false)}}
         />}
         {endPop && currentTable?.state === "closed" && <PayMethodsPop 
-            total={total}
+            products={currentTable.products}
             confirm={()=>{changeTableState("unnactive"); endTablePop(false)}}
             close={()=>{endTablePop(false)}}
         />}

@@ -98,6 +98,26 @@ main>.d-flex {
     flex-direction: column;
     overflow: hidden;
     border-radius: 0 0 10px 10px;
+    position: relative;
+}
+
+.loading {
+    position: absolute;
+    inset: 0;
+    background-color: #0000005c;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    text-align: center;
+}
+.loading > :first-child {
+    font-size: 3rem;
+    color: var(--cwhite);
+}
+.loading * {
+    color: var(--cwhite);
 }
 
 .nav-page {
@@ -175,6 +195,11 @@ main>.d-flex {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.confirm-pop {
+    text-align: center;
+    padding: 1rem;
 }
 
 .buttons-confirm {

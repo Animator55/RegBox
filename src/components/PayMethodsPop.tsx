@@ -1,8 +1,10 @@
 import React from 'react'
 import { payTypes } from '../defaults/payTypes'
+import "../assets/payMethods.css"
+import { Item } from '../vite-env'
 
 type Props = {
-    total: number
+    products: Item[]
     close: Function
     confirm: Function
 }
@@ -12,8 +14,14 @@ type PayMethod = {
     amount: string
 }
 
-export default function PayMethodsPop({ total, close, confirm }: Props) {
+export default function PayMethodsPop({ products, close, confirm }: Props) {
     const [methodsUsed, setMethods] = React.useState<PayMethod[]>([])
+
+    let total = 0
+
+    for(let i=0; i<products.length; i++) {
+        total += products[i].amount! * products[i].price
+    }
 
     const addNew = (e: React.FocusEvent) => {
         let div = e.currentTarget as HTMLInputElement
@@ -21,7 +29,7 @@ export default function PayMethodsPop({ total, close, confirm }: Props) {
 
         let select = div.previousSibling as HTMLSelectElement
 
-        setMethods([...methodsUsed, { type: select.value, amount: div.value }])
+        setMethods([...methodsUsed, { type: select.value, amount: `${parseFloat(div.value)}` }])
         div.value = ""
     }
 
@@ -34,7 +42,7 @@ export default function PayMethodsPop({ total, close, confirm }: Props) {
             })])
         }
 
-        return <div key={Math.random()}>
+        return <div key={Math.random()} className='method-item'>
             <select defaultValue={el.type} onChange={(e)=>{edit(e, "type")}}>
                 {payTypes.map(type => {
                     return <option key={Math.random()} value={type}>{type}</option>
@@ -48,25 +56,26 @@ export default function PayMethodsPop({ total, close, confirm }: Props) {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") close()
     }}>
-        <section className='pop'>
-            <div>
+        <section className='pop pay-meth-pop'>
+            <div className='top-total'>
                 <h5>Monto total de:</h5>
                 <h2>{total}</h2>
             </div>
             <hr></hr>
-            <section>
+            <section className='methods-list'>
                 {methodsUsed.length !== 0 && methodsUsed.map((el, i) => {
                     return Item(el, i)
                 })}
-                <div>
+                <div className='method-item'>
                     <select>{payTypes.map(type => {
                         return <option key={Math.random()} value={type}>{type}</option>
                     })}</select>
-                    <input type='number' onBlur={(e) => { addNew(e) }}></input>
+                    <input type='number' defaultValue={"0"} onBlur={(e) => { addNew(e) }}></input>
                 </div>
             </section>
-            <div>
-                <button onClick={() => { confirm() }}>Confirmar</button>
+            <div className='buttons-confirm'>
+                <button className='secondary-button' onClick={() => { close() }}>Cancelar</button>
+                <button className="default-button-2" onClick={() => { confirm() }}>Confirmar</button>
             </div>
         </section>
     </section>

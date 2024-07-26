@@ -27,8 +27,10 @@ export default function ProductEditor({ close }: Props) {
         if(!ul) return
         lastChanged = index
         scrollHeight = ul.scrollTop
+        let newValue = key === "price" ? parseFloat(value) : value
+
         setResult({...resultProducts, [page]: resultProducts[page].map((el, i)=>{
-            return i !== index ? el : {...el, [key]: value} 
+            return i !== index ? el : {...el, [key]: newValue} 
         })})
     }
 
