@@ -49,6 +49,7 @@ export type userType = {
 export type configType = {
     prodsAsList: boolean
     orderedLists: boolean
+    prodsInEditorAsList: boolean,
     map: {
         x: number
         y: number

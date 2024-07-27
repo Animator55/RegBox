@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowCircleLeft, faCircle, faList, faTableCells } from '@fortawesome/free-solid-svg-icons'
+import { faArrowCircleLeft, faCircle, faList, faPenToSquare, faTableCells } from '@fortawesome/free-solid-svg-icons'
 import "../assets/productList.css"
 import SearchBar from './SearchBar'
 import checkSearch from '../logic/checkSearch'
@@ -10,13 +10,14 @@ type Props = {
   displayList: boolean
   changeDisplay: Function
   addItem: Function
+  OpenPop: Function
 }
 
 export type pagesRouter = {
   [key: string]: any
 }
 
-export default function ProductList({displayList, changeDisplay, addItem}: Props) {
+export default function ProductList({displayList, changeDisplay, addItem, OpenPop}: Props) {
   const p = React.useContext(Products).list
 
   const [search, setSearch] = React.useState("")
@@ -48,6 +49,11 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
     const Top = ()=>{
       return <section className='products-top'>
         <SearchBar searchButton={setSearch} placeholder={"Buscar producto"} defaultValue={search} onChange={true}/>
+        <button className='backgroundless-button' title='Editar productos' onClick={()=>{
+          OpenPop("products", ProductPage)
+        }}>
+          <FontAwesomeIcon icon={faPenToSquare}/>
+        </button>
         <button className='default-button' title='Cambiar disposición' onClick={()=>{
           changeDisplay()
         }}>

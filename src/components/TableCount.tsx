@@ -263,6 +263,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
     return <section className='table-count'>
         {endPop && currentTable?.state !== "closed" && <ConfirmPop 
             title={"¿Cerrar mesa?"} 
+            subTitle='No se podrá editar, unicamente imprimir.'
             confirm={()=>{changeTableState("closed"); endTablePop(false)}}
             close={()=>{endTablePop(false)}}
         />}

@@ -124,7 +124,7 @@
     display: flex;
     width: 100%;
     margin: 0.5rem 0;
-    justify-content: space-between;
+    gap: 1rem;
 }
 
 .input-search {
@@ -137,6 +137,7 @@
     overflow: hidden;
     color: var(--cwhite);
     position: relative;
+    margin-right: auto;
 }
 
 .input-search>button {

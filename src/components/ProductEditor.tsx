@@ -1,26 +1,35 @@
-import { faCheck, faCircle, faList, faPen, faPlus, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faCircle, faList, faPen, faPlus, faTableCells, faTrash, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
 import "../assets/productEditor.css"
-import { Products } from '../roleMains/Main'
+import { Configuration, Products } from '../roleMains/Main'
 import checkSearch from '../logic/checkSearch'
+import ConfirmPop from './ConfirmPop'
 
 type Props = {
     close: Function
+    initialPage: string
 }
 
 let lastChanged: null | number = null
 
 let scrollHeight = 0
 
-export default function ProductEditor({ close }: Props) {
+export default function ProductEditor({ initialPage, close }: Props) {
     const p = React.useContext(Products)
+    let c = React.useContext(Configuration)
+
+    const [pop, setPop] = React.useState(false)
     const [search, setSearch] = React.useState("")
     const [resultProducts, setResult] = React.useState(p.list)
     const types = Object.keys(resultProducts)
 
-    const [page, setPage] = React.useState(types[0] !== undefined ? types[0] : "")
+    const [page, setPage] = React.useState(types[0] !== undefined ? initialPage !== "" ? initialPage : types[0] : "")
+
+    const changeProdDisplay = ()=>{
+        c.setConfig({...c.config, prodsInEditorAsList: !c.config.prodsInEditorAsList})
+    }
 
     const changeProd = (key: string, value:string, page:string, index: number)=>{
         let ul = document.getElementById("prod-list")
@@ -31,6 +40,16 @@ export default function ProductEditor({ close }: Props) {
 
         setResult({...resultProducts, [page]: resultProducts[page].map((el, i)=>{
             return i !== index ? el : {...el, [key]: newValue} 
+        })})
+    }
+
+    const deleteProd = (index: number)=>{
+        let ul = document.getElementById("prod-list")
+        if(!ul) return
+        scrollHeight = ul.scrollTop
+
+        setResult({...resultProducts, [page]: resultProducts[page].filter((el, i)=>{
+            if(i !== index) return el
         })})
     }
 
@@ -94,6 +113,19 @@ export default function ProductEditor({ close }: Props) {
         setPage(newName)
     }
 
+    const deleteType = () =>{
+        let newProducts = {}
+
+        for(let i=0;i<types.length;i++) {
+            let key = types[i]
+            if(key === page) continue
+            newProducts = {...newProducts, [key]: resultProducts[key]}
+        }
+        setPop(false)
+        setResult(newProducts)
+        setPage(types[0] !== undefined ? types[0] : "")
+    }
+
     React.useEffect(()=>{
         if(scrollHeight !== 0) {
             let ul = document.getElementById("prod-list")
@@ -103,7 +135,6 @@ export default function ProductEditor({ close }: Props) {
             scrollHeight = 0
             if(!lastChanged) return
             let added = ul?.children[lastChanged] as HTMLDivElement
-            console.log(added)
             if(added) added.classList.add("added")
         }
     })
@@ -112,6 +143,7 @@ export default function ProductEditor({ close }: Props) {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") closeHandle()
     }}>
+        {pop && <ConfirmPop title='¿Borrar lista de productos?' subTitle='Todos los productos de la lista actual se perderán' confirm={deleteType} close={()=>{setPop(false)}}/>}
         <section className='pop'>
             <header> 
                 <div className='pop-top'>
@@ -127,8 +159,8 @@ export default function ProductEditor({ close }: Props) {
                         placeholder='Buscar Producto...'
                     />
                     <button className='default-button-2'><FontAwesomeIcon icon={faUpload} /></button>
-                    <button className='default-button-2' title='Cambiar disposición'>
-                        <FontAwesomeIcon icon={faList} />
+                    <button onClick={changeProdDisplay} className='default-button-2' title='Cambiar disposición'>
+                        <FontAwesomeIcon icon={c.config.prodsInEditorAsList ? faList : faTableCells} />
                     </button>
                 </div>
             </header>
@@ -161,6 +193,7 @@ export default function ProductEditor({ close }: Props) {
                             <FontAwesomeIcon icon={faPen}/>
                             <FontAwesomeIcon icon={faCheck}/>
                         </button>
+                        <button onClick={()=>{setPop(true)}}><FontAwesomeIcon icon={faTrash}/></button>
                         <button
                             className='add-prod'
                             onClick={()=>{newProduct()}}
@@ -170,7 +203,7 @@ export default function ProductEditor({ close }: Props) {
                         </button>
                     </div>
                     <hr></hr>
-                    <ul id="prod-list">
+                    <ul id="prod-list" className={c.config.prodsInEditorAsList ? "" : "prod-grid-mode"}>
                         {resultProducts[page].map((item, i) => {
                             let check = checkSearch(item.name, search)
                             return <div
@@ -187,6 +220,7 @@ export default function ProductEditor({ close }: Props) {
                                     contentEditable
                                 ></p>
                                 <input defaultValue={item.price} onBlur={(e)=>{changeProd("price", e.currentTarget.value, page, i)}}/>
+                                <button title='Borrar producto' onClick={()=>{deleteProd(i)}}><FontAwesomeIcon icon={faXmark}/></button>
                             </div>
                         })}
                     </ul>

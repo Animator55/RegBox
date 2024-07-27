@@ -173,6 +173,21 @@ main>.d-flex {
     color: var(--corange);
     background-color: var(--cwhite);
 }
+.backgroundless-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--corange);
+    font-size: 1.3rem;
+    background-color: transparent;
+    transition: scale 300ms, color 300ms;
+}
+.backgroundless-button:hover{
+    scale: 1.1;
+    color: var(--cwhite);
+    transition: scale 300ms, color 300ms;
+}
+
 .secondary-button{
     display: flex;
     gap: 0.5rem;

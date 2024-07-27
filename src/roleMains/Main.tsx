@@ -19,6 +19,7 @@ export const Configuration = React.createContext({
     config: {
         orderedLists: true,
         prodsAsList: true,
+        prodsInEditorAsList: true,
         map: {
             zoom: 1,
             x: 0,
@@ -37,8 +38,9 @@ let productPickerScroll = 0
 
 export default function Main({ }: Props) {
     const [config, setConfig] = React.useState({
-        prodsAsList: true,
+        prodsAsList: false,
         orderedLists: true,
+        prodsInEditorAsList: false,
         map: {
             zoom: 1,
             x: 0,
@@ -56,12 +58,12 @@ export default function Main({ }: Props) {
 
     const [tables, setTables] = React.useState<TableType[]>([])
     const [current, setCurrent] = React.useState<string>()
-    const [popUp, setCurrentPop] = React.useState("")
+    const [popUp, setCurrentPop] = React.useState({pop:"", initialPage: ""})
 
-    const close = () => { setCurrentPop("") }
+    const close = () => { setCurrentPop({pop:"", initialPage: ""}) }
 
     const popUps: { [key: string]: any } = {
-        "products": <ProductEditor close={close} />,
+        "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
         "configuration": <ConfigurationComp close={close} />,
         "notifications": <Notifications close={close} />
     }
@@ -152,17 +154,21 @@ export default function Main({ }: Props) {
         }
     }, [tables])
 
+    const OpenPop = (pop: string, initialPage?: string)=>{
+        let init = initialPage === undefined ? "" : initialPage
+        setCurrentPop({pop:pop, initialPage: init})
+    }
 
     return <>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
-                    <TopBar setCurrentPop={setCurrentPop} />
+                    <TopBar OpenPop={OpenPop} />
                     <section className='d-flex'>
                         <TableCount currentTable={currentTableData} EditTable={EditTable} tablesMin={tablesMin} setCurrentTable={setCurrentHandler} />
-                        <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
+                        <ProdAndMap OpenPop={OpenPop} tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                     </section>
-                    {popUp !== "" && popUps[popUp]}
+                    {popUp.pop !== "" && popUps[popUp.pop]}
                 </Products.Provider>
             </Configuration.Provider>
         </TablesPlaces.Provider>

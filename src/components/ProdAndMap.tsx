@@ -11,9 +11,10 @@ type Props = {
     current: TableType | undefined
     tablesMin: {_id: string, number: number, state: "open" | "paying" | "closed" | "unnactive"}[]
     addItem: Function
+    OpenPop: Function
 }
 
-export default function ProdAndMap({current, setCurrentID, tablesMin,addItem}: Props) {
+export default function ProdAndMap({current, setCurrentID, tablesMin,addItem, OpenPop}: Props) {
     let c = React.useContext(Configuration)
     const [page, setPage] = React.useState("map")
     const [loading, setLoading] = React.useState("")
@@ -51,7 +52,7 @@ export default function ProdAndMap({current, setCurrentID, tablesMin,addItem}: P
 
     return <section className='prod-map-container'>
         <NavBar/>
-        {page === "map" ? <Map current={current} setCurrentID={setCurrentHandler} tablesOpenMin={tablesMin}/>: <ProductList displayList={c.config.prodsAsList} changeDisplay={changeProdDisplay} addItem={addItem}/>}
+        {page === "map" ? <Map current={current} setCurrentID={setCurrentHandler} tablesOpenMin={tablesMin}/>: <ProductList OpenPop={OpenPop} displayList={c.config.prodsAsList} changeDisplay={changeProdDisplay} addItem={addItem}/>}
         {loading !== "" && <Loading/>}
     </section>
 }

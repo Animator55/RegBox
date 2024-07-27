@@ -12,7 +12,7 @@
 .pop-top {
     display: flex;
     justify-content: space-between;
-    padding: 0 1rem 0.5rem;
+    padding: 0 1rem 1rem 0.5rem;
 }
 
 .pop-top>h2 {
@@ -142,15 +142,28 @@
     padding: 0 calc(0.5rem - 4px) 0 0.5rem;
 }
 
+.pop .prod-grid-mode {
+    display: grid;
+    grid-template-columns: 49% 49%;
+    gap: 0 2%;
+}
+
 .pop .item {
     display: grid;
-    grid-template-columns: 45% 54%;
-    background-color: var(--clightgray);
-    border-radius: 5px;
+    grid-template-columns: 46% 46% 8%;
+    background-color: transparent;
     padding: 0.5rem 2%;
     align-items: center;
-    gap: 1%;
     margin-bottom: 0.3rem;
+    height: fit-content;
+    box-shadow: 3px 3px 5px var(--clightgray);
+    position: relative;
+    overflow: hidden;
+}
+.pop .prod-grid-mode .item {
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
 }
 
 .pop .item>* {
@@ -158,15 +171,48 @@
 }
 
 .pop .item>input,.pop .item>p {
-    background-color: var(--cdarkgray);
-    color: var(--cwhite);
+    background-color: var(--clightgray);
+    color: var(--cdarkgray);
     padding: 0.2rem;
     width: 95%;
     font-size: 1rem;
-    border-radius: 5px;
     white-space: nowrap;
     overflow-y: hidden;
     height: 1.6rem;
+}
+.pop .item>input {
+    background-color: transparent;
+    border-bottom: 1px solid var(--cdarkgray);
+    width: 110%;
+}
+.pop .prod-grid-mode .item > input {
+    width: fit-content;
+}
+.pop .item > button {
+    position: absolute;
+    opacity: 0;
+    right: -1rem;
+    background: linear-gradient(270deg, var(--cwhite) 70%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+    width: 3rem;
+    font-size: 1.2rem;
+    transition: right 300ms, opacity 300ms;
+}
+.pop .prod-grid-mode .item > button {
+    top: 0;
+}
+.pop .item:hover > button {
+    right: 0.5rem;
+    opacity: 1;
+    transition: right 300ms, opacity 300ms;
+}
+.pop .prod-grid-mode .item:hover > button {
+    right: 0rem;
+    opacity: 1;
+    transition: right 300ms, opacity 300ms;
 }
 
 .pop .item>p::-webkit-scrollbar {
