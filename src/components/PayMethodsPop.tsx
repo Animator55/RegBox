@@ -18,10 +18,15 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
     const [methodsUsed, setMethods] = React.useState<PayMethod[]>([])
 
     let total = 0
-
+    
     for(let i=0; i<products.length; i++) {
         total += products[i].amount! * products[i].price
     }
+    let substractedTotal = total
+    for(let i=0; i<methodsUsed.length; i++) {
+        substractedTotal -= parseFloat(methodsUsed[i].amount)
+    }
+
 
     const addNew = (e: React.FocusEvent) => {
         let div = e.currentTarget as HTMLInputElement
@@ -36,7 +41,7 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
     const Item = (el: PayMethod, index: number) => {
         const edit = (e: React.FocusEvent | React.ChangeEvent, entry: string) => {
             let div = e.currentTarget as HTMLInputElement
-            setMethods([...methodsUsed.filter((item, i) => {
+            setMethods([...methodsUsed.map((item, i) => {
                 if (i === index) return { ...item, [entry]: div.value }
                 else return item
             })])
@@ -59,7 +64,7 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
         <section className='pop pay-meth-pop'>
             <div className='top-total'>
                 <h5>Monto total de:</h5>
-                <h2>{total}</h2>
+                <h2>{substractedTotal}</h2>
             </div>
             <hr></hr>
             <section className='methods-list'>
@@ -70,12 +75,12 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
                     <select>{payTypes.map(type => {
                         return <option key={Math.random()} value={type}>{type}</option>
                     })}</select>
-                    <input type='number' defaultValue={"0"} onBlur={(e) => { addNew(e) }}></input>
+                    <input type='number' defaultValue={0} max={substractedTotal} onBlur={(e) => { addNew(e) }}></input>
                 </div>
             </section>
             <div className='buttons-confirm'>
                 <button className='secondary-button' onClick={() => { close() }}>Cancelar</button>
-                <button className="default-button-2" onClick={() => { confirm() }}>Confirmar</button>
+                <button className={substractedTotal !== 0 ? "default-button-2 disabled" : "default-button-2"} onClick={() => { if(substractedTotal === 0) confirm(methodsUsed) }}>Confirmar</button>
             </div>
         </section>
     </section>
