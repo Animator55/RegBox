@@ -14,7 +14,7 @@ type Props = {
     currentTable: TableType | undefined
     EditTable: Function
     setCurrentTable: Function
-    tablesMin: {_id: string, number: number, state: "open" | "paying" | "closed" | "unnactive"}[]
+    tablesMin: {_id: string, number: string, state: "open" | "paying" | "closed" | "unnactive"}[]
 }
 let scrollHeight = 0
 

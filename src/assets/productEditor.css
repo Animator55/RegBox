@@ -97,6 +97,10 @@
     color: var(--cdarkgray)
 }
 
+.product-editor-content {
+    min-height: 75.2vh;
+}
+
 .product-editor-content > div:first-child {
     display: flex;
     gap: 0.7rem;
@@ -135,7 +139,6 @@
 .pop ul {
     width: 50dvw;
     max-width: 50dvw;
-    min-height: 60vh;
     max-height: 60vh;
     overflow-x: hidden;
     overflow-y: scroll;

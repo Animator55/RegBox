@@ -1,7 +1,7 @@
 import React from 'react'
 import { TablePlaceType, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGear, faMinus, faPlus, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faGear, faMinus, faPen, faPlus, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { Configuration, TablesPlaces } from '../roleMains/Main'
 
 import "../assets/map.css"
@@ -10,7 +10,7 @@ import { colorSelector } from '../logic/colorSelector'
 type Props = {
   setCurrentID: Function
   current: TableType | undefined
-  tablesOpenMin: { _id: string, number: number, state: "open" | "paying" | "closed" | "unnactive" }[]
+  tablesOpenMin: { _id: string, number: string, state: "open" | "paying" | "closed" | "unnactive" }[]
 }
 
 let deleteItem = false
@@ -42,7 +42,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     
     let table: TablePlaceType = {
       _id: `${Math.round((Math.random()*Math.random())*100000)}`,
-      number: Math.round(Math.random()*100),
+      number: `${Math.round(Math.random()*100)}`,
       coords: {
         x: x,
         y: y,
@@ -199,6 +199,16 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       document.addEventListener("mouseleave", drop)
     }
 
+    const editTableName = (e: React.MouseEvent)=>{
+      let div = e.target as HTMLButtonElement 
+      if(div.className !== "edit-name") return
+      let name = div.nextSibling as HTMLButtonElement
+
+      name.contentEditable = "true"
+      name.focus()
+      console.log("focus")
+    }
+
     const changeZoom = (zoomin: boolean) => {
       let zone = document.querySelector(".draggable") as HTMLDivElement
       let scale = parseFloat(zone.style.scale)
@@ -210,7 +220,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       <Buttons />
       <section className='background' onMouseDown={drag} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
         <div className='draggable' style={{ top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}` }} >
-          {tdf.tables.map(tbl => {
+          {tdf.tables.map((tbl) => {
             let color = "var(--clightgray)"
             let selected = false
             let check = checkTable(tbl._id)
@@ -219,7 +229,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
             return <button
               id={tbl._id}
-              onMouseDown={(e) => { if (editMode) dragItem(e) }}
+              onMouseDown={(e) => { if (editMode && e.currentTarget.contentEditable !== "true") dragItem(e) }}
               key={Math.random()}
               onClick={() => { if (!editMode) setCurrentID(tbl._id, check.state === "unnactive" ? true : false) }}
               className={selected ? "selected table" : "table"}
@@ -231,7 +241,15 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
                 backgroundColor: color
               }}
             >
-              {tbl.number}
+              { editMode && <a className='edit-name' onClick={editTableName}>
+                <FontAwesomeIcon icon={faPen}/>
+              </a>}
+              <p
+                onBlur={(e)=>{
+                  if(e.currentTarget.textContent !== null 
+                    && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+                }}
+              >{tbl.number}</p>
             </button>
           })}
         </div>

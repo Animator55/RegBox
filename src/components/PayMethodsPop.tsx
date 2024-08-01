@@ -31,18 +31,29 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
     const addNew = (e: React.FocusEvent) => {
         let div = e.currentTarget as HTMLInputElement
         if(div.value === "") return
+        let value = div.value
 
         let select = div.previousSibling as HTMLSelectElement
 
-        setMethods([...methodsUsed, { type: select.value, amount: `${parseFloat(div.value)}` }])
+        if(substractedTotal < parseFloat(value)) {
+            value = `${substractedTotal}`
+        }
+        if(value === "0") return
+
+        setMethods([...methodsUsed, { type: select.value, amount: `${parseFloat(value)}` }])
         div.value = ""
     }
 
     const Item = (el: PayMethod, index: number) => {
         const edit = (e: React.FocusEvent | React.ChangeEvent, entry: string) => {
             let div = e.currentTarget as HTMLInputElement
+
+            let value = div.value
+            if(entry === "amount" && substractedTotal < parseFloat(value)) {
+                value = `${substractedTotal}`
+            }
             setMethods([...methodsUsed.map((item, i) => {
-                if (i === index) return { ...item, [entry]: div.value }
+                if (i === index) return { ...item, [entry]: value }
                 else return item
             })])
         }

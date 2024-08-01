@@ -31,7 +31,11 @@ export const Products = React.createContext({
     list: {} as productsType, setProds: (val: productsType) => { console.log(val) }
 })
 
-export const TablesPlaces = React.createContext({ tables: [] as TablePlaceType[], set: (val: TablePlaceType[]) => { console.log(val) } })
+export const TablesPlaces = React.createContext({ 
+    tables: [] as TablePlaceType[], 
+    set: (val: TablePlaceType[]) => { console.log(val) },
+    editName: (id: string, val: string) => { console.log(id, val) },
+})
 
 let lastChanged = ""
 let productPickerScroll = 0
@@ -159,8 +163,19 @@ export default function Main({ }: Props) {
         setCurrentPop({pop:pop, initialPage: init})
     }
 
+    const EditTableName = (id: string, val: string )=>{
+        setTablesPlaces([...tablesPlacesPH.map((el)=>{
+            if(el._id !== id) return el
+            else return {
+                ...el,
+                number: val
+            } as TablePlaceType
+        })])
+
+        EditTable(id, "number", val)
+    }
     return <>
-        <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces }}>
+        <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
                     <TopBar OpenPop={OpenPop} />

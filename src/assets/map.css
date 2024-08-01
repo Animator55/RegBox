@@ -122,10 +122,44 @@
     border: 1px solid var(--cwhite);
     position: absolute;
     inset: -0.35rem;
+    pointer-events: none;
 }
 [data-edit="true"] .table {
     cursor: grab;
 }
+[data-edit="true"] .table:hover .edit-name {
+    scale: 1;
+    transition: scale 300ms;
+}
 [data-edit="true"] .table:focus {
     cursor: grabbing;
+}
+
+.edit-name {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;   
+    background-color: var(--corange);
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    scale: 0;
+    transition: scale 300ms;
+    z-index: 2;
+}
+.edit-name > * {
+    pointer-events: none;
+}
+[data-edit="true"] .table p[contenteditable="true"] {
+    pointer-events: all;
+}
+
+.table > p {
+    padding: 0.5rem;
+    margin: 0;
+    pointer-events: none;
 }

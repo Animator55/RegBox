@@ -3,7 +3,7 @@
 
 export type TableType = {
     _id: string
-    number: number
+    number: string
     tag: string
     products: Item[]
     opened: string[]
@@ -11,7 +11,7 @@ export type TableType = {
 }
 export type TablePlaceType = {
     _id: string
-    number: number
+    number: string
     coords: {
         x: number
         y: number
