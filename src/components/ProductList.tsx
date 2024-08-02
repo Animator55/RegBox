@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowCircleLeft, faCircle, faList, faPenToSquare, faTableCells } from '@fortawesome/free-solid-svg-icons'
+import { faArrowCircleLeft, faList, faPenToSquare, faTableCells } from '@fortawesome/free-solid-svg-icons'
 import "../assets/productList.css"
 import SearchBar from './SearchBar'
 import checkSearch from '../logic/checkSearch'
@@ -39,7 +39,7 @@ export default function ProductList({displayList, changeDisplay, addItem, OpenPo
             onClick={() => { setProductPage(page) }}
             style={bool ? { color: "var(--cgreen)" } : {}}
           >
-            <FontAwesomeIcon icon={faCircle} />
+            {/* <FontAwesomeIcon icon={faCircle} /> */}
             <p>{page}</p>
           </button>
         })}

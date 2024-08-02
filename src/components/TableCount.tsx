@@ -9,6 +9,8 @@ import { Configuration, Products } from '../roleMains/Main'
 import orderByTypes from '../logic/orderByTypes'
 import ConfirmPop from './ConfirmPop'
 import PayMethodsPop from './PayMethodsPop'
+import SwitchTable from './SwitchTable'
+import Discount from './Discount'
 
 type Props = {
     currentTable: TableType | undefined
@@ -20,6 +22,7 @@ let scrollHeight = 0
 
 export default function TableCount({ currentTable, EditTable, tablesMin, setCurrentTable}: Props) {
     const [endPop, endTablePop] = React.useState(false)
+    const [pop, setPop] = React.useState("")
 
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
@@ -174,11 +177,11 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 </button>
             </div>
             <div className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
-                <button>
+                <button onClick={()=>{setPop("switch")}}>
                     <FontAwesomeIcon icon={faArrowRightArrowLeft} />Cambiar
                 </button>
-                <button>
-                    <FontAwesomeIcon icon={faPercentage} />Descuento
+                <button onClick={()=>{setPop("discount")}}>
+                    {currentTable?.discount}<FontAwesomeIcon icon={faPercentage} />Descuento
                 </button>
             </div>
             <div className={currentTable ? "" : 'disabled'}>
@@ -272,6 +275,21 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
             confirm={()=>{changeTableState("unnactive"); endTablePop(false)}}
             close={()=>{endTablePop(false)}}
         />}
+        {pop === "switch" && currentTable &&
+            <SwitchTable
+                actual={{_id: currentTable?._id, name: currentTable.number}} 
+                tablesMin={tablesMin.map(el=>{return el._id})}
+                close={()=>{setPop("")}}
+                confirm={(val: string)=>{console.log(val); setPop("")}}
+            />
+        }
+        {pop === "discount" && currentTable &&
+            <Discount
+                actual={currentTable?.discount} 
+                close={()=>{setPop("")}}
+                confirm={(val: string)=>{EditTable(currentTable._id, "discount", val); setPop("")}}
+            />
+        }
         <Reciept />
         <Top />
         <List />

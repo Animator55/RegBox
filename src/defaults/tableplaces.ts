@@ -3,7 +3,7 @@ import { TablePlaceType } from "../vite-env";
 export const TablePlacesDefault: TablePlaceType[] = [
     {
         _id: "gdsghdsh",
-        number: 1,
+        number: "1",
         coords: {
             x: 0,
             y: 0
@@ -15,7 +15,7 @@ export const TablePlacesDefault: TablePlaceType[] = [
     },
     {
         _id: "ggdagagasghdash",
-        number: 2,
+        number: "2",
         coords: {
             x: 120,
             y: 40
@@ -27,7 +27,7 @@ export const TablePlacesDefault: TablePlaceType[] = [
     },
     {
         _id: "yrfyhh",
-        number: 3,
+        number: "3",
         coords: {
             x: 80,
             y: 110
@@ -39,7 +39,7 @@ export const TablePlacesDefault: TablePlaceType[] = [
     },
     {
         _id: "ggfdasgagdsgdsg",
-        number: 5,
+        number: "5",
         coords: {
             x: 200,
             y: 60
@@ -51,7 +51,7 @@ export const TablePlacesDefault: TablePlaceType[] = [
     },
     {
         _id: "erghdsfhjdfs",
-        number: 4,
+        number: "4",
         coords: {
             x: 225,
             y: 100

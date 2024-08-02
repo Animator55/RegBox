@@ -86,6 +86,7 @@ export default function Main({ }: Props) {
                 _id: data._id,
                 number: data.number,
                 tag: "",
+                discount: 0,
                 products: [],
                 opened: [`${fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}`, 
                     `${fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}`

@@ -4,6 +4,7 @@
 export type TableType = {
     _id: string
     number: string
+    discount: number
     tag: string
     products: Item[]
     opened: string[]
