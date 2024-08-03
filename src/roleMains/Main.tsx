@@ -41,6 +41,7 @@ let lastChanged = ""
 let productPickerScroll = 0
 
 export default function Main({ }: Props) {
+    const [historial, setHistorial] = React.useState()
     const [config, setConfig] = React.useState({
         prodsAsList: false,
         orderedLists: true,

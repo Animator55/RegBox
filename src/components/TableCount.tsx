@@ -11,6 +11,7 @@ import ConfirmPop from './ConfirmPop'
 import PayMethodsPop from './PayMethodsPop'
 import SwitchTable from './SwitchTable'
 import Discount from './Discount'
+import HistorialTable from './HistorialTable'
 
 type Props = {
     currentTable: TableType | undefined
@@ -288,6 +289,12 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 actual={currentTable?.discount} 
                 close={()=>{setPop("")}}
                 confirm={(val: string)=>{EditTable(currentTable._id, "discount", val); setPop("")}}
+            />
+        }
+        {pop === "historial" && currentTable &&
+            <HistorialTable
+                table={currentTable} 
+                close={()=>{setPop("")}}
             />
         }
         <Reciept />

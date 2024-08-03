@@ -5,6 +5,8 @@ import { Configuration } from '../roleMains/Main'
 import { TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
+import MiniProductList from './mini/MiniProductList'
+import MiniMap from './mini/MiniMap'
 
 type Props = {
     setCurrentID: Function
@@ -52,7 +54,22 @@ export default function ProdAndMap({current, setCurrentID, tablesMin,addItem, Op
 
     return <section className='prod-map-container'>
         <NavBar/>
-        {page === "map" ? <Map current={current} setCurrentID={setCurrentHandler} tablesOpenMin={tablesMin}/>: <ProductList OpenPop={OpenPop} displayList={c.config.prodsAsList} changeDisplay={changeProdDisplay} addItem={addItem}/>}
+        {page === "map" ? 
+            <div>
+                <MiniProductList/>
+                <Map current={current} setCurrentID={setCurrentHandler} tablesOpenMin={tablesMin}/>
+            </div>
+        : 
+            <div> 
+                <ProductList 
+                    OpenPop={OpenPop} 
+                    displayList={c.config.prodsAsList} 
+                    changeDisplay={changeProdDisplay} 
+                    addItem={addItem}
+                />
+                <MiniMap/>
+            </div>
+        }
         {loading !== "" && <Loading/>}
     </section>
 }
