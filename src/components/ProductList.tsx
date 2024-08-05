@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowCircleLeft, faList, faPenToSquare, faTableCells } from '@fortawesome/free-solid-svg-icons'
+import { faArrowCircleLeft, faList, faPenToSquare, faTableCells, faWarning } from '@fortawesome/free-solid-svg-icons'
 import "../assets/productList.css"
 import SearchBar from './SearchBar'
 import checkSearch from '../logic/checkSearch'
@@ -10,14 +10,13 @@ type Props = {
   displayList: boolean
   changeDisplay: Function
   addItem: Function
-  OpenPop: Function
 }
 
 export type pagesRouter = {
   [key: string]: any
 }
 
-export default function ProductList({displayList, changeDisplay, addItem, OpenPop}: Props) {
+export default function ProductList({displayList, changeDisplay, addItem}: Props) {
   const p = React.useContext(Products).list
 
   const [search, setSearch] = React.useState("")
@@ -25,21 +24,22 @@ export default function ProductList({displayList, changeDisplay, addItem, OpenPo
 
   const pages = Object.keys(p)
 
+  const OpenPop = ()=>{
+    let button = document.querySelector(".prod-edit-pop-button") as HTMLButtonElement
+    button.dataset.page = ProductPage
+    button.click()
+  }
+
   const ProductPicker = () => {
     const Router = () => {
       return <nav className='picker-nav'>
         {pages.map(page => {
-          let bool = false
-          // selectedProds.some(it=>{
-          //     return it.type === page
-          // })
           return <button
             key={Math.random()}
+            id={"prod-nav."+page}
             className={ProductPage === page ? "active" : ""}
             onClick={() => { setProductPage(page) }}
-            style={bool ? { color: "var(--cgreen)" } : {}}
           >
-            {/* <FontAwesomeIcon icon={faCircle} /> */}
             <p>{page}</p>
           </button>
         })}
@@ -50,7 +50,7 @@ export default function ProductList({displayList, changeDisplay, addItem, OpenPo
       return <section className='products-top'>
         <SearchBar searchButton={setSearch} placeholder={"Buscar producto"} defaultValue={search} onChange={true}/>
         <button className='backgroundless-button' title='Editar productos' onClick={()=>{
-          OpenPop("products", ProductPage)
+          OpenPop()
         }}>
           <FontAwesomeIcon icon={faPenToSquare}/>
         </button>
@@ -62,7 +62,17 @@ export default function ProductList({displayList, changeDisplay, addItem, OpenPo
       </section>
     }
 
+    const Alert = ()=>{
+      return <section className='alert absolute'>
+          <FontAwesomeIcon icon={faWarning}/>
+          <h2>No hay productos añadidos a este tipo.</h2>
+          <button className='default-button' onClick={()=>{OpenPop()}}>
+              {"Ir al editor"}
+          </button>
+      </section>
+    }
     const RenderProducts = () => {
+
       if(!p[ProductPage]) return []
 
       return p[ProductPage].map(item => {
@@ -86,6 +96,7 @@ export default function ProductList({displayList, changeDisplay, addItem, OpenPo
       <div className='product-paging'>
         <Top/>
         <div className={displayList ? 'product-picker' : "product-picker grid"} id='product-picker'>
+          {p[ProductPage] && p[ProductPage].length === 0 && <Alert/>}
           <RenderProducts/>
         </div>
       </div>

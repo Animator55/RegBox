@@ -1,9 +1,10 @@
 .picker-section {
     background-color: var(--cdarkgray);
-    border-radius: 0 0 10px 10px;
     height: 100%;
     display: flex;
     flex-direction: column;
+    max-width: 84%;
+    width: 100%;
 }
 
 .picker-nav {
@@ -38,6 +39,7 @@
 
 .picker-nav>button.active {
     background-color: var(--cblack);
+    color: var(--corange);
 }
 
 .product-paging {
@@ -172,4 +174,10 @@
 
 .input-expand::placeholder {
     color: var(--clightgray)
+}
+
+/***/
+
+.alert.absolute {
+    position: absolute;
 }

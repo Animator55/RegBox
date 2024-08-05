@@ -97,9 +97,92 @@ main>.d-flex {
     max-height: calc(100dvh - 4.9rem);
     flex-direction: column;
     overflow: hidden;
-    border-radius: 0 0 10px 10px;
+    border-radius: 10px 10px;
     position: relative;
+    background-color: var(--cdarkgray);
 }
+
+.prod-map-sub-container {
+    display: flex;
+    height: 100%;
+}
+
+/* CHANGE PAGE ANIMATIONS*/
+
+.change-to-products .nav-page > :last-child,
+.change-to-map .nav-page > :first-child {
+    animation: darkToOrange 300ms 0s forwards;
+}
+.change-to-products .nav-page > :first-child,
+.change-to-map .nav-page > :last-child {
+    animation: darkToOrange 300ms 0s forwards reverse;
+}
+
+@keyframes darkToOrange {
+    from {
+        background-color: var(--cdarkgray);
+        color: var(--corange);
+    }
+    to {
+        background-color: var(--corange);
+        color: var(--cdarkgray);
+    }
+}
+
+.change-to-products .map,
+.change-to-products .mini-prod-list,
+.change-to-map .picker-section,
+.change-to-map .mini-map {
+    animation: compress 250ms 0s forwards;
+    overflow: hidden;
+}
+
+@keyframes compress {
+    from {
+        max-width: 84%;
+        min-width: 84%;
+        background-color: var(--cdarkgray);
+    }
+    to {
+        min-width: 15%;
+        max-width: 15%;
+        background-color: var(--corange);
+    }
+}
+@keyframes compressReverse {
+    from {
+        background-color: var(--corange);
+        min-width: 15%;
+        max-width: 15%;
+    }
+    to {
+        max-width: 84%;
+        min-width: 84%;
+        background-color: var(--cdarkgray);
+    }
+}
+
+.change-to-products .map *,
+.change-to-products .mini-prod-list *,
+.change-to-map .picker-section *,
+.change-to-map .mini-map * {
+    animation: fadeScaleOut 300ms 50ms forwards;
+}
+
+@keyframes fadeScaleOut {
+    to {
+        opacity: 0;
+    }
+}
+.change-to-products .mini-prod-list, 
+.change-to-map .mini-map,
+.change-to-map .map, 
+.change-to-products .picker-section {
+    animation-name: compressReverse;
+}
+
+
+/***/
 
 .loading {
     position: absolute;
@@ -130,6 +213,7 @@ main>.d-flex {
     background-color: var(--corange);
     color: var(--cdarkgray);
     border: 2px solid var(--cdarkgray);
+    border-bottom: none;
     border-radius: 8px 8px 0 0;
 }
 

@@ -11,65 +11,101 @@ import MiniMap from './mini/MiniMap'
 type Props = {
     setCurrentID: Function
     current: TableType | undefined
-    tablesMin: {_id: string, number: string, state: "open" | "paying" | "closed" | "unnactive"}[]
+    tablesMin: { _id: string, number: string, state: "open" | "paying" | "closed" | "unnactive" }[]
     addItem: Function
-    OpenPop: Function
 }
 
-export default function ProdAndMap({current, setCurrentID, tablesMin,addItem, OpenPop}: Props) {
+let subPage = ""
+
+export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }: Props) {
     let c = React.useContext(Configuration)
-    const [page, setPage] = React.useState("map")
+    const [page, setPageState] = React.useState("map")
     const [loading, setLoading] = React.useState("")
-    
-    const changeProdDisplay = ()=>{
-        c.setConfig({...c.config, prodsAsList: !c.config.prodsAsList})
+
+    const changeProdDisplay = () => {
+        c.setConfig({ ...c.config, prodsAsList: !c.config.prodsAsList })
     }
 
+    const setPage = (pageStr: string, sub?: string) => {
+        if (page === pageStr) return
+        let container = document.querySelector(".prod-map-container") as HTMLDivElement
+        if (!container) return
+        container.classList.remove("change-to-products")
+        container.classList.remove("change-to-map")
+        container.offsetWidth
+        container.classList.add("change-to-" + pageStr)
+        setTimeout(() => {
+            subPage = sub === undefined ? "" : sub
+            setPageState(pageStr)
+            setTimeout(() => {
+                container.classList.remove("change-to-" + pageStr)
+            }, 50)
+        }, 300)
+    }
 
-    const NavBar = ()=>{
+    const NavBar = () => {
         return <nav id='main-router' className="nav-page">
-            <button className={page === "products" ? "active" : ""} onClick={()=>{setPage("products")}}>Productos</button>
-            <button className={page === "map" ? "active" : ""} onClick={()=>{setPage("map")}}>Mapa</button>
+            <button className={page === "products" ? "active" : ""} onClick={() => { setPage("products") }}>Productos</button>
+            <button className={page === "map" ? "active" : ""} onClick={() => { setPage("map") }}>Mapa</button>
         </nav>
     }
 
-    const Loading = ()=>{
+    const Loading = () => {
         return <section className='loading'>
-            <FontAwesomeIcon icon={faCircleNotch} spin/>
+            <FontAwesomeIcon icon={faCircleNotch} spin />
             <h3>Creando mesa...</h3>
         </section>
     }
 
-    const setCurrentHandler = (id: string, creating: boolean)=>{
-        if(creating)setLoading(id)
+    const setCurrentHandler = (id: string, creating: boolean) => {
+        if (creating) setLoading(id)
         else setCurrentID(id)
     }
-    React.useEffect(()=>{
-        if(loading) setTimeout(()=>{
-            setCurrentID(loading)
-            setPage("products")
-            setLoading("")
-        }, 200)
+    React.useEffect(() => {
+        if (subPage !== "") {
+            let button = document.getElementById("prod-nav." + subPage) as HTMLButtonElement
+            button.click()
+            subPage = ""
+        }
+        if (loading) {
+            let container = document.querySelector(".prod-map-container") as HTMLDivElement
+            if (!container) return
+            container.classList.add("change-to-products")
+            setTimeout(() => {
+                setCurrentID(loading)
+                setLoading("")
+                setPageState("products")
+            }, 200)
+        }
     })
 
-    return <section className='prod-map-container'>
-        <NavBar/>
-        {page === "map" ? 
-            <div>
-                <MiniProductList/>
-                <Map current={current} setCurrentID={setCurrentHandler} tablesOpenMin={tablesMin}/>
-            </div>
-        : 
-            <div> 
-                <ProductList 
-                    OpenPop={OpenPop} 
-                    displayList={c.config.prodsAsList} 
-                    changeDisplay={changeProdDisplay} 
-                    addItem={addItem}
-                />
-                <MiniMap/>
-            </div>
-        }
-        {loading !== "" && <Loading/>}
+    return <section
+        //  key={Math.random()} 
+        className='prod-map-container'>
+        <NavBar />
+        <div className='prod-map-sub-container'>
+            {page === "map" ? <>
+                <MiniProductList Open={(val: string) => { setPage("products", val) }} />
+                <Map current={current} setCurrentID={setCurrentHandler} tablesOpenMin={tablesMin} />
+            </>
+                :
+                <>
+                    <ProductList
+                        displayList={c.config.prodsAsList}
+                        changeDisplay={changeProdDisplay}
+                        addItem={addItem}
+                    />
+                    <MiniMap 
+                        OpenTable={(_id: string, isNew: boolean) => {
+                            setCurrentHandler(_id, isNew)
+                        }}
+                        Open={() => { setPage("map") }}
+                        tablesOpenMin={tablesMin}
+                        current={current}
+                    />
+                </>
+            }
+        </div>
+        {loading !== "" && <Loading />}
     </section>
 }

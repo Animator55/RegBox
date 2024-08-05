@@ -1,0 +1,74 @@
+.mini-prod-list, .mini-map {
+    background-color: var(--corange);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 15%;
+    width: 20%;
+    border: 2px solid var(--cdarkgray);
+    border-top: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.mini-prod-list > ul::-webkit-scrollbar,
+.mini-map > ul::-webkit-scrollbar {
+    width: 0;
+}
+.mini-prod-list > ul, 
+.mini-map > ul 
+{
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.2rem;
+    margin: 0;
+    overflow-y:auto;
+    overflow-x: hidden;
+    max-height: calc(100% - 4.2rem);
+}
+.mini-prod-list::after, .mini-map::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    height: 4rem;
+    width: 100%;
+    background: linear-gradient(180deg, transparent, var(--corange));
+    pointer-events: none;
+}
+.mini-prod-list > button,
+.mini-map > button
+{
+    background-color: transparent;
+    color: var(--cdarkgray);
+    font-size: 1.3rem;
+}
+
+.mini-prod-list > ul button:hover,
+.mini-map > ul button:hover {
+    background-color: var(--cblack);
+    color: var(--corange);
+} 
+.mini-map > ul button:hover {
+    transition: font-size 100ms;
+    font-size: 1.5rem;
+}
+.mini-prod-list > ul button,
+.mini-map > ul button
+{ 
+    background-color: var(--cdarkgray);
+    border: 3px solid var(--cdarkgray);
+    border-radius: 5px;
+    min-height: 3rem;
+    color: var(--clightgray);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+
+.mini-map > ul button.selected {
+    outline: auto;
+}
