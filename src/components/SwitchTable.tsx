@@ -19,17 +19,21 @@ export default function SwitchTable({actual, tablesMin, close, confirm}: Props) 
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") close()
     }}>
-        <section className='pop'>
-            <h3>{actual.name}</h3>
-            <div><FontAwesomeIcon icon={faRepeat}/></div>
+        <section className='pop switch-pop'>
+            <h2>Cambiar mesa actual</h2>
+            <h3 className='actual'>Mesa {actual.name}</h3>
+            <div className='switch-icon'><FontAwesomeIcon icon={faRepeat}/></div>
             <select value={selected} onChange={(e)=>{
                 let val = e.target.value
                 setSelected(val)
             }}>
+                <option key={Math.random()} value={""}>
+                    Seleccionar
+                </option>
                 {tbl.tables.map((el: TablePlaceType)=>{
                     if(tablesMin.includes(el._id))return
                     return <option key={Math.random()} value={el._id}>
-                        {el.number}
+                        Mesa {el.number}
                     </option>
                 })}
             </select>

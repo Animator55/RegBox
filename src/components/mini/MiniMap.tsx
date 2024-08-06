@@ -3,7 +3,7 @@ import "../../assets/mini-sections.css"
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons"
 import { TablesPlaces } from "../../roleMains/Main"
 import React from "react"
-import { TableType } from "../../vite-env"
+import { TablePlaceType, TableType } from "../../vite-env"
 import { checkTable } from "../../logic/checkTableState"
 import { colorSelector } from "../../logic/colorSelector"
 
@@ -17,11 +17,19 @@ type Props = {
 export default function MiniMap({OpenTable, Open, tablesOpenMin, current}: Props) {
   const tdf = React.useContext(TablesPlaces)
 
-  let list = []
+  const constructor: {[key:string]: TablePlaceType[]} = {
+    open: [],
+    paying: [],
+    closed: [],
+    unnactive: [],
+  }
 
   for(let i = 0; i<tdf.tables.length; i++) {
-    list.push(tdf.tables[i])
+    let result = checkTable(tdf.tables[i]._id, tablesOpenMin)
+    constructor[result.state].push(tdf.tables[i])
   }
+
+  let list = Object.values(constructor).flat()
 
   return <section className="mini-map">
     <button onClick={()=>{Open()}}>

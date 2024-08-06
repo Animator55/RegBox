@@ -14,6 +14,7 @@ body {
     max-height: 100vh;
     max-width: 100%;
     overflow: hidden;
+    background-color: var(--cwhite);
 }
 
 * {
@@ -111,11 +112,11 @@ main>.d-flex {
 
 .change-to-products .nav-page > :last-child,
 .change-to-map .nav-page > :first-child {
-    animation: darkToOrange 300ms 0s forwards;
+    animation: darkToOrange 300ms 10ms forwards;
 }
 .change-to-products .nav-page > :first-child,
 .change-to-map .nav-page > :last-child {
-    animation: darkToOrange 300ms 0s forwards reverse;
+    animation: darkToOrange 300ms 10ms forwards reverse;
 }
 
 @keyframes darkToOrange {
@@ -224,6 +225,7 @@ main>.d-flex {
 }
 
 .default-button {
+    cursor: pointer;
     display: flex;
     gap: 0.5rem;
     align-items: center;
@@ -241,6 +243,7 @@ main>.d-flex {
     background-color: transparent;
 }
 .default-button-2 {
+    cursor: pointer;
     display: flex;
     gap: 0.5rem;
     align-items: center;
@@ -258,6 +261,7 @@ main>.d-flex {
     background-color: var(--cwhite);
 }
 .backgroundless-button {
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -273,6 +277,7 @@ main>.d-flex {
 }
 
 .secondary-button{
+    cursor: pointer;
     display: flex;
     gap: 0.5rem;
     align-items: center;
@@ -313,4 +318,76 @@ main>.d-flex {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+body:has(.initial-data-pop) main .main-top-bar,
+body:has(.initial-data-pop) main .table-count,
+body:has(.initial-data-pop) main .prod-map-container  {
+    position: relative;
+    overflow: hidden;
+}
+body:has(.initial-data-pop) main .main-top-bar::after,
+body:has(.initial-data-pop) main .table-count::after,
+body:has(.initial-data-pop) main .prod-map-container::after {
+    content: ""; 
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background: var(--cdarkgray)
+}
+
+
+.initial-data-pop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.initial-data-pop >header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.initial-data-pop >header>button {
+    background-color: transparent;
+    font-size: 1.8rem;
+}
+
+.initial-data-pop > input {
+    display: none;
+}
+
+.initial-data-pop label:hover{
+    background-color: var(--corange);
+    color: var(--cwhite);
+    transition: color 300ms, background-color 300ms;
+}
+.initial-data-pop label {
+    transition: color 300ms, background-color 300ms;
+    width: 80%;
+    border: 5px solid var(--corange);
+    background-color: transparent;
+    color: var(--corange);
+    padding: 0.8rem 0;
+    justify-content: center;
+    flex-direction: column;
+}
+.initial-data-pop label > svg {
+    font-size: 4rem;
+}
+.initial-data-pop label >p {
+    margin-bottom: 0;
+    font-size: small;
+}
+.initial-data-pop h1 {
+    color: var(--cblack);
+    font-size: 1.5rem;
+    margin: 0;
+}
+.initial-data-pop > button {
+    font-size: 1.2rem;
+    margin-bottom: 0.7rem;
 }

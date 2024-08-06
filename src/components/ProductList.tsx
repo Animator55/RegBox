@@ -19,10 +19,10 @@ export type pagesRouter = {
 export default function ProductList({displayList, changeDisplay, addItem}: Props) {
   const p = React.useContext(Products).list
 
-  const [search, setSearch] = React.useState("")
-  const [ProductPage, setProductPage] = React.useState("Entrada")
-
   const pages = Object.keys(p)
+  const [search, setSearch] = React.useState("")
+  const [ProductPage, setProductPage] = React.useState(pages.length !== 0 ? pages[0] : "")
+
 
   const OpenPop = ()=>{
     let button = document.querySelector(".prod-edit-pop-button") as HTMLButtonElement

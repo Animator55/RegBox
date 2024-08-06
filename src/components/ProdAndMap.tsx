@@ -39,7 +39,7 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
             setPageState(pageStr)
             setTimeout(() => {
                 container.classList.remove("change-to-" + pageStr)
-            }, 50)
+            }, 10)
         }, 300)
     }
 
@@ -70,8 +70,11 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
         if (loading) {
             let container = document.querySelector(".prod-map-container") as HTMLDivElement
             if (!container) return
-            container.classList.add("change-to-products")
+            if(page !== "products")container.classList.add("change-to-products")
             setTimeout(() => {
+                if(page !== "products") setTimeout(() => {
+                    container.classList.remove("change-to-products")
+                }, 100)
                 setCurrentID(loading)
                 setLoading("")
                 setPageState("products")

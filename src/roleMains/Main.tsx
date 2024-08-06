@@ -3,15 +3,21 @@ import TopBar from '../components/TopBar'
 import TableCount from '../components/TableCount'
 import ProdAndMap from '../components/ProdAndMap'
 import { Item, TablePlaceType, TableType, configType } from '../vite-env'
-import { TablePlacesDefault } from '../defaults/tableplaces'
 import getTableData from '../logic/getTableData'
 import fixNum from '../logic/fixDateNumber'
-import { products, productsType } from '../defaults/products'
+import { productsType } from '../defaults/products'
 import ProductEditor from '../components/ProductEditor'
 import Notifications from '../components/Notifications'
 import ConfigurationComp from '../components/Configuration'
+import DownloadTsObject from '../logic/download'
 
 type Props = {
+    initialData?: {
+        config: configType
+        products: productsType
+        tablePlaces: TablePlaceType[]
+    }
+    logout: Function
 }
 
 
@@ -37,12 +43,13 @@ export const TablesPlaces = React.createContext({
     editName: (id: string, val: string) => { console.log(id, val) },
 })
 
+
+
 let lastChanged = ""
 let productPickerScroll = 0
 
-export default function Main({ }: Props) {
-    const [historial, setHistorial] = React.useState()
-    const [config, setConfig] = React.useState({
+export default function Main({initialData, logout}: Props) {
+    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config : {
         prodsAsList: false,
         orderedLists: true,
         prodsInEditorAsList: false,
@@ -57,9 +64,9 @@ export default function Main({ }: Props) {
         setConfig(val)
     }
 
-    const [ProductsState, setProdsState] = React.useState<productsType>(products)
+    const [ProductsState, setProdsState] = React.useState<productsType>(initialData === undefined ? {}: initialData.products)
 
-    const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(TablePlacesDefault)
+    const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(initialData === undefined ? []: initialData.tablePlaces)
 
     const [tables, setTables] = React.useState<TableType[]>([])
     const [current, setCurrent] = React.useState<string>()
@@ -144,6 +151,13 @@ export default function Main({ }: Props) {
         }))
     }
 
+    React.useEffect(()=>{
+        if(initialData !== undefined) {
+            setProdsState(initialData.products)
+            setTablesPlaces(initialData.tablePlaces)
+            setConfig(initialData.config)
+        }
+    }, [initialData])
     React.useEffect(() => {
         if (lastChanged !== "") {
             let item = document.getElementById(lastChanged)
@@ -165,6 +179,14 @@ export default function Main({ }: Props) {
         setCurrentPop({pop:pop, initialPage: init})
     }
 
+    const download = ()=>{
+        DownloadTsObject({
+            config: config,
+            products: ProductsState,
+            tablePlaces: tablesPlacesPH
+        })
+    }
+
     const EditTableName = (id: string, val: string )=>{
         setTablesPlaces([...tablesPlacesPH.map((el)=>{
             if(el._id !== id) return el
@@ -180,10 +202,10 @@ export default function Main({ }: Props) {
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
-                    <TopBar OpenPop={OpenPop} />
+                    <TopBar OpenPop={OpenPop} download={download} logout={logout}/>
                     <section className='d-flex'>
                         <TableCount currentTable={currentTableData} EditTable={EditTable} tablesMin={tablesMin} setCurrentTable={setCurrentHandler} />
-                        <ProdAndMap OpenPop={OpenPop} tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
+                        <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                     </section>
                     {popUp.pop !== "" && popUps[popUp.pop]}
                 </Products.Provider>

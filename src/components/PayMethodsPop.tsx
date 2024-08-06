@@ -30,7 +30,7 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
 
     const addNew = (e: React.FocusEvent) => {
         let div = e.currentTarget as HTMLInputElement
-        if(div.value === "") return
+        if(div.value === ""|| parseFloat(div.value) < 0) return
         let value = div.value
 
         let select = div.previousSibling as HTMLSelectElement
@@ -38,10 +38,10 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
         if(substractedTotal < parseFloat(value)) {
             value = `${substractedTotal}`
         }
+        div.value = ""
         if(value === "0") return
 
         setMethods([...methodsUsed, { type: select.value, amount: `${parseFloat(value)}` }])
-        div.value = ""
     }
 
     const Item = (el: PayMethod, index: number) => {
@@ -49,8 +49,11 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
             let div = e.currentTarget as HTMLInputElement
 
             let value = div.value
-            if(entry === "amount" && substractedTotal < parseFloat(value)) {
-                value = `${substractedTotal}`
+            if(value === "" || parseFloat(value) < 0) return setMethods([...methodsUsed.filter((item, i) => {
+                if (i !== index) return item
+            })])
+            if(entry === "amount" && substractedTotal+parseFloat(el.amount) < parseFloat(value)) {
+                value = `${substractedTotal+parseFloat(el.amount)}`
             }
             setMethods([...methodsUsed.map((item, i) => {
                 if (i === index) return { ...item, [entry]: value }

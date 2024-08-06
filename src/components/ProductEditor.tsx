@@ -1,4 +1,4 @@
-import { faCheck, faCircle, faList, faPen, faPlus, faTableCells, faTrash, faUpload, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faCircle, faList, faPen, faPlus, faTableCells, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
@@ -25,31 +25,31 @@ export default function ProductEditor({ initialPage, close }: Props) {
     const [resultProducts, setResult] = React.useState(p.list)
     const types = Object.keys(resultProducts)
 
-    const [page, setPage] = React.useState(types[0] !== undefined ? initialPage !== "" ? initialPage : types[0] : "")
+    const [page, setPage] = React.useState(initialPage !== "" ? initialPage : "")
 
     const changeProdDisplay = ()=>{
         c.setConfig({...c.config, prodsInEditorAsList: !c.config.prodsInEditorAsList})
     }
 
-    const changeProd = (key: string, value:string, page:string, index: number)=>{
+    const changeProd = (key: string, value:string, page:string, id: string, index: number)=>{
         let ul = document.getElementById("prod-list")
         if(!ul) return
         lastChanged = index
         scrollHeight = ul.scrollTop
         let newValue = key === "price" ? parseFloat(value) : value
 
-        setResult({...resultProducts, [page]: resultProducts[page].map((el, i)=>{
-            return i !== index ? el : {...el, [key]: newValue} 
+        setResult({...resultProducts, [page]: resultProducts[page].map((el)=>{
+            return el._id !== id ? el : {...el, [key]: newValue} 
         })})
     }
 
-    const deleteProd = (index: number)=>{
+    const deleteProd = (id: string)=>{
         let ul = document.getElementById("prod-list")
         if(!ul) return
         scrollHeight = ul.scrollTop
 
-        setResult({...resultProducts, [page]: resultProducts[page].filter((el, i)=>{
-            if(i !== index) return el
+        setResult({...resultProducts, [page]: resultProducts[page].filter((el)=>{
+            if(el._id !== id) return el
         })})
     }
 
@@ -139,6 +139,20 @@ export default function ProductEditor({ initialPage, close }: Props) {
         }
     })
 
+    const compileTypes = ()=>{
+        if(!types[0] || types[0].length === 0) return 
+        let result = []
+
+        for(const key in resultProducts) {
+            let array = resultProducts[key]
+            if(array.length === 0) continue
+            result.push(...array)
+        }
+        return result
+    }
+
+    let renderList = resultProducts[page] ? resultProducts[page] : page === "" ? compileTypes(): null
+
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") closeHandle()
@@ -158,7 +172,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                         defaultValue={search}
                         placeholder='Buscar Producto...'
                     />
-                    <button className='default-button-2'><FontAwesomeIcon icon={faUpload} /></button>
+                    {/* <button className='default-button-2'><FontAwesomeIcon icon={faUpload} /></button> */}
                     <button onClick={changeProdDisplay} className='default-button-2' title='Cambiar disposición'>
                         <FontAwesomeIcon icon={c.config.prodsInEditorAsList ? faList : faTableCells} />
                     </button>
@@ -170,6 +184,14 @@ export default function ProductEditor({ initialPage, close }: Props) {
                         <FontAwesomeIcon icon={faPlus} />
                         <p>Nuevo tipo</p>
                     </button>
+                    {types.length > 0 && 
+                        <button
+                        className={"" === page ? "active" : ""}
+                        onClick={() => { setPage("") }}
+                    >
+                        <p>Todos</p>
+                    </button>
+                    }
                     {types.map(type => {
                         return <button
                             key={Math.random()}
@@ -183,28 +205,30 @@ export default function ProductEditor({ initialPage, close }: Props) {
                 </nav>
                 <section className='product-editor-content' key={Math.random()}>
                     <div>
-                        <h3
-                            onBlur={(e)=>{confirmName(e.currentTarget)}}
-                            onKeyDown={(e)=>{
-                                if(e.key === "Enter") confirmName(e.currentTarget)
-                            }}
-                        >{page}</h3>
-                        <button className='change' onClick={(e)=>{editTypeName(e)}}>
-                            <FontAwesomeIcon icon={faPen}/>
-                            <FontAwesomeIcon icon={faCheck}/>
-                        </button>
-                        <button onClick={()=>{setPop(true)}}><FontAwesomeIcon icon={faTrash}/></button>
-                        <button
-                            className='add-prod'
-                            onClick={()=>{newProduct()}}
-                        >
-                            <FontAwesomeIcon icon={faPlus}/>
-                            <p>Añadir Producto</p>
-                        </button>
+                        {resultProducts[page] && page !== "" && <>
+                            <h3
+                                onBlur={(e)=>{confirmName(e.currentTarget)}}
+                                onKeyDown={(e)=>{
+                                    if(e.key === "Enter") confirmName(e.currentTarget)
+                                }}
+                            >{page}</h3>
+                            <button className='change' onClick={(e)=>{editTypeName(e)}}>
+                                <FontAwesomeIcon icon={faPen}/>
+                                <FontAwesomeIcon icon={faCheck}/>
+                            </button>
+                            <button onClick={()=>{setPop(true)}}><FontAwesomeIcon icon={faTrash}/></button>
+                            <button
+                                className='add-prod'
+                                onClick={()=>{newProduct()}}
+                            >
+                                <FontAwesomeIcon icon={faPlus}/>
+                                <p>Añadir Producto</p>
+                            </button>
+                        </>}
                     </div>
                     <hr></hr>
                     <ul id="prod-list" className={c.config.prodsInEditorAsList ? "" : "prod-grid-mode"}>
-                        {resultProducts[page].map((item, i) => {
+                        {renderList && renderList.map((item, i) => {
                             let check = checkSearch(item.name, search)
                             return <div
                                 className={search !== "" && check === item.name ? "d-none" : 'item'} 
@@ -215,12 +239,12 @@ export default function ProductEditor({ initialPage, close }: Props) {
                                     onBlur={(e)=>{
                                         let div = e.target as HTMLDivElement
                                         let val = div.textContent === null ? "" : div.textContent 
-                                        changeProd("name", val, page, i)
+                                        changeProd("name", val, item.type, item._id,i)
                                     }}
                                     contentEditable
                                 ></p>
-                                <input defaultValue={item.price} onBlur={(e)=>{changeProd("price", e.currentTarget.value, page, i)}}/>
-                                <button title='Borrar producto' onClick={()=>{deleteProd(i)}}><FontAwesomeIcon icon={faXmark}/></button>
+                                <input type='number' defaultValue={item.price} onBlur={(e)=>{changeProd("price", e.currentTarget.value, item.type, item._id,i)}}/>
+                                <button title='Borrar producto' onClick={()=>{deleteProd(item._id)}}><FontAwesomeIcon icon={faXmark}/></button>
                             </div>
                         })}
                     </ul>
