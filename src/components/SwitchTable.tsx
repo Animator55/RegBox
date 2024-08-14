@@ -15,6 +15,12 @@ export default function SwitchTable({actual, tablesMin, close, confirm}: Props) 
     const [selected, setSelected] = React.useState(actual._id)
     const tbl = React.useContext(TablesPlaces)
 
+    const confirmHandler = ()=>{
+        if(selected === "" && selected === actual._id) return
+        let [id, number] = selected.split("/")
+        confirm(id, number)
+    }
+
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") close()
@@ -32,7 +38,7 @@ export default function SwitchTable({actual, tablesMin, close, confirm}: Props) 
                 </option>
                 {tbl.tables.map((el: TablePlaceType)=>{
                     if(tablesMin.includes(el._id))return
-                    return <option key={Math.random()} value={el._id}>
+                    return <option key={Math.random()} value={el._id+"/"+el.number}>
                         Mesa {el.number}
                     </option>
                 })}
@@ -41,7 +47,7 @@ export default function SwitchTable({actual, tablesMin, close, confirm}: Props) 
                 <button className='secondary-button' onClick={() => { close() }}>Cancelar</button>
                 <button 
                     className={selected === actual._id || selected === "" ? "default-button-2 disabled" : "default-button-2"} 
-                    onClick={() => { if(selected !== "" && selected !== actual._id) confirm(selected) }}
+                    onClick={confirmHandler}
                 >Confirmar</button>
             </div>
         </section>

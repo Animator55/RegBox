@@ -51,6 +51,9 @@ export type configType = {
     prodsAsList: boolean
     orderedLists: boolean
     prodsInEditorAsList: boolean,
+    domain: {
+        name: string,
+    },
     map: {
         x: number
         y: number

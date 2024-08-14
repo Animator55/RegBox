@@ -99,11 +99,11 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         scrollHeight = ul.scrollTop
 
         if (newItem.amount === 0
-            && index !== -1) EditTable(currentTable?._id, "products", list.filter(el => { if (el._id !== item._id) return el }))
+            && index !== -1) EditTable(currentTable?._id, "products", list.filter(el => { if (el._id !== item._id) return el }), "Eliminado " + item.name+ " (" +newItem._id+ ")")
         else EditTable(currentTable?._id, "products", list.map(el => {
             if (el._id === item._id) return newItem
             else return el
-        }))
+        }), value === 1 ? "Añadido 1 de " : "Subtraido 1 de " + newItem.name + " (" +newItem._id+ ")")
     }
 
     const List = () => {
@@ -163,7 +163,11 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 <hr></hr>
                 <div className="total">
                     <div>Total</div>
-                    <div>{total}</div>
+                    {currentTable&& currentTable?.discount !== 0 ? <div>
+                        <del style={{opacity: 0.5}}>{total}</del>
+                        {Math.floor(total*(1-(currentTable?.discount/100)))}
+                    </div> : 
+                    <div>{total}</div>}
                 </div>
             </>}
         </section>
@@ -173,7 +177,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         return <section className='table-commands'>
             <div>
                 <p>{currentTable && `Caja abierta a las ${currentTable.opened[0]} el ${currentTable.opened[1]}`}</p>
-                <button className={currentTable ? "" : 'disabled'}>
+                <button className={currentTable ? "" : 'disabled'} onClick={()=>{setPop("historial")}}>
                     <FontAwesomeIcon icon={faClockRotateLeft} />Historial
                 </button>
             </div>
@@ -181,7 +185,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 <button onClick={()=>{setPop("switch")}}>
                     <FontAwesomeIcon icon={faArrowRightArrowLeft} />Cambiar
                 </button>
-                <button onClick={()=>{setPop("discount")}}>
+                <button style={currentTable?.discount ? {background: "var(--cwhite)"}: {}} onClick={()=>{setPop("discount")}}>
                     {currentTable?.discount}<FontAwesomeIcon icon={faPercentage} />Descuento
                 </button>
             </div>
@@ -254,6 +258,12 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         </div>
     }
 
+    /****/
+
+    const switchTable = (new_id: string, new_number: string)=>{
+        EditTable(currentTable?._id, "switch", new_id+"/"+new_number, "Cambiada la mesa con la " + new_number)
+    }
+
 
     React.useEffect(() => {
         if (scrollHeight !== null && scrollHeight !== 0) {
@@ -281,14 +291,14 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 actual={{_id: currentTable?._id, name: currentTable.number}} 
                 tablesMin={tablesMin.map(el=>{return el._id})}
                 close={()=>{setPop("")}}
-                confirm={(val: string)=>{console.log(val); setPop("")}}
+                confirm={(id: string, num: string)=>{switchTable(id, num); setPop("")}}
             />
         }
         {pop === "discount" && currentTable &&
             <Discount
                 actual={currentTable?.discount} 
                 close={()=>{setPop("")}}
-                confirm={(val: string)=>{EditTable(currentTable._id, "discount", val); setPop("")}}
+                confirm={(val: string)=>{EditTable(currentTable._id, "discount", val, "Aplicado descuento del " + val + "%"); setPop("")}}
             />
         }
         {pop === "historial" && currentTable &&

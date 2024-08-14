@@ -18,7 +18,9 @@ export default function ConfigurationComp({ close }: Props) {
           <button onClick={() => { close() }}><FontAwesomeIcon icon={faXmark} /></button>
         </div>
       </header>
-      <section className='pop-content'></section>
+      <section className='pop-content'>
+        
+      </section>
     </section>
   </section>
 }

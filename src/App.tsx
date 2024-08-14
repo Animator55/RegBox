@@ -7,8 +7,8 @@ import InitialDataPop from './components/auth/InitialDataPop'
 
 export default function App() {
   const [session, setSession] = React.useState<sessionType>(
-    // { _id: "gnidkasgm", role: "main", opened: "", domain: "domain-1", url: "", name: "Caja" }
-    {_id: "", role: "", opened: "", domain: "", url: "", name: ""}
+    { _id: "gnidkasgm", role: "main", opened: "", domain: "domain-1", url: "", name: "Caja" }
+    // {_id: "", role: "", opened: "", domain: "", url: "", name: ""}
   )
   const [initialData, setInitialData] = React.useState()
   const [ref, refresh] = React.useState(false)

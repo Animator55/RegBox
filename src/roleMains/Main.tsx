@@ -26,6 +26,9 @@ export const Configuration = React.createContext({
         orderedLists: true,
         prodsAsList: true,
         prodsInEditorAsList: true,
+        domain: {
+            name: "",
+        },
         map: {
             zoom: 1,
             x: 0,
@@ -53,6 +56,9 @@ export default function Main({initialData, logout}: Props) {
         prodsAsList: false,
         orderedLists: true,
         prodsInEditorAsList: false,
+        domain: {
+            name: "",
+        },
         map: {
             zoom: 1,
             x: 0,
@@ -90,31 +96,52 @@ export default function Main({initialData, logout}: Props) {
             let date = new Date()
             let data = getTableData(id, tablesPlacesPH)
             if (!data) return
+            let opened = [`${fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}`, 
+                `${fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}`
+            ]
             let newTable: TableType = {
                 _id: data._id,
                 number: data.number,
                 tag: "",
                 discount: 0,
                 products: [],
-                opened: [`${fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}`, 
-                    `${fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}`
-                ],
+                opened: opened,
                 state: "open",
             }
             setTables([...tables, newTable])
             setCurrent(data._id)
+
+            
+            let storage = window.localStorage
+            let testVal = storage.getItem(data._id)
+            let prev = testVal ? testVal : ""
+            storage.setItem(data._id, prev + "/*/" + "Se crea la mesa " +data.number+". A las " + opened)
         }
     }
 
-    const EditTable = (table_id: string, entry: string, value: any) => {
+    const EditTable = (table_id: string, entry: string, value: any, comment: string) => {
         let table
         for (let i = 0; i < tables.length; i++) {
             if (tables[i]._id === table_id) table = tables[i]
         }
         if (!table) return
 
+        let storage = window.localStorage
+        let testVal = storage.getItem(table_id)
+        let prev = testVal ? testVal : ""
+        storage.setItem(table_id, prev + "/*/" + comment)
+
+        if(entry === "switch"){/// if switch tables
+            let [id, number] = value.split("/")
+            setTables([
+                ...tables.filter(el => { if (el._id !== table._id) return el }),
+                { ...table, _id: id, number: number}
+            ])
+            setCurrent(id)
+        }
+
         ///if is deleting table => after closing table, it must return to "unnactive" state to repeat the process
-        if (entry === "state" && value === "unnactive") {
+        else if (entry === "state" && value === "unnactive") {
             setTables([...tables.filter(el => { if (el._id !== table._id) return el })])
             setCurrent(undefined)
         }
@@ -144,11 +171,11 @@ export default function Main({initialData, logout}: Props) {
         lastChanged = item._id
         productPickerScroll = document.getElementById("product-picker")?.scrollTop!
 
-        if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: 1 }])
+        if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: 1 }], "Añadido 1 de " + item.name + " ("+item._id+")")
         else EditTable(currentTableData?._id, "products", prods.map(el => {
             if (el._id === item._id) return { ...item, amount: prods[index].amount! + 1 }
             else return el
-        }))
+        }), "Añadido 1 de " + item.name + " ("+item._id+")")
     }
 
     React.useEffect(()=>{
@@ -188,16 +215,22 @@ export default function Main({initialData, logout}: Props) {
     }
 
     const EditTableName = (id: string, val: string )=>{
+        let prev = ""
         setTablesPlaces([...tablesPlacesPH.map((el)=>{
             if(el._id !== id) return el
-            else return {
-                ...el,
-                number: val
-            } as TablePlaceType
+            else {
+                prev = el.number
+                return {
+                    ...el,
+                    number: val
+                } as TablePlaceType
+            }
         })])
 
-        EditTable(id, "number", val)
+        EditTable(id, "number", val, "Cambio de nombre de mesa de "+prev +" a " + val)
     }
+
+    console.log(window.localStorage)
     return <>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
