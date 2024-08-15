@@ -83,7 +83,6 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
     })
 
     return <section
-        //  key={Math.random()} 
         className='prod-map-container'>
         <NavBar />
         <div className='prod-map-sub-container'>

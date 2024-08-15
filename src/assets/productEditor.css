@@ -64,7 +64,7 @@
     transition: background-color 200ms;
 }
 
-.pop-content>nav>button:first-child {
+.pop-content>nav:not(.historial-nav)>button:first-child {
     border-color: var(--corange);
 }
 
@@ -73,7 +73,7 @@
     transition: background-color 200ms;
 }
 
-.pop-content>nav>button:first-child:hover {
+.pop-content>nav:not(.historial-nav)>button:first-child:hover {
     background-color: var(--corange);
     color: var(--cwhite);
     transition: color 200ms, background-color 200ms;
@@ -134,6 +134,10 @@
     transition: border-color 300ms, background-color 300ms, color 300ms;
     background-color: var(--corange);
     color: var(--cwhite);
+}
+
+.product-editor-content[data-expanded="true"] ul {
+    max-height: 70vh;
 }
 
 .pop ul {

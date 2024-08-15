@@ -29,7 +29,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     let y = map.parentElement!.clientHeight/2 - parseInt(map.style.top)
     
     let table: TablePlaceType = {
-      _id: `${Math.round((Math.random()*Math.random())*100000)}`,
+      _id: `${Math.round((Math.random()*Math.random())*10000000000)}`,
       number: `${Math.round(Math.random()*100)}`,
       coords: {
         x: x,

@@ -23,7 +23,7 @@ export default function TopBar({OpenPop, download, logout}: Props) {
     <button className='option' onClick={()=>{
       download()
     }}><FontAwesomeIcon icon={faFloppyDisk}/></button>
-    <button className='option' onClick={()=>{logout()}}><FontAwesomeIcon icon={faRightFromBracket}/></button>
+    <button className='option' onClick={()=>{window.localStorage.clear();logout()}}><FontAwesomeIcon icon={faRightFromBracket}/></button>
     <button className='user'><FontAwesomeIcon icon={faUserCircle}/></button>
   </nav>
 }

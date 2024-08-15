@@ -1,0 +1,39 @@
+
+.span-header {
+    border: 2px solid var(--cgray);
+    background-color: var(--clightgray);
+    padding: 0 1rem;
+    display:flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.span-header > p:first-of-type {
+    margin-right: auto;
+}
+
+.event-list {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.event {
+    padding-left: 1rem;
+    display: grid;
+    grid-template-columns: 15% 83%;
+    gap: 2%;
+    align-items: center;
+}
+.event p {
+    margin: 0.5rem 0;
+}
+
+.event.important > p {
+    font-size: 1.2rem;
+}
+
+.event:not(.important) > p {
+    padding-left: 1rem;
+    color: var(--cgray);
+    margin: 0.2rem 0;
+}

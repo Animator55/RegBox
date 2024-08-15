@@ -10,6 +10,24 @@ export type TableType = {
     opened: string[]
     state: "open" | "paying" | "closed" | "unnactive"
 }
+export type TableEvents = {
+    opened: string[]
+    state: "open" | "paying" | "closed" | "unnactive"
+    total: string
+    discount: number
+    events: {
+        important: boolean
+        type: string
+        comment: string
+        timestamp: string
+    }[]
+}
+
+export type HistorialTable = {
+    _id: string
+    number: string
+    historial: TableEvents[]
+}
 export type TablePlaceType = {
     _id: string
     number: string

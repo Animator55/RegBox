@@ -13,9 +13,10 @@ export default function App() {
   const [initialData, setInitialData] = React.useState()
   const [ref, refresh] = React.useState(false)
   const logout = ()=>{
-    setSession({_id: "", role: "", opened: "", domain: "", url: "", name: ""})
-    setInitialData(undefined)
-    refresh(false)
+    window.location.reload()
+    // setSession({_id: "", role: "", opened: "", domain: "", url: "", name: ""})
+    // setInitialData(undefined)
+    // refresh(false)
   }
 
   return session._id === "" ?

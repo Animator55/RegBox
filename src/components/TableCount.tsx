@@ -11,7 +11,8 @@ import ConfirmPop from './ConfirmPop'
 import PayMethodsPop from './PayMethodsPop'
 import SwitchTable from './SwitchTable'
 import Discount from './Discount'
-import HistorialTable from './HistorialTable'
+import { calculateTotal } from '../logic/calculateTotal'
+import HistorialTableComp from './HistorialTable'
 
 type Props = {
     currentTable: TableType | undefined
@@ -30,10 +31,6 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
 
     let spanListlength = !currentTable ? tablesMin.length : tablesMin.length -1
     let disabled = spanListlength <= 0 ? " disabled" : ""
-
-    const changeTableState = (state: "open" | "paying" | "closed" | "unnactive")=>{
-        if(currentTable) EditTable(currentTable._id, "state", state)
-    }
 
     const expandList = (e: React.MouseEvent) => {
         let button = e.currentTarget as HTMLButtonElement
@@ -99,11 +96,11 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         scrollHeight = ul.scrollTop
 
         if (newItem.amount === 0
-            && index !== -1) EditTable(currentTable?._id, "products", list.filter(el => { if (el._id !== item._id) return el }), "Eliminado " + item.name+ " (" +newItem._id+ ")")
+            && index !== -1) EditTable(currentTable?._id, "products", list.filter(el => { if (el._id !== item._id) return el }), "Eliminado " + item.name+ " (" +item._id+ ")")
         else EditTable(currentTable?._id, "products", list.map(el => {
             if (el._id === item._id) return newItem
             else return el
-        }), value === 1 ? "Añadido 1 de " : "Subtraido 1 de " + newItem.name + " (" +newItem._id+ ")")
+        }), value === 1 ? "Añadido 1 de "+ item.name + " (" +item._id+ ")" : "Subtraido 1 de " + item.name + " (" +item._id+ ")")
     }
 
     const List = () => {
@@ -113,7 +110,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
 
         let isProds = products && products.length !== 0
 
-        let total = 0
+        let totalList = 0
 
         let titles = c.config.orderedLists
         let reOrdered = titles ? orderByTypes(products, p, true) : products
@@ -133,7 +130,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 {isProds ? reOrdered && reOrdered.map(item => {
                     let header = false
                     if (titles && item.header) header = true
-                    else total += item.amount! * item.price
+                    else totalList += item.amount! * item.price
                     return header ? <div className='title' key={Math.random()}>{item.type}</div>
                         :
                         <li id={item._id} key={Math.random()}>
@@ -164,10 +161,10 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 <div className="total">
                     <div>Total</div>
                     {currentTable&& currentTable?.discount !== 0 ? <div>
-                        <del style={{opacity: 0.5}}>{total}</del>
-                        {Math.floor(total*(1-(currentTable?.discount/100)))}
+                        <del style={{opacity: 0.5}}>{totalList}</del>
+                        {Math.floor(totalList*(1-(currentTable?.discount/100)))}
                     </div> : 
-                    <div>{total}</div>}
+                    <div>{totalList}</div>}
                 </div>
             </>}
         </section>
@@ -182,10 +179,10 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 </button>
             </div>
             <div className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
-                <button onClick={()=>{setPop("switch")}}>
+                <button onClick={()=>{if(currentTable?.state === "open")setPop("switch")}}>
                     <FontAwesomeIcon icon={faArrowRightArrowLeft} />Cambiar
                 </button>
-                <button style={currentTable?.discount ? {background: "var(--cwhite)"}: {}} onClick={()=>{setPop("discount")}}>
+                <button style={currentTable?.discount ? {background: "var(--cwhite)"}: {}} onClick={()=>{if(currentTable?.state === "open")setPop("discount")}}>
                     {currentTable?.discount}<FontAwesomeIcon icon={faPercentage} />Descuento
                 </button>
             </div>
@@ -202,7 +199,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                     WinPrint.close();
                 }}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
                 <button className={currentTable?.state !== "closed" ? "": "confirm"} onClick={()=>{
-                    endTablePop(true)
+                    if(currentTable?.state !== "unnactive") endTablePop(true)
                 }}><FontAwesomeIcon icon={faCheckToSlot } />
                     {currentTable?.state !== "closed" ? "Cerrar" : "Cobrar"}
                 </button>
@@ -210,6 +207,11 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         </section>
     }
     let total = 0
+
+    const changeTableState = (state: "open" | "paying" | "closed" | "unnactive")=>{
+        let comment = state === "closed" ? "Cierre de mesa: ": "Cobro de mesa: "
+        if(currentTable) EditTable(currentTable._id, "state", state, comment + calculateTotal(currentTable.products, currentTable.discount))
+    }
 
     /*** */
 
@@ -267,7 +269,6 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
 
     React.useEffect(() => {
         if (scrollHeight !== null && scrollHeight !== 0) {
-            console.log(scrollHeight)
             let ul = document.querySelector(".table-list")
             ul?.scrollTo({top: scrollHeight})
             scrollHeight = 0
@@ -302,7 +303,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
             />
         }
         {pop === "historial" && currentTable &&
-            <HistorialTable
+            <HistorialTableComp
                 table={currentTable} 
                 close={()=>{setPop("")}}
             />

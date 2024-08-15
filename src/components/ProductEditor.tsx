@@ -71,7 +71,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
     }
     const newProduct = ()=>{
         let Item = {
-            _id: `${Math.round((Math.random()*Math.random())*1000)}`,
+            _id: `${Math.round((Math.random()*Math.random())*1000000000)}`,
             name: "Nuevo producto",
             price: 0,
             type: page,
@@ -203,7 +203,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                         </button>
                     })}
                 </nav>
-                <section className='product-editor-content' key={Math.random()}>
+                <section className='product-editor-content' key={Math.random()} data-expanded={page === "" ? "true" : "false"}>
                     <div>
                         {resultProducts[page] && page !== "" && <>
                             <h3
