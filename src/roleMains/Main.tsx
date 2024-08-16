@@ -105,7 +105,6 @@ export default function Main({ initialData, logout }: Props) {
             let newTable: TableType = {
                 _id: data._id,
                 number: data.number,
-                tag: "",
                 discount: 0,
                 products: [],
                 opened: opened,

@@ -66,7 +66,6 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                     })}
                 </span>
                 <h2>Mesa {currentTable.number}</h2>
-                <p>{currentTable.tag !== "" && "(" + currentTable.tag + ")"}</p>
                 <div className='after' style={{ backgroundColor: colorSelector[currentTable.state] }}></div>
             </> 
             :
@@ -229,7 +228,6 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 <hr></hr>
                 <div style={{ display: "flex", gap: "1rem" }}>
                     <p>Mesa {currentTable?.number}</p>
-                    <p>{currentTable.tag !== "" && currentTable.tag}</p>
                 </div>
                 <p>Abierta a las {currentTable.opened[0]} el {currentTable.opened[1]}</p>
                 <p>Cerrada a las {fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())} el {fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}</p>
