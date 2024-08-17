@@ -4,8 +4,10 @@
 }
 .table-selector > button {
     margin: 0.2rem;
-    padding: 0.8rem 1.2rem;
+    padding: 0.8rem 1.5rem;
     font-size: 1.1rem;
+    box-shadow: 3px 3px 5px var(--clightgray);
+    background-color: var(--cwhite);
 }
 
 
