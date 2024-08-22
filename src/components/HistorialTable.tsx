@@ -1,28 +1,27 @@
-import { HistorialTable, TablePlaceType, TableType } from '../vite-env'
+import { HistorialTableType, TableEvents, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faCircle, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faCircle, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import "../assets/historial.css"
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
-import { TablesPlaces } from '../roleMains/Main'
 
 type Props = {
-    table: TableType
+    table?: TableType
     close: Function
 }
 
 export default function HistorialTableComp({ table, close }: Props) {  
-    const [selectedTable, setSelected ] = React.useState<TableType | TablePlaceType|undefined>(table)
-    const tbl = React.useContext(TablesPlaces)
+    const [selectedTable, setSelected ] = React.useState<TableType | TableEvents|undefined>(table)
+    // const tbl = React.useContext(TablesPlaces)
 
     const ViewTable = () => {
-        if(!selectedTable) return
+        if(!selectedTable || !selectedTable._id) return
         const stateTraductions = {
             "unnactive": "Concluida", "closed": "Cerrada", "open": "Abierta", "paying": "Pagando"
         }
-        let get = window.localStorage.getItem(selectedTable._id)
+        let get = window.localStorage.getItem("RegBoxID:"+selectedTable._id)
         let entries: string[][] | undefined
-        let stor: HistorialTable | undefined
+        let stor: HistorialTableType | undefined
         if (get !== null) {
             stor = JSON.parse(get)
             entries = []
@@ -92,15 +91,38 @@ export default function HistorialTableComp({ table, close }: Props) {
     }
 
     const TableSelector = ()=>{
-        let array = tbl.tables
+        let array: TableEvents[] = []
 
-        return array && array.length !== 0 && <section className='table-selector'>
+        for(const key in window.localStorage) {
+            if(key.startsWith("RegBoxID:")) {
+                let stor : HistorialTableType = JSON.parse(window.localStorage[key])
+                
+                array.push(...stor.historial.map(el=>{
+                    return {...el, number: stor.number, _id: stor._id}
+                }))
+            }
+        }
+        array.sort((a, b) => {
+            const timeA = a.opened[0].split(":").map(Number); 
+            const timeB = b.opened[0].split(":").map(Number);
+          
+            return timeB[0] - timeA[0] || timeB[1] - timeA[1];
+        });
+
+        return array && array.length !== 0 ? <section className='table-selector'>
             {array.map(el=>{
                 return <button
+                    style={{background: colorSelector[el.state]}}
                     key={Math.random()}
                     onClick={()=>{setSelected(el)}}
-                >{el.number}</button>
+                >{el.number + " " + el.opened +" " + el.state}</button>
             })}
+        </section>: <section className='alert'>
+            <FontAwesomeIcon icon={faWarning}/>
+            <h2>"No hay historial previo."</h2>
+            <button className='default-button' onClick={()=>{close()}}>
+                Cerrar
+            </button>
         </section>
     }
     return <section className='back-blur' onClick={(e) => {

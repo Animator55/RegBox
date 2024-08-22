@@ -12,7 +12,6 @@ import PayMethodsPop from './PayMethodsPop'
 import SwitchTable from './SwitchTable'
 import Discount from './Discount'
 import { calculateTotal } from '../logic/calculateTotal'
-import HistorialTableComp from './HistorialTable'
 
 type Props = {
     currentTable: TableType | undefined
@@ -37,6 +36,12 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         let list = button.nextElementSibling as HTMLSpanElement
 
         list.classList.toggle("expanded")
+    }
+
+    const openPop = ()=>{
+        let button = document.querySelector(".historial-general-pop-button") as HTMLButtonElement
+        button.dataset.page = "true"
+        button.click()
     }
 
     const goTo = (page: string)=>{
@@ -173,7 +178,7 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
         return <section className='table-commands'>
             <div>
                 <p>{currentTable && `Caja abierta a las ${currentTable.opened[0]} el ${currentTable.opened[1]}`}</p>
-                <button className={currentTable ? "" : 'disabled'} onClick={()=>{setPop("historial")}}>
+                <button className={currentTable ? "" : 'disabled'} onClick={()=>{openPop()}}>
                     <FontAwesomeIcon icon={faClockRotateLeft} />Historial
                 </button>
             </div>
@@ -298,12 +303,6 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                 actual={currentTable?.discount} 
                 close={()=>{setPop("")}}
                 confirm={(val: string)=>{EditTable(currentTable._id, "discount", val, "Aplicado descuento del " + val + "%"); setPop("")}}
-            />
-        }
-        {pop === "historial" && currentTable &&
-            <HistorialTableComp
-                table={currentTable} 
-                close={()=>{setPop("")}}
             />
         }
         <Reciept />
