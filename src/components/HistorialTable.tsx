@@ -115,11 +115,11 @@ export default function HistorialTableComp({ table, close }: Props) {
                     style={{background: colorSelector[el.state]}}
                     key={Math.random()}
                     onClick={()=>{setSelected(el)}}
-                >{el.number + " " + el.opened +" " + el.state}</button>
+                >{el.opened[0] +": "+el.number +" " + el.state}</button>
             })}
         </section>: <section className='alert'>
             <FontAwesomeIcon icon={faWarning}/>
-            <h2>"No hay historial previo."</h2>
+            <h2>No hay historial previo.</h2>
             <button className='default-button' onClick={()=>{close()}}>
                 Cerrar
             </button>

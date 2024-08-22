@@ -2,7 +2,7 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import TableCount from '../components/TableCount'
 import ProdAndMap from '../components/ProdAndMap'
-import { HistorialTable, Item, TableEvents, TablePlaceType, TableType, configType } from '../vite-env'
+import { HistorialTableType, Item, TableEvents, TablePlaceType, TableType, configType } from '../vite-env'
 import getTableData from '../logic/getTableData'
 import fixNum from '../logic/fixDateNumber'
 import { productsType } from '../defaults/products'
@@ -12,6 +12,7 @@ import ConfigurationComp from '../components/Configuration'
 import DownloadTsObject from '../logic/download'
 import { checkImportancy } from '../logic/checkChangeImportancy'
 import { calculateTotal } from '../logic/calculateTotal'
+import HistorialTableComp from '../components/HistorialTable'
 
 type Props = {
     initialData?: {
@@ -82,12 +83,6 @@ export default function Main({ initialData, logout }: Props) {
 
     const close = () => { setCurrentPop({ pop: "", initialPage: "" }) }
 
-    const popUps: { [key: string]: any } = {
-        "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
-        "configuration": <ConfigurationComp close={close} />,
-        "notifications": <Notifications close={close} />
-    }
-
     const setCurrentHandler = (id: string) => {
         let index = -1
         for (let i = 0; i < tables.length; i++) {
@@ -121,9 +116,8 @@ export default function Main({ initialData, logout }: Props) {
     const addTableToHistorial = (newTable: TableType, isSwitch: boolean, prevId?: string) => {
         let date = new Date()
         let storage = window.localStorage
-        console.log(newTable)
-        let testVal = storage.getItem(newTable._id)
-        let prev: HistorialTable = testVal ? JSON.parse(testVal) as HistorialTable : { _id: newTable._id, number: newTable.number, historial: [] }
+        let testVal = storage.getItem("RegBoxID:"+newTable._id)
+        let prev: HistorialTableType = testVal ? JSON.parse(testVal) as HistorialTableType : { _id: newTable._id, number: newTable.number, historial: [] }
 
         let initialEvents = [{
             important: true,
@@ -132,7 +126,7 @@ export default function Main({ initialData, logout }: Props) {
             timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds())
         }]
         if (isSwitch && prevId) {
-            let prevTable: HistorialTable = JSON.parse(storage.getItem(prevId) as string) 
+            let prevTable: HistorialTableType = JSON.parse(storage.getItem("RegBoxID:"+prevId) as string) 
             initialEvents = [
                 ...prevTable.historial[prevTable.historial.length-1].events, {
                     important: true,
@@ -145,7 +139,7 @@ export default function Main({ initialData, logout }: Props) {
                 if(i !== prevTable.historial.length-1)return el
             })
             prevTable.historial = splicedHistorial
-            storage.setItem(prevId, JSON.stringify(prevTable))
+            storage.setItem("RegBoxID:"+prevId, JSON.stringify(prevTable))
         }
         let newEntrie: TableEvents = {
             opened: newTable.opened,
@@ -154,16 +148,15 @@ export default function Main({ initialData, logout }: Props) {
             discount: 0,
             events: initialEvents
         }
-        console.log(prev)
         prev.historial =[...prev.historial, newEntrie]
-        storage.setItem(newTable._id, JSON.stringify(prev))
+        storage.setItem("RegBoxID:"+newTable._id, JSON.stringify(prev))
     }
 
     const addEventToHistorial = (table_id: string, entry: string, comment: string, importancy: boolean, value?: any, total?: string, discount?: number) => {
         let storage = window.localStorage
-        let testVal = storage.getItem(table_id)
+        let testVal = storage.getItem("RegBoxID:"+table_id)
         if (!testVal) return
-        let prev: HistorialTable = JSON.parse(testVal) as HistorialTable
+        let prev: HistorialTableType = JSON.parse(testVal) as HistorialTableType
         if (prev.historial.length === 0) return
 
 
@@ -189,7 +182,7 @@ export default function Main({ initialData, logout }: Props) {
             else return resultChange
         }) as TableEvents[]]
 
-        storage.setItem(table_id, JSON.stringify(prev))
+        storage.setItem("RegBoxID:"+table_id, JSON.stringify(prev))
     }
 
     const EditTable = (table_id: string, entry: string, value: any, comment: string) => {
@@ -226,6 +219,17 @@ export default function Main({ initialData, logout }: Props) {
     let currentTableData: undefined | TableType
     for (let i = 0; i < tables.length; i++) {
         if (tables[i]._id === current) { currentTableData = tables[i]; break }
+    }
+
+    
+    const popUps: { [key: string]: any } = {
+        "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
+        "configuration": <ConfigurationComp close={close} />,
+        "notifications": <Notifications close={close} />,
+        "historial": <HistorialTableComp
+                table={popUp.initialPage === "true" ? currentTableData : undefined} 
+                close={close}
+            />
     }
 
     let tablesMin = tables.map(tbl => {

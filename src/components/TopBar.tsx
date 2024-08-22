@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import '../assets/topBar.css'
-import { faBell, faCircleDollarToSlot, faFloppyDisk, faGear, faRightFromBracket, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faCircleDollarToSlot, faClockRotateLeft, faFloppyDisk, faGear, faRightFromBracket, faUserCircle } from '@fortawesome/free-solid-svg-icons'
 
 type Props = {
   OpenPop: Function
@@ -16,6 +16,10 @@ export default function TopBar({OpenPop, download, logout}: Props) {
     <button className='text-button' onClick={()=>{
       OpenPop("notifications")
     }}><FontAwesomeIcon icon={faBell}/>Notificaciones</button>
+    <button className='text-button historial-general-pop-button' data-page={"false"} onClick={(e)=>{
+      OpenPop("historial", e.currentTarget.dataset.page)
+      e.currentTarget.dataset.page = "false"
+    }}><FontAwesomeIcon icon={faClockRotateLeft}/>Historial</button>
     <hr></hr>
     <button className='option' onClick={()=>{
       OpenPop("configuration")
