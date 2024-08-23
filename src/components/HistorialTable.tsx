@@ -1,25 +1,30 @@
 import { HistorialTableType, TableEvents, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faCircle, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faCaretRight, faCircle, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import "../assets/historial.css"
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
+import fixNum from '../logic/fixDateNumber'
 
 type Props = {
     table?: TableType
     close: Function
 }
 
-export default function HistorialTableComp({ table, close }: Props) {  
-    const [selectedTable, setSelected ] = React.useState<TableType | TableEvents|undefined>(table)
+export default function HistorialTableComp({ table, close }: Props) {
+    const stateTraductions = {
+        "unnactive": "Concluida", "closed": "Cerrada", "open": "Abierta", "paying": "Pagando"
+    }
+    const jump = (index: number) => {
+        let ul = document.querySelector(".historial-list")
+        ul?.children[index].scrollIntoView({ block: "start", behavior: "smooth" })
+    }
+    const [selectedTable, setSelected] = React.useState<TableType | TableEvents | undefined>(table)
     // const tbl = React.useContext(TablesPlaces)
 
     const ViewTable = () => {
-        if(!selectedTable || !selectedTable._id) return
-        const stateTraductions = {
-            "unnactive": "Concluida", "closed": "Cerrada", "open": "Abierta", "paying": "Pagando"
-        }
-        let get = window.localStorage.getItem("RegBoxID:"+selectedTable._id)
+        if (!selectedTable || !selectedTable._id) return
+        let get = window.localStorage.getItem("RegBoxID:" + selectedTable._id)
         let entries: string[][] | undefined
         let stor: HistorialTableType | undefined
         if (get !== null) {
@@ -28,11 +33,6 @@ export default function HistorialTableComp({ table, close }: Props) {
             if (stor && stor.historial) for (let i = stor.historial.length - 1; i >= 0; i--) {
                 entries?.push(stor.historial[i].opened)
             }
-        }
-
-        const jump = (index: number) => {
-            let ul = document.querySelector(".historial-list")
-            ul?.children[index].scrollIntoView({ block: "start", behavior: "smooth" })
         }
 
         const Historial = () => {
@@ -90,40 +90,72 @@ export default function HistorialTableComp({ table, close }: Props) {
         </>
     }
 
-    const TableSelector = ()=>{
+    const TableSelector = () => {
         let array: TableEvents[] = []
 
-        for(const key in window.localStorage) {
-            if(key.startsWith("RegBoxID:")) {
-                let stor : HistorialTableType = JSON.parse(window.localStorage[key])
-                
-                array.push(...stor.historial.map(el=>{
-                    return {...el, number: stor.number, _id: stor._id}
+        for (const key in window.localStorage) {
+            if (key.startsWith("RegBoxID:")) {
+                let stor: HistorialTableType = JSON.parse(window.localStorage[key])
+
+                array.push(...stor.historial.map(el => {
+                    return { ...el, number: stor.number, _id: stor._id }
                 }))
             }
         }
         array.sort((a, b) => {
-            const timeA = a.opened[0].split(":").map(Number); 
+            const timeA = a.opened[0].split(":").map(Number);
             const timeB = b.opened[0].split(":").map(Number);
-          
+
             return timeB[0] - timeA[0] || timeB[1] - timeA[1];
         });
 
-        return array && array.length !== 0 ? <section className='table-selector'>
-            {array.map(el=>{
-                return <button
-                    style={{background: colorSelector[el.state]}}
-                    key={Math.random()}
-                    onClick={()=>{setSelected(el)}}
-                >{el.opened[0] +": "+el.number +" " + el.state}</button>
-            })}
-        </section>: <section className='alert'>
-            <FontAwesomeIcon icon={faWarning}/>
-            <h2>No hay historial previo.</h2>
-            <button className='default-button' onClick={()=>{close()}}>
-                Cerrar
-            </button>
-        </section>
+        let date = new Date()
+        let firstTableHour = array[array.length-1].opened[0]
+        let hoursEntries = []
+        let hourNow = parseInt(fixNum(date.getHours())) 
+        let firstTableFix = parseInt(firstTableHour.split(":")[0])
+        while(hourNow > firstTableFix) {
+            firstTableFix++
+            hoursEntries.unshift(firstTableFix +":00")
+        }
+        hoursEntries.push(firstTableHour)
+        hoursEntries.unshift("Ahora")
+
+
+        return array && array.length !== 0 ? <>
+            <nav className='historial-nav'>
+                {hoursEntries.length!==0 && hoursEntries.map((el, i) => {
+                    return <button key={Math.random()} onClick={() => { jump(i) }}>
+                        <FontAwesomeIcon icon={faCircle} />
+                        <p>{el}</p>
+                    </button>
+                })}
+            </nav>
+            <section className='table-selector'>
+                <ul className='historial-list'>
+                    {array.map(el => {
+                        return <div key={Math.random()}>
+                            <p>{el.opened[0]}</p>
+                            <button
+                                style={{ background: colorSelector[el.state] }}
+                                onClick={() => { setSelected(el) }}
+                            >
+                                Mesa {el.number}
+                                <p>{"(" + stateTraductions[el.state] + ")"}</p>
+                                <FontAwesomeIcon icon={faCaretRight} />
+                            </button>
+                        </div>
+                    })}
+                </ul>
+            </section>
+        </>
+            : <section className='alert'>
+                <FontAwesomeIcon icon={faWarning} />
+                <h2>No hay historial previo.</h2>
+                <button className='default-button' onClick={() => { close() }}>
+                    Cerrar
+                </button>
+            </section>
     }
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
@@ -132,8 +164,8 @@ export default function HistorialTableComp({ table, close }: Props) {
         <section className='pop'>
             <header>
                 <div className='pop-top'>
-                    {selectedTable && <button onClick={()=>{setSelected(undefined)}}>
-                        <FontAwesomeIcon icon={faArrowLeft}/>
+                    {selectedTable && <button onClick={() => { setSelected(undefined) }}>
+                        <FontAwesomeIcon icon={faArrowLeft} />
                     </button>}
                     <h2>Historial</h2>
                     <button onClick={() => { close() }}><FontAwesomeIcon icon={faXmark} /></button>
@@ -141,9 +173,9 @@ export default function HistorialTableComp({ table, close }: Props) {
             </header>
 
             <section className='pop-content'>
-                {selectedTable ? 
-                    <ViewTable/>
-                    : <TableSelector/>
+                {selectedTable ?
+                    <ViewTable />
+                    : <TableSelector />
                 }
             </section>
 
