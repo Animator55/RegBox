@@ -1,4 +1,4 @@
-import { Item, sessionType, userType } from "../vite-env";
+import { HistorialTableType, Item, sessionType, SingleEvent, userType } from "../vite-env";
 
 type domainType = {
     _id: string
@@ -71,4 +71,36 @@ export function checkUser (user: string, password: string, domain: string): {typ
     session._id = domains[domainIndex].users[userIndex]._id
 
     return {type: "success", data: session} 
+}
+
+const defaultNotifications: SingleEvent[] = [
+    {   
+        accepted: false,
+        important: false,
+        type: "products",
+        comment: `Añadido: 2 Ojo Relleno, 2 Bao Bun`,
+        timestamp: "19:50",
+        _id: "yrfyhh",
+        number: "3",
+        owner: "pawn",
+        owner_name: "Tepo"
+    },
+    {
+        accepted: false,
+        important: false,
+        type: "products",
+        comment: `Añadido: 1 Tortilla de Papas, 2 Empanadas de Osobuco X2`,
+        timestamp: "18:35",
+        _id: "yrfyhh",
+        number: "3",
+        owner: "pawn",
+        owner_name: "Pepito"
+    },
+]
+
+export const getHistorialGeneral = (filter?: string, filterValue?: string)=>{
+    let array: SingleEvent[]= []
+
+    array = [...defaultNotifications]
+    return array
 }

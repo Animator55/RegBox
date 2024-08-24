@@ -9,6 +9,17 @@ export type TableType = {
     opened: string[]
     state: "open" | "paying" | "closed" | "unnactive"
 }
+export type SingleEvent = {
+    important: boolean
+    type: string
+    comment: string
+    timestamp: string
+    _id?: string
+    number?: string
+    accepted?: boolean /// only for notification events
+    owner: string
+    owner_name?: string
+}
 export type TableEvents = {
     _id?: string
     number?: string
@@ -16,12 +27,7 @@ export type TableEvents = {
     state: "open" | "paying" | "closed" | "unnactive"
     total: string
     discount: number
-    events: {
-        important: boolean
-        type: string
-        comment: string
-        timestamp: string
-    }[]
+    events: SingleEvent[]
 }
 
 export type HistorialTableType = {

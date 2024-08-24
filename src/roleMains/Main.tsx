@@ -2,7 +2,7 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import TableCount from '../components/TableCount'
 import ProdAndMap from '../components/ProdAndMap'
-import { HistorialTableType, Item, TableEvents, TablePlaceType, TableType, configType } from '../vite-env'
+import { HistorialTableType, Item, SingleEvent, TableEvents, TablePlaceType, TableType, configType } from '../vite-env'
 import getTableData from '../logic/getTableData'
 import fixNum from '../logic/fixDateNumber'
 import { productsType } from '../defaults/products'
@@ -119,11 +119,12 @@ export default function Main({ initialData, logout }: Props) {
         let testVal = storage.getItem("RegBoxID:"+newTable._id)
         let prev: HistorialTableType = testVal ? JSON.parse(testVal) as HistorialTableType : { _id: newTable._id, number: newTable.number, historial: [] }
 
-        let initialEvents = [{
+        let initialEvents: SingleEvent[] = [{
             important: true,
             type: "state",
             comment: isSwitch ? ("Se cambió la mesa a " + newTable.number) : ("Se crea la mesa " + newTable.number),
-            timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds())
+            timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds()),
+            owner: "main"
         }]
         if (isSwitch && prevId) {
             let prevTable: HistorialTableType = JSON.parse(storage.getItem("RegBoxID:"+prevId) as string) 
@@ -132,7 +133,8 @@ export default function Main({ initialData, logout }: Props) {
                     important: true,
                     type: "state",
                     comment: isSwitch ? ("Se cambió la mesa a " + newTable.number) : ("Se crea la mesa " + newTable.number),
-                    timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds())
+                    timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds()),
+                    owner: "main"
                 }
             ]
             let splicedHistorial = prevTable.historial.filter((el,i)=>{
@@ -162,11 +164,12 @@ export default function Main({ initialData, logout }: Props) {
 
         let current = prev.historial[prev.historial.length - 1]
         let date = new Date()
-        let newEvent = {
+        let newEvent: SingleEvent = {
             type: entry,
             important: importancy,
             comment: comment,
             timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()) + ":" + fixNum(date.getSeconds()),
+            owner: "main"
         }
         let resultChange = { ...current, events: [...current.events, newEvent] }
         if (entry === "state" && value) {
