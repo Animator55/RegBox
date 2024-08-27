@@ -10,12 +10,12 @@ type Props = {
 
 export default function TopBar({OpenPop, download, logout}: Props) {
   return <nav className="main-top-bar">
+    <button className='text-button notifications-pop-button' onClick={()=>{
+      OpenPop("notifications")
+    }}><FontAwesomeIcon icon={faBell}/>Notificaciones</button>
     <button className='text-button prod-edit-pop-button' data-page={""} onClick={(e)=>{
       OpenPop("products", e.currentTarget.dataset.page)
     }}><FontAwesomeIcon icon={faCircleDollarToSlot}/>Productos</button>
-    <button className='text-button' onClick={()=>{
-      OpenPop("notifications")
-    }}><FontAwesomeIcon icon={faBell}/>Notificaciones</button>
     <button className='text-button historial-general-pop-button' data-page={"false"} onClick={(e)=>{
       OpenPop("historial", e.currentTarget.dataset.page)
       e.currentTarget.dataset.page = "false"

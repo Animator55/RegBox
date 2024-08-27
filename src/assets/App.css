@@ -8,8 +8,10 @@ body {
     --clightgray: #cfcbc7;
     --cwhite: #ffffff;
     --cgreen: #6ae78f;
+    --cgreen2: #6ae7905d;
     --corange: #f07f34;
     --cred: #f36c6c;
+    --cred2: #f36c6c54;
     height: 100vh;
     max-height: 100vh;
     max-width: 100%;
@@ -290,7 +292,7 @@ main>.d-flex {
     transition: color 300ms, scale 300ms;
     color: var(--corange);
 }
-.back-blur {
+.back-blur, .back {
     position: fixed;
     z-index: 50;
     inset: 0;
@@ -298,6 +300,9 @@ main>.d-flex {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.back {
+    background-color: transparent;
 }
 
 .confirm-pop {

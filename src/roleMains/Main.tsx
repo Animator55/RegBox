@@ -53,7 +53,16 @@ export const TablesPlaces = React.createContext({
 
 let lastChanged = ""
 let productPickerScroll = 0
+window.addEventListener('beforeunload', function (event) {
+    // Establece el mensaje que se mostrará en algunos navegadores
+    event.preventDefault(); // Este método es obsoleto, pero se incluye por compatibilidad
+    event.returnValue = ''; // Chrome requiere esta asignación
 
+    // El mensaje predeterminado del navegador se mostrará.
+    // No es posible personalizar el texto en la mayoría de los navegadores modernos.
+});
+
+let massive: {table_id:string, value:Item[], comment:string}|undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, logout }: Props) {
     const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config : {
         prodsAsList: false,
@@ -82,7 +91,26 @@ export default function Main({ initialData, logout }: Props) {
     const [popUp, setCurrentPop] = React.useState({ pop: "", initialPage: "" })
 
     const close = () => { setCurrentPop({ pop: "", initialPage: "" }) }
+    const createTable = (id:string)=>{
+        let date = new Date()
+        let data = getTableData(id, tablesPlacesPH)
+        if (!data) return false
+        let hour = fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())
+        let day = fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()
 
+        let opened = [`${hour}`, ` ${day}`]
+        let newTable: TableType = {
+            _id: data._id,
+            number: data.number,
+            discount: 0,
+            products: [],
+            opened: opened,
+            state: "open",
+        }
+        setTables([...tables, newTable])
+        addTableToHistorial(newTable, false)
+        return true
+    }
     const setCurrentHandler = (id: string) => {
         let index = -1
         for (let i = 0; i < tables.length; i++) {
@@ -90,26 +118,8 @@ export default function Main({ initialData, logout }: Props) {
         }
         if (index !== -1) setCurrent(id)
         else {
-            let date = new Date()
-            let data = getTableData(id, tablesPlacesPH)
-            if (!data) return
-            let hour = fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())
-            let day = fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()
-
-            let opened = [`${hour}`, ` ${day}`]
-            let newTable: TableType = {
-                _id: data._id,
-                number: data.number,
-                discount: 0,
-                products: [],
-                opened: opened,
-                state: "open",
-            }
-            setTables([...tables, newTable])
-            setCurrent(data._id)
-
-            addTableToHistorial(newTable, false)
-
+            let result = createTable(id)
+            if(result) setCurrent(id)
         }
     }
 
@@ -218,6 +228,51 @@ export default function Main({ initialData, logout }: Props) {
             ])
         }
     }
+    const EditMassiveTable = (table_id: string, value: Item[], comment: string)=>{
+        let table
+        for (let i = 0; i < tables.length; i++) {
+            if (tables[i]._id === table_id) table = tables[i]
+        }
+        if (!table) return
+
+        if (table.state !== "closed" && table.state !== "unnactive") {
+            addEventToHistorial(table_id, "products", comment, false)
+            let array = [...table.products]
+            for(let i=0; i<value.length; i++) {
+                let newItem = value[i]
+
+                /// search if new item already exists
+                let index = -1
+                for (let j = 0; j < array.length; j++) {
+                    if(newItem._id === array[j]._id){
+                        index = j
+                        break
+                    }
+                }
+                if(index === -1) array = [...array, newItem]
+                else array = array.map((el, j)=>{
+                    if(j === index) return {...el, amount: el.amount! + newItem.amount!}
+                    else return el
+                })
+            }
+            setTables([
+                ...tables.filter(el => { if (el._id !== table._id) return el }),
+                { ...table, products: array }
+            ])
+        }
+    }
+
+    const EditMassiveTableHandle = (table_id: string, value: Item[], comment: string)=>{
+        let table
+        for (let i = 0; i < tables.length; i++) {
+            if (tables[i]._id === table_id) table = tables[i]
+        }
+        if (!table) {
+            let result = createTable(table_id)
+            if(result) massive = {table_id, value, comment}
+        }
+        else EditMassiveTable(table_id, value, comment)
+    }
 
     let currentTableData: undefined | TableType
     for (let i = 0; i < tables.length; i++) {
@@ -228,7 +283,7 @@ export default function Main({ initialData, logout }: Props) {
     const popUps: { [key: string]: any } = {
         "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
         "configuration": <ConfigurationComp close={close} />,
-        "notifications": <Notifications close={close} />,
+        "notifications": <Notifications close={close} EditMassiveTable={EditMassiveTableHandle} />,
         "historial": <HistorialTableComp
                 table={popUp.initialPage === "true" ? currentTableData : undefined} 
                 close={close}
@@ -239,21 +294,24 @@ export default function Main({ initialData, logout }: Props) {
         return { _id: tbl._id, number: tbl.number, state: tbl.state }
     })
 
-    const addItem = (item: Item) => {
+    const addItem = (item: Item, value?: 1 | -1,) => {
         if (!currentTableData) return
         let prods = currentTableData.products
 
         let index = -1
         for (let i = 0; i < prods.length; i++) if (prods[i]._id === item._id) { index = i; break }
 
+        let amount = value !== undefined ? value : 1
+        let word = amount === 1 ? "Añadido": "Subtraido"
         lastChanged = item._id
-        productPickerScroll = document.getElementById("product-picker")?.scrollTop!
+        productPickerScroll = value !== undefined ? 0 : document.getElementById("product-picker")?.scrollTop!
 
-        if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: 1 }], "Añadido 1 de " + item.name + " (" + item._id + ")")
+        if (item.amount && (item.amount + amount) <= 0) EditTable(currentTableData._id, "products", prods.filter(el => { if (el._id !== item._id) return el }), "Eliminado " + item.name+ " (" +item._id+ ")")
+        else if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: amount }], "Añadido 1 de " + item.name + " (" + item._id + ")")
         else EditTable(currentTableData?._id, "products", prods.map(el => {
-            if (el._id === item._id) return { ...item, amount: prods[index].amount! + 1 }
+            if (el._id === item._id) return { ...item, amount: prods[index].amount! + amount }
             else return el
-        }), "Añadido 1 de " + item.name + " (" + item._id + ")")
+        }), word + "1 de " + item.name + " (" + item._id + ")")
     }
 
     React.useEffect(() => {
@@ -276,6 +334,10 @@ export default function Main({ initialData, logout }: Props) {
         if (productPickerScroll !== 0) {
             let ul = document.getElementById("product-picker")
             ul?.scrollTo({ top: productPickerScroll, })
+        }
+        if(massive !== undefined) {
+            EditMassiveTable(massive.table_id, massive.value, massive.comment)
+            massive = undefined
         }
     }, [tables])
 
@@ -314,7 +376,7 @@ export default function Main({ initialData, logout }: Props) {
                 <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
                     <TopBar OpenPop={OpenPop} download={download} logout={logout} />
                     <section className='d-flex'>
-                        <TableCount currentTable={currentTableData} EditTable={EditTable} tablesMin={tablesMin} setCurrentTable={setCurrentHandler} />
+                        <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin} setCurrentTable={setCurrentHandler} />
                         <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                     </section>
                     {popUp.pop !== "" && popUps[popUp.pop]}

@@ -105,6 +105,7 @@
     display: flex;
     gap: 0.7rem;
     align-items: center;
+    vertical-align: middle;
     padding: 0 0.8rem;
 }
 
@@ -240,4 +241,131 @@
         background-color: var(--corange);
         scale: 1.02;
     }
+}
+
+/***/
+
+main:has(.notifications) .notifications-pop-button {
+    background-color: var(--cwhite);
+    border-color: var(--cwhite);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    color: var(--cdarkgray);
+}
+
+.notifications {
+    width: 27dvw;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    border-top: none;
+    background-color: var(--cwhite);
+    box-shadow: 2px 2px 2px var(--cblack);
+    left: 0;
+    padding: 0.3rem 0.3rem 0.2rem;
+    border-radius: 5px 5px;
+    top: calc(1rem + 0.7rem + 3px + .8rem);
+}
+
+.loading-notis {
+    height: 70dvh;
+    display: flex;
+    align-items: center;
+}
+.loading-notis > * {
+    font-size: 2rem;
+    margin: 2rem 0;
+}
+
+.notifications ul {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    overflow: hidden;
+    max-height: 70dvh;
+    height: 70dvh;
+    overflow-y: scroll;
+}
+
+.notification-item {
+    position: relative;
+    list-style-type: none;
+    background-color: var(--cwhite);
+    box-shadow: 3px 3px 5px var(--clightgray);
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.2rem;
+}
+.notification-item > p {
+    margin: 0;
+}
+
+.notification-item > .owner-tag {
+    opacity: 0.7;
+    font-size: 0.7rem;
+    margin-right: auto;
+}
+
+.notification-item::after{
+    z-index: 1;
+    inset: 0;
+    position: absolute;
+    left: 0;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: white;
+    content: "Ver detalles...";
+    opacity: 0;
+    top: 2rem;
+}
+.notification-item:hover::after {
+    cursor: pointer;
+    top: 0rem;
+    opacity: 1;
+    transition: opacity 300ms, top 300ms;
+}
+.notification-item:has(.accept-zone:hover)::after {
+    opacity: 0;
+    top: 2rem;
+}
+.notification-item:has(.accept-zone:hover) > *:not(.accept-zone) {
+    opacity: 1;
+}
+.notification-item:hover > *:not(.accept-zone) {
+    opacity: 0;
+    transition: opacity 300ms;
+}
+
+
+.accept-zone {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.accept-zone > button:hover {
+    background-color: var(--cred);
+}
+.accept-zone > button {
+    color: var(--cdarkgray);
+    border: 2px solid var(--cred);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2rem;
+    width: 2rem;
+    font-size: 0.8rem;
+    background-color: var(--cred2);
+    border-radius: 2px;
+}
+.accept-zone > button:first-child:hover {
+    background-color: var(--cgreen);
+}
+.accept-zone > button:first-child{
+    border-color: var(--cgreen);
+    background-color: var(--cgreen2);
 }

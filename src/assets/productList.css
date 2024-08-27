@@ -71,6 +71,9 @@
     height: fit-content;
     padding: 0 .5rem 2rem 0.5rem;
 }
+.product-picker.grid:has(.alert) {
+    height: calc(100% - 5rem);
+}
 
 .pickeable-item {
     padding: 0.2rem 1rem;

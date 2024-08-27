@@ -1,7 +1,7 @@
 import { Item, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faBars, faCaretDown, faCheckToSlot, faClockRotateLeft, faList, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faCaretDown, faCheckToSlot, faClockRotateLeft, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import fixNum from '../logic/fixDateNumber'
@@ -17,11 +17,12 @@ type Props = {
     currentTable: TableType | undefined
     EditTable: Function
     setCurrentTable: Function
+    addItem: Function
     tablesMin: {_id: string, number: string, state: "open" | "paying" | "closed" | "unnactive"}[]
 }
 let scrollHeight = 0
 
-export default function TableCount({ currentTable, EditTable, tablesMin, setCurrentTable}: Props) {
+export default function TableCount({ currentTable, EditTable, addItem, tablesMin, setCurrentTable}: Props) {
     const [endPop, endTablePop] = React.useState(false)
     const [pop, setPop] = React.useState("")
 
@@ -81,32 +82,6 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
 
     /**** LIST ****/
 
-    const addAmount = (value: 1 | -1, item_id: string) => {
-        let list = currentTable?.products
-        if (!list || list.length === 0) return
-
-        let item
-        let index = -1
-        for (let i = 0; i < list.length; i++) {
-            if (item_id === list[i]._id) {
-                item = list[i]; index = i; break
-            }
-        }
-        if (!item || !item.amount) return
-
-        let newItem = { ...item, amount: item.amount + value }
-        
-        let ul = document.querySelector(".table-list") as HTMLDivElement
-        scrollHeight = ul.scrollTop
-
-        if (newItem.amount === 0
-            && index !== -1) EditTable(currentTable?._id, "products", list.filter(el => { if (el._id !== item._id) return el }), "Eliminado " + item.name+ " (" +item._id+ ")")
-        else EditTable(currentTable?._id, "products", list.map(el => {
-            if (el._id === item._id) return newItem
-            else return el
-        }), value === 1 ? "Añadido 1 de "+ item.name + " (" +item._id+ ")" : "Subtraido 1 de " + item.name + " (" +item._id+ ")")
-    }
-
     const List = () => {
         let products: Item[] | undefined = currentTable?.products
 
@@ -125,9 +100,9 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                     {columns.map(str => {
                         return <div key={Math.random()}>{str}</div>
                     })}
-                    <button className='default-button' onClick={() => { c.setConfig({ ...c.config, orderedLists: !titles }) }}>
+                    {/* <button className='default-button' onClick={() => { c.setConfig({ ...c.config, orderedLists: !titles }) }}>
                         <FontAwesomeIcon icon={titles ? faList : faBars} />
-                    </button>
+                    </button> */}
                 </>}
             </header>
             <ul className='table-list'>
@@ -143,8 +118,8 @@ export default function TableCount({ currentTable, EditTable, tablesMin, setCurr
                             <div>${item.price*item.amount}</div>
                             <div>{item.amount}</div>
                             <div className='amount-buttons'>
-                                <button onClick={() => { addAmount(1, item._id) }}><FontAwesomeIcon icon={faPlus} /></button>
-                                <button onClick={() => { addAmount(-1, item._id) }}><FontAwesomeIcon icon={faMinus} /></button>
+                                <button onClick={() => { addItem(item, 1) }}><FontAwesomeIcon icon={faPlus} /></button>
+                                <button onClick={() => { addItem(item, -1) }}><FontAwesomeIcon icon={faMinus} /></button>
                             </div>
                         </li>
                 })

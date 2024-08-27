@@ -16,9 +16,10 @@ export type SingleEvent = {
     timestamp: string
     _id?: string
     number?: string
-    accepted?: boolean /// only for notification events
+    accepted?: boolean | undefined /// only for notification events
+    products?: Item[] /// only for notification events
     owner: string
-    owner_name?: string
+    owner_name?: string /// only for notification events
 }
 export type TableEvents = {
     _id?: string

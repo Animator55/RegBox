@@ -17,7 +17,8 @@ export default function HistorialTableComp({ table, close }: Props) {
     }
     const jump = (index: number) => {
         let ul = document.querySelector(".historial-list")
-        ul?.children[index].scrollIntoView({ block: "start", behavior: "smooth" })
+        console.log({ul}, index)
+        if(ul) ul.children[index].scrollIntoView({ block: "start", behavior: "smooth" })
     }
     const [selectedTable, setSelected] = React.useState<TableType | TableEvents | undefined>(table)
     // const tbl = React.useContext(TablesPlaces)
@@ -110,7 +111,7 @@ export default function HistorialTableComp({ table, close }: Props) {
         });
 
         let date = new Date()
-        let firstTableHour = array[array.length-1].opened[0]
+        let firstTableHour = array.length !== 0 ? array[array.length-1].opened[0] : (fixNum(date.getHours()) +":"+fixNum(date.getMinutes()))
         let hoursEntries = []
         let hourNow = parseInt(fixNum(date.getHours())) 
         let firstTableFix = parseInt(firstTableHour.split(":")[0])
@@ -133,6 +134,7 @@ export default function HistorialTableComp({ table, close }: Props) {
             </nav>
             <section className='table-selector'>
                 <ul className='historial-list'>
+                    <div></div>
                     {array.map(el => {
                         return <div key={Math.random()}>
                             <p>{el.opened[0]}</p>

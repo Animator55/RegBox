@@ -1,4 +1,4 @@
-import { faCircleNotch, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faCircleNotch, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { getHistorialGeneral } from '../logic/API'
 import React from 'react'
@@ -6,9 +6,10 @@ import { SingleEvent } from '../vite-env'
 
 type Props = {
   close: Function
+  EditMassiveTable: Function
 }
 
-export default function Notifications({ close }: Props) {
+export default function Notifications({ close, EditMassiveTable }: Props) {
   const [list, setList]= React.useState<SingleEvent[] | undefined>(undefined)
 
   const [pop, OpenPop] = React.useState<SingleEvent | undefined>()
@@ -30,35 +31,92 @@ export default function Notifications({ close }: Props) {
   }
 
   const RenderList = ()=>{
-    if(!list || list.length === 0) return
+    if(!list || list.length === 0) return <Alert/>
+
+    let ul= []
+    for(let i=0;i<list.length; i++) {
+      if(i === 10) break
+      let el = list[i]
+      const action = (boolean:boolean)=>{
+        setList([...list.map(item=>{
+          if(el === item) return {...el, accepted : boolean}
+          else return item
+        })])
+        if(boolean) EditMassiveTable(el._id, el.products, el.comment)
+      }
+
+      const actionZone = {
+        "undefined": <>
+          <button onClick={()=>{action(true)}}>
+            <FontAwesomeIcon icon={faCheck}/>
+          </button>
+          <button onClick={()=>{action(false)}}>
+            <FontAwesomeIcon icon={faXmark}/>
+          </button>
+        </>,
+        "true": <FontAwesomeIcon icon={faCheck}/>,
+        "false": <FontAwesomeIcon icon={faXmark}/>,
+      }
+
+      ul.push(<li
+        className='notification-item'
+        key={Math.random()}
+        onClick={(e)=>{
+          let target = e.target as HTMLDivElement
+          if(target.className === "notification-item")OpenPop(el)
+        }}
+      >
+        <p>Mesa {el.number}</p>
+        <p className='owner-tag'>{el.timestamp}</p>
+
+        <div className='accept-zone'>{actionZone[`${el.accepted}`]}</div>
+      </li>)
+    }
+
     return <ul>
-      {list.map(el=>{
-        return <li
-          key={Math.random()}
-          onClick={()=>{OpenPop(el)}}
-        >{el}</li>
-      })}
+      {ul}
     </ul>
   }
 
   const ViewNotification = ()=>{
-    return <section className='pop'>
-      Notification 
+    if(!pop) return
+    return <section className='back-blur' onClick={(e) => {
+        let target = e.target as HTMLDivElement
+        if (target.className === "back-blur") OpenPop(undefined)
+    }}>
+      <section className='pop'>
+        <header>
+            <div className='pop-top'>
+                <h2>Detalles</h2>
+                <button onClick={() => { OpenPop(undefined) }}><FontAwesomeIcon icon={faXmark} /></button>
+            </div>
+        </header>
+        <section className='pop-content'>
+          <div className='product-editor-content'>
+              <div>
+                  <h3>Mesa {pop.number}</h3>
+                  <p>{pop.timestamp}</p>
+                  {pop.owner_name && <p>Origen: <i>{pop.owner_name}</i></p>}
+              </div>
+              <hr></hr>
+              <ul>
+                {pop.comment}
+              </ul>
+          </div>
+        </section>
+      </section>
     </section>
   }
 
-  return <section className='back-blur' onClick={(e) => {
+  return <section className='back' onClick={(e) => {
     let target = e.target as HTMLDivElement
-    if (target.className === "back-blur") close()
+    if (target.className === "back") close()
   }}>
     {pop && <ViewNotification/>}
     <section className='notifications'>
       {list === undefined ?
-        <FontAwesomeIcon icon={faCircleNotch} spin/>
-        : list.length === 0 ? 
-        <Alert/> 
-        :
-        <RenderList/>
+        <div className='loading-notis'><FontAwesomeIcon icon={faCircleNotch} spin/></div>
+        : <RenderList/>
       }
     </section>
   </section>

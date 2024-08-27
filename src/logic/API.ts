@@ -75,10 +75,26 @@ export function checkUser (user: string, password: string, domain: string): {typ
 
 const defaultNotifications: SingleEvent[] = [
     {   
-        accepted: false,
+        accepted: undefined,
         important: false,
         type: "products",
-        comment: `Añadido: 2 Ojo Relleno, 2 Bao Bun`,
+        comment: `Añadido: 2 Ojo Relleno, 2 Bao Bun, 2 Ojo Relleno, 2 Bao Bun`,
+        products: [
+            {
+              "_id": "p.000",
+              "name": "Ojo de Bife",
+              "price": 9800,
+              "type": "Principal",
+              "amount": 2
+            },
+            {
+              "_id": "e.007",
+              "name": "Bao Bun",
+              "price": 4300,
+              "type": "Entrada",
+              "amount": 2
+            }
+        ],
         timestamp: "19:50",
         _id: "yrfyhh",
         number: "3",
@@ -86,10 +102,26 @@ const defaultNotifications: SingleEvent[] = [
         owner_name: "Tepo"
     },
     {
-        accepted: false,
+        accepted: undefined,
         important: false,
         type: "products",
         comment: `Añadido: 1 Tortilla de Papas, 2 Empanadas de Osobuco X2`,
+        products: [
+            {
+              "_id": "e.000",
+              "name": "Tortilla de Papa",
+              "price": 4750,
+              "type": "Entrada",
+              "amount": 1
+            },
+            {
+              "_id": "e.005",
+              "name": "Empanadas de Osobuco X2",
+              "price": 1400,
+              "type": "Entrada",
+              "amount": 2
+            }
+        ],
         timestamp: "18:35",
         _id: "yrfyhh",
         number: "3",

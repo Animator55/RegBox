@@ -201,7 +201,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     const changeZoom = (zoomin: boolean) => {
       let zone = document.querySelector(".draggable") as HTMLDivElement
       let scale = parseFloat(zone.style.scale)
-      let newScale = !zoomin ? scale - 0.05 : scale + 0.05
+      let newScale = !zoomin ? scale - 0.02 : scale + 0.02
       if(newScale < 0.05) return
       zone.style.scale = `${newScale}`
       if(!zone.parentElement) return
