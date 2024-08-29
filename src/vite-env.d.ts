@@ -7,6 +7,7 @@ export type TableType = {
     discount: number
     products: Item[]
     opened: string[]
+    payMethod: PayMethod[] | undefined
     state: "open" | "paying" | "closed" | "unnactive"
 }
 export type SingleEvent = {
@@ -26,8 +27,10 @@ export type TableEvents = {
     number?: string
     opened: string[]
     state: "open" | "paying" | "closed" | "unnactive"
+    products: Item[],
     total: string
     discount: number
+    payMethod: PayMethod[] | undefined
     events: SingleEvent[]
 }
 
@@ -85,4 +88,15 @@ export type configType = {
         y: number
         zoom: number
     }
+}
+
+
+export type PayMethod = {
+    type: string
+    amount: string
+}
+
+
+export type router = {
+    [key:string] : any
 }

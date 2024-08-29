@@ -13,6 +13,7 @@ import DownloadTsObject from '../logic/download'
 import { checkImportancy } from '../logic/checkChangeImportancy'
 import { calculateTotal } from '../logic/calculateTotal'
 import HistorialTableComp from '../components/HistorialTable'
+import CloseSession from '../components/CloseSession'
 
 type Props = {
     initialData?: {
@@ -105,6 +106,7 @@ export default function Main({ initialData, logout }: Props) {
             discount: 0,
             products: [],
             opened: opened,
+            payMethod: undefined,
             state: "open",
         }
         setTables([...tables, newTable])
@@ -157,6 +159,8 @@ export default function Main({ initialData, logout }: Props) {
             opened: newTable.opened,
             state: "open",
             total: "$0",
+            payMethod: undefined,
+            products: newTable.products,
             discount: 0,
             events: initialEvents
         }
@@ -164,7 +168,7 @@ export default function Main({ initialData, logout }: Props) {
         storage.setItem("RegBoxID:"+newTable._id, JSON.stringify(prev))
     }
 
-    const addEventToHistorial = (table_id: string, entry: string, comment: string, importancy: boolean, value?: any, total?: string, discount?: number) => {
+    const addEventToHistorial = (table_id: string, entry: string, comment: string, importancy: boolean, value?: any, table?: TableType, discount?: number) => {
         let storage = window.localStorage
         let testVal = storage.getItem("RegBoxID:"+table_id)
         if (!testVal) return
@@ -182,10 +186,16 @@ export default function Main({ initialData, logout }: Props) {
             owner: "main"
         }
         let resultChange = { ...current, events: [...current.events, newEvent] }
-        if (entry === "state" && value) {
+        if(entry === "products" && table) {
+            resultChange.products = [...table.products]
+        }
+        else if (entry === "state" && value) {
             resultChange.state = value
-            if (value === "unnactive" && total) {
+            if (value === "unnactive" && table) {
+                let total = calculateTotal(table.products, 0)
                 resultChange.total = total
+                resultChange.payMethod = table.payMethod
+                resultChange.products = [...table.products]
                 resultChange.discount = discount!
             }
         }
@@ -215,16 +225,23 @@ export default function Main({ initialData, logout }: Props) {
         }
         ///if is deleting table => after closing table, it must return to "unnactive" state to repeat the process
         else if (entry === "state" && value === "unnactive") {
-            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, calculateTotal(table.products, 0), table.discount)
+            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, table, table.discount)
             setTables([...tables.filter(el => { if (el._id !== table._id) return el })])
             setCurrent(undefined)
         }
         ///if is only changing any entry
         else if (table.state !== "closed" && table.state !== "unnactive") {
-            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined)
+            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, entry === "products" ? {...table, products: value} : undefined)
             setTables([
                 ...tables.filter(el => { if (el._id !== table._id) return el }),
                 { ...table, [entry]: value }
+            ])
+        }
+        else if(table.state === "closed" && entry === "payMethod") {
+            addEventToHistorial(table_id, entry, comment, true, undefined, undefined)
+            setTables([
+                ...tables.filter(el => { if (el._id !== table._id) return el }),
+                { ...table, [entry]: value}
             ])
         }
     }
@@ -236,7 +253,6 @@ export default function Main({ initialData, logout }: Props) {
         if (!table) return
 
         if (table.state !== "closed" && table.state !== "unnactive") {
-            addEventToHistorial(table_id, "products", comment, false)
             let array = [...table.products]
             for(let i=0; i<value.length; i++) {
                 let newItem = value[i]
@@ -255,9 +271,12 @@ export default function Main({ initialData, logout }: Props) {
                     else return el
                 })
             }
+            let editedTable ={ ...table, products: array }
+
+            addEventToHistorial(table_id, "products", comment, false, undefined, editedTable)
             setTables([
                 ...tables.filter(el => { if (el._id !== table._id) return el }),
-                { ...table, products: array }
+                editedTable
             ])
         }
     }
@@ -284,6 +303,7 @@ export default function Main({ initialData, logout }: Props) {
         "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
         "configuration": <ConfigurationComp close={close} />,
         "notifications": <Notifications close={close} EditMassiveTable={EditMassiveTableHandle} />,
+        "closesession": <CloseSession close={close} logout={logout}/>,
         "historial": <HistorialTableComp
                 table={popUp.initialPage === "true" ? currentTableData : undefined} 
                 close={close}
@@ -374,7 +394,7 @@ export default function Main({ initialData, logout }: Props) {
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
-                    <TopBar OpenPop={OpenPop} download={download} logout={logout} />
+                    <TopBar OpenPop={OpenPop} download={download} />
                     <section className='d-flex'>
                         <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin} setCurrentTable={setCurrentHandler} />
                         <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />

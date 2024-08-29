@@ -1,4 +1,4 @@
-import { Item, TableType } from '../vite-env'
+import { Item, PayMethod, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightArrowLeft, faCaretDown, faCheckToSlot, faClockRotateLeft, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
@@ -191,7 +191,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
 
     const changeTableState = (state: "open" | "paying" | "closed" | "unnactive")=>{
         let comment = state === "closed" ? "Cierre de mesa: ": "Cobro de mesa: "
-        if(currentTable) EditTable(currentTable._id, "state", state, comment + calculateTotal(currentTable.products, currentTable.discount))
+        if(currentTable) EditTable(currentTable._id, "state", state, comment + calculateTotal(currentTable.products, currentTable.discount),)
     }
 
     /*** */
@@ -255,16 +255,28 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
         }
     })
 
+    React.useEffect(()=>{
+        if(currentTable && currentTable.state === "closed" && currentTable.payMethod !== undefined) {
+            changeTableState("unnactive"); 
+            endTablePop(false)
+        }
+    }, [currentTable])
+
     return <section className='table-count'>
         {endPop && currentTable?.state !== "closed" && <ConfirmPop 
             title={"¿Cerrar mesa?"} 
             subTitle='No se podrá editar, unicamente imprimir.'
-            confirm={()=>{changeTableState("closed"); endTablePop(false)}}
+            confirm={()=>{
+                changeTableState("closed"); 
+                endTablePop(false)
+            }}
             close={()=>{endTablePop(false)}}
         />}
         {endPop && currentTable?.state === "closed" && <PayMethodsPop 
             products={currentTable.products}
-            confirm={()=>{changeTableState("unnactive"); endTablePop(false)}}
+            confirm={(val:PayMethod[])=>{
+                EditTable(currentTable?._id, "payMethod", val, "Metodo de pago: " +val.map(el=>{return el.type +": "+el.amount}).join(", "))
+            }}
             close={()=>{endTablePop(false)}}
         />}
         {pop === "switch" && currentTable &&

@@ -35,7 +35,7 @@ export default function Notifications({ close, EditMassiveTable }: Props) {
 
     let ul= []
     for(let i=0;i<list.length; i++) {
-      if(i === 10) break
+      // if(i === 10) break
       let el = list[i]
       const action = (boolean:boolean)=>{
         setList([...list.map(item=>{

@@ -5,10 +5,9 @@ import { faBell, faCircleDollarToSlot, faClockRotateLeft, faFloppyDisk, faGear, 
 type Props = {
   OpenPop: Function
   download: Function
-  logout: Function
 }
 
-export default function TopBar({OpenPop, download, logout}: Props) {
+export default function TopBar({OpenPop, download}: Props) {
   return <nav className="main-top-bar">
     <button className='text-button notifications-pop-button' onClick={()=>{
       OpenPop("notifications")
@@ -27,7 +26,7 @@ export default function TopBar({OpenPop, download, logout}: Props) {
     <button className='option' onClick={()=>{
       download()
     }}><FontAwesomeIcon icon={faFloppyDisk}/></button>
-    <button className='option' onClick={()=>{window.localStorage.clear();logout()}}><FontAwesomeIcon icon={faRightFromBracket}/></button>
+    <button className='option' onClick={()=>{OpenPop("closesession")}}><FontAwesomeIcon icon={faRightFromBracket}/></button>
     <button className='user'><FontAwesomeIcon icon={faUserCircle}/></button>
   </nav>
 }

@@ -1,17 +1,12 @@
 import React from 'react'
 import { payTypes } from '../defaults/payTypes'
 import "../assets/payMethods.css"
-import { Item } from '../vite-env'
+import { Item, PayMethod } from '../vite-env'
 
 type Props = {
     products: Item[]
     close: Function
     confirm: Function
-}
-
-type PayMethod = {
-    type: string
-    amount: string
 }
 
 export default function PayMethodsPop({ products, close, confirm }: Props) {
@@ -40,8 +35,17 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
         }
         div.value = ""
         if(value === "0") return
+        let index = -1 
 
-        setMethods([...methodsUsed, { type: select.value, amount: `${parseFloat(value)}` }])
+        for(let i=0;i<methodsUsed.length;i++) {
+            if(select.value === methodsUsed[i].type) {index = i; break}
+        }
+
+        if(index === -1) setMethods([...methodsUsed, { type: select.value, amount: `${parseFloat(value)}` }])
+        else setMethods(methodsUsed.map((el, i)=>{
+            if(i === index) return {...el, amount : `${parseFloat(el.amount) + parseFloat(value)}`}
+            else return el
+        }))
     }
 
     const Item = (el: PayMethod, index: number) => {
@@ -55,10 +59,29 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
             if(entry === "amount" && substractedTotal+parseFloat(el.amount) < parseFloat(value)) {
                 value = `${substractedTotal+parseFloat(el.amount)}`
             }
-            setMethods([...methodsUsed.map((item, i) => {
+
+            
+            let iqualType = -1 
+            for(let i=0;i<methodsUsed.length;i++) {
+                if(value === methodsUsed[i].type) {iqualType = i; break}
+            }
+
+            let amountValue = parseFloat(el.amount)
+            if(iqualType === -1) setMethods(methodsUsed.map((item, i) => {
                 if (i === index) return { ...item, [entry]: value }
                 else return item
-            })])
+            }))
+            else {
+                let array: PayMethod[] = methodsUsed
+                let result = []
+                
+                for(let i=0; i<array.length; i++) {
+                    let item = array[i]
+                    if(i === iqualType && i !== index) result.push({type: value, amount : `${parseFloat(item.amount) + amountValue}`})
+                    else if(i !== index) result.push(item)
+                }
+                setMethods(result)
+            }
         }
 
         return <div key={Math.random()} className='method-item'>

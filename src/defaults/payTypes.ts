@@ -1,7 +1,6 @@
 export const payTypes = [
     "Debito",
     "Credito",
-    "Efectivo (ARS)",
-    "Efectivo (USD)",
+    "Efectivo",
     "Transferencia"
 ]
