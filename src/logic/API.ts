@@ -1,4 +1,4 @@
-import { HistorialTableType, Item, sessionType, SingleEvent, userType } from "../vite-env";
+import { Item, sessionType, SingleEvent, userType } from "../vite-env";
 
 type domainType = {
     _id: string
@@ -130,7 +130,7 @@ const defaultNotifications: SingleEvent[] = [
     },
 ]
 
-export const getHistorialGeneral = (filter?: string, filterValue?: string)=>{
+export const getHistorialGeneral = ()=>{
     let array: SingleEvent[]= []
 
     array = [...defaultNotifications]

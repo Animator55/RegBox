@@ -1,4 +1,4 @@
-import { faRightFromBracket, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faPrint, faRightFromBracket, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HistorialTableType, Item, router, TableEvents } from '../vite-env'
 import { Products } from '../roleMains/Main'
@@ -34,7 +34,7 @@ export default function CloseSession({ close, logout }: Props) {
     /// prods
 
     let compiledProdList: Item[][] = array.map(el=>{
-        if(el.payMethod !== undefined && el.payMethod.length !== 0) for(let i=0; i<el.payMethod?.length; i++){
+        if(el.state === "unnactive" && el.payMethod !== undefined && el.payMethod.length !== 0) for(let i=0; i<el.payMethod?.length; i++){
             payMethodsObj[el.payMethod[i].type] += parseFloat(el.payMethod[i].amount)
         } 
         return el.products
@@ -100,11 +100,12 @@ export default function CloseSession({ close, logout }: Props) {
         return <section className='pay-numbers'>
             {Object.keys(payMethodsObj).map(key=>{
                 return <React.Fragment key={Math.random()}>
+                    <div style={{background: payColorSelector[key]}} className="dot"></div>
                     <div>{key}</div>
-                    <div>{"$"+ payMethodsObj[key]}</div>
+                    <div className='number'>{"$"+ payMethodsObj[key]}</div>
                 </React.Fragment>
             })}
-            <><div><b>Total</b></div><div><b>${total}</b></div></>
+            <><div className='dot'></div><div><b>Total</b></div><div className='number'><b>${total}</b></div></>
         </section>
     }
 
@@ -149,6 +150,10 @@ export default function CloseSession({ close, logout }: Props) {
                         <CakeChart/>
                         <PayNumbers/>
                     </div>
+                    <button className='default-button' onClick={() => { console.log("print") }}>
+                        <FontAwesomeIcon icon={faPrint} />
+                        Imprimir
+                    </button>
                     <button className='default-button' onClick={() => { window.localStorage.clear(); logout() }}>
                         <FontAwesomeIcon icon={faRightFromBracket} />
                         Cerrar Sesión

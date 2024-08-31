@@ -402,8 +402,8 @@ main:has(.notifications) .notifications-pop-button {
 
 .pie-container {
     position: relative;
-    width: 20dvh;
-    height: 20dvh;
+    width: 25dvh;
+    height: 25dvh;
     overflow: hidden;
     border-radius: 100%;
     box-shadow: 0 10px 0 var(--cdarkgray);
@@ -452,6 +452,10 @@ main:has(.notifications) .notifications-pop-button {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 0.5rem;
+}
+.result-side > button {
+    width: 100%;
 }
 
 .result-container {
@@ -462,18 +466,29 @@ main:has(.notifications) .notifications-pop-button {
 
 .pay-numbers {
     display: grid;
-    grid-template-columns: 40% 59%;
+    grid-template-columns: 10% 44% 44%;
     gap: 1%;
     border: 1px solid var(--clightgray);
     border-radius: 0 0 5px 5px;
     padding: 0.5rem;
-    margin: 1rem;
+    margin: 1rem 0;
+    align-items: center;
+    width: 90%;
 }
 .pay-numbers > div {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+.pay-numbers > .number {
+    text-align: end;
+}
+.pay-numbers > .dot {
+    border-radius: 50%;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: black;
+} 
 
 .result-prod-list {
     border-radius: 5px;
