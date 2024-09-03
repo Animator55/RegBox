@@ -1,4 +1,4 @@
-import { faCheck, faCircle, faList, faPen, faPlus, faTableCells, faTrash, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faList, faPen, faPlus, faTableCells, faTrash, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
