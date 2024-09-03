@@ -17,8 +17,7 @@ export default function HistorialTableComp({ table, close }: Props) {
     }
     const jump = (index: number) => {
         let ul = document.querySelector(".historial-list")
-        console.log({ul}, index)
-        if(ul) ul.children[index].scrollIntoView({ block: "start", behavior: "smooth" })
+        if(ul && ul.children[index]) ul.children[index].scrollIntoView({ block: "start", behavior: "smooth" })
     }
     const [selectedTable, setSelected] = React.useState<TableType | TableEvents | undefined>(table)
     // const tbl = React.useContext(TablesPlaces)

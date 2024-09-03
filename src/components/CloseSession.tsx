@@ -5,6 +5,7 @@ import { Products } from '../roleMains/Main'
 import React from 'react'
 import orderByTypes from '../logic/orderByTypes'
 import { payTypes } from '../defaults/payTypes'
+import { html_result } from '../defaults/reciept'
 
 type Props = {
     close: Function
@@ -27,25 +28,30 @@ export default function CloseSession({ close, logout }: Props) {
     }
     /// payMethods
 
-    let payMethodsObj:router = {}
-    for(let i=0;i<payTypes.length; i++) {
+    let payMethodsObj: router = {}
+    for (let i = 0; i < payTypes.length; i++) {
         payMethodsObj[payTypes[i]] = 0
     }
     /// prods
 
-    let compiledProdList: Item[][] = array.map(el=>{
-        if(el.state === "unnactive" && el.payMethod !== undefined && el.payMethod.length !== 0) for(let i=0; i<el.payMethod?.length; i++){
-            payMethodsObj[el.payMethod[i].type] += parseFloat(el.payMethod[i].amount)
-        } 
-        return el.products
-    })
+    let compiledProdList: Item[][] = []
+
+    for(let j=0; j<array.length;j++) {
+        let el = array[j]
+        if (el.state === "unnactive" && el.payMethod !== undefined && el.payMethod.length !== 0) {
+            for (let i = 0; i < el.payMethod?.length; i++) {
+                payMethodsObj[el.payMethod[i].type] += parseFloat(el.payMethod[i].amount)
+            }
+            compiledProdList.push(el.products)
+        }
+    }
     let combinedArray = compiledProdList.flat().reduce((acc: Item[], curr) => {
-        const found = acc.find((item:Item )=> {if(item._id === curr._id) return item})
+        const found = acc.find((item: Item) => { if (item._id === curr._id) return item })
         if (found) {
             let item = found as Item
             item.amount! += curr.amount!;
         } else {
-          acc.push({ ...curr });
+            acc.push({ ...curr });
         }
         return acc;
     }, []);
@@ -55,18 +61,31 @@ export default function CloseSession({ close, logout }: Props) {
     let total = 0
     let payNumbersArray = []
 
-    for(const key in payMethodsObj) {
+    for (const key in payMethodsObj) {
         total += payMethodsObj[key]
-        payNumbersArray.push(<div key={Math.random()}>{key} : {" $"+ payMethodsObj[key]}</div>)
+        payNumbersArray.push(<div key={Math.random()}>{key} : {" $" + payMethodsObj[key]}</div>)
     }
-    const getAngle = (percent:number)=>{
+    const getAngle = (percent: number) => {
         let angle = (percent * 360) / 100
         return `${angle}deg`
     }
 
-    const getPercent = (amount:number)=>{
+    const getPercent = (amount: number) => {
         let percent = (amount * 100) / total
         return percent
+    }
+
+    const print = () => {
+        if (headers === undefined) return
+        let html = html_result(headers, payMethodsObj)
+        if (!html) return
+        var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+        if (!WinPrint) return
+        WinPrint.document.write(html);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
     }
 
     const payColorSelector: router = {
@@ -79,41 +98,41 @@ export default function CloseSession({ close, logout }: Props) {
     const CakeChart = () => {
         let entries = Object.keys(payMethodsObj)
         let stacked = 0
-        
+
         return <section className='pie-container'>
-            {entries.map((key, i)=>{
-                let val = i===0 ? entries[0]:entries[i-1]
+            {entries.map((key, i) => {
+                let val = i === 0 ? entries[0] : entries[i - 1]
                 let value = getPercent(payMethodsObj[val])
                 stacked += value
-                return <div 
-                    key={Math.random()} 
+                return <div
+                    key={Math.random()}
                     title={key}
                     data-entry={key}
-                    className="pie animate no-round" 
-                    style={{rotate: getAngle(stacked)}}
+                    className="pie animate no-round"
+                    style={{ rotate: getAngle(stacked) }}
                 ></div>
             })}
         </section>
     }
 
-    const PayNumbers = ()=>{
+    const PayNumbers = () => {
         return <section className='pay-numbers'>
-            {Object.keys(payMethodsObj).map(key=>{
+            {Object.keys(payMethodsObj).map(key => {
                 return <React.Fragment key={Math.random()}>
-                    <div style={{background: payColorSelector[key]}} className="dot"></div>
+                    <div style={{ background: payColorSelector[key] }} className="dot"></div>
                     <div>{key}</div>
-                    <div className='number'>{"$"+ payMethodsObj[key]}</div>
+                    <div className='number'>{"$" + payMethodsObj[key]}</div>
                 </React.Fragment>
             })}
             <><div className='dot'></div><div><b>Total</b></div><div className='number'><b>${total}</b></div></>
         </section>
     }
 
-    React.useEffect(()=>{
+    React.useEffect(() => {
         let pieContainer = document.querySelector(".pie-container")
 
-        if(!pieContainer) return
-        for(let i=0;i<pieContainer?.children.length; i++){
+        if (!pieContainer) return
+        for (let i = 0; i < pieContainer?.children.length; i++) {
             let div = pieContainer.children[i] as HTMLDivElement
             let entry = div.dataset.entry
 
@@ -138,19 +157,19 @@ export default function CloseSession({ close, logout }: Props) {
                 <ul className='result-prod-list'>
                     <li><div>Nombre</div><div>Cantidad</div></li>
                     {headers && headers.map(el => {
-                        return el.header ? <label key={Math.random()}>{el.type}</label>:
-                        <li key={Math.random()}>
-                            <div>{el.name}</div> 
-                            <div>{el.amount}</div> 
-                        </li>
+                        return el.header ? <label key={Math.random()}>{el.type}</label> :
+                            <li key={Math.random()}>
+                                <div>{el.name}</div>
+                                <div>{el.amount}</div>
+                            </li>
                     })}
                 </ul>
                 <section className='result-side'>
                     <div className='result-container'>
-                        <CakeChart/>
-                        <PayNumbers/>
+                        <CakeChart />
+                        <PayNumbers />
                     </div>
-                    <button className='default-button' onClick={() => { console.log("print") }}>
+                    <button className='default-button' onClick={() => { print() }}>
                         <FontAwesomeIcon icon={faPrint} />
                         Imprimir
                     </button>

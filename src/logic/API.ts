@@ -1,4 +1,5 @@
 import { Item, sessionType, SingleEvent, userType } from "../vite-env";
+import fixNum from "./fixDateNumber";
 
 type domainType = {
     _id: string
@@ -60,13 +61,17 @@ export function checkUser (user: string, password: string, domain: string): {typ
     let domainIndex = selectDomain(domain)
     if(domainIndex === -1) return {type: "error", data: "Dominio no encontrado"}
 
-    session.domain = domain
+    session.domain = domains[domainIndex]._id
     session.url = domains[domainIndex].url
 
     let userIndex = selectUser(domainIndex, user)
     if(userIndex === -1 || domains[domainIndex].users[userIndex].password !== password) return {type: "error", data: "El usuario y la contraseña no coinciden"}
 
+    let date = new Date()
     session.name = user
+    let hour = fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())
+    let day = fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()
+    session.opened = `${hour} - ${day}`
     session.role = domains[domainIndex].users[userIndex].role
     session._id = domains[domainIndex].users[userIndex]._id
 

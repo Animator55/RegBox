@@ -64,16 +64,16 @@ export default function AuthScreen({ setSession }: Props) {
             <form onSubmit={submit} className='form'>
                 <div className='labeled-input'>
                     <label>Dominio</label>
-                    <input name='domain' />
+                    <input name='domain' defaultValue={"domain-1"}/>
                 </div>
                 <div className='labeled-input'>
                     <label>Usuario</label>
-                    <input name='user' />
+                    <input name='user'  defaultValue={"Caja"}/>
                 </div>
                 <div className='labeled-input'>
                     <label>Contraseña</label>
                     <div className='input-container'>
-                        <input name="password" type='password' />
+                        <input name="password" type='password' defaultValue={"1234"}/>
                         <button type='button' onClick={togglePassword}>
                             <FontAwesomeIcon icon={faEyeSlash} />
                             <FontAwesomeIcon icon={faEye} />
