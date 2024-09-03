@@ -152,6 +152,13 @@
     overflow-x: hidden;
     overflow-y: scroll;
     padding: 0 calc(0.5rem - 4px) 0 0.5rem;
+    position: relative;
+}
+.pop ul:has(.alert) {
+    height: 100%;
+}
+.pop ul .alert {
+    left: 10%;
 }
 
 .pop .prod-grid-mode {
@@ -484,6 +491,7 @@ main:has(.notifications) .notifications-pop-button {
     text-align: end;
 }
 .pay-numbers > .dot {
+    border: 1px solid var(--cdarkgray);
     border-radius: 50%;
     width: 0.5rem;
     height: 0.5rem;

@@ -101,7 +101,7 @@ main>.d-flex {
     overflow: hidden;
     border-radius: 10px 10px;
     position: relative;
-    background-color: var(--cdarkgray);
+    background-color: var(--corange);
 }
 
 .prod-map-sub-container {
@@ -113,11 +113,11 @@ main>.d-flex {
 
 .change-to-products .nav-page > :last-child,
 .change-to-map .nav-page > :first-child {
-    animation: darkToOrange 300ms 10ms forwards;
+    animation: darkToOrange 300ms 10ms forwards reverse;
 }
 .change-to-products .nav-page > :first-child,
 .change-to-map .nav-page > :last-child {
-    animation: darkToOrange 300ms 10ms forwards reverse;
+    animation: darkToOrange 300ms 10ms forwards;
 }
 
 @keyframes darkToOrange {
@@ -143,24 +143,24 @@ main>.d-flex {
     from {
         max-width: 84%;
         min-width: 84%;
-        background-color: var(--cdarkgray);
+        background-color: var(--corange);
     }
     to {
         min-width: 15%;
         max-width: 15%;
-        background-color: var(--corange);
+        background-color: var(--cdarkgray);
     }
 }
 @keyframes compressReverse {
     from {
-        background-color: var(--corange);
+        background-color: var(--cdarkgray);
         min-width: 15%;
         max-width: 15%;
     }
     to {
         max-width: 84%;
         min-width: 84%;
-        background-color: var(--cdarkgray);
+        background-color: var(--corange);
     }
 }
 
@@ -212,16 +212,16 @@ main>.d-flex {
 
 .nav-page>button {
     width: 100%;
-    background-color: var(--corange);
-    color: var(--cdarkgray);
-    border: 2px solid var(--cdarkgray);
+    background-color: var(--cdarkgray);
+    color: var(--corange);
+    border: 2px solid var(--corange);
     border-bottom: none;
     border-radius: 8px 8px 0 0;
 }
 
 .nav-page>button.active {
-    background-color: var(--cdarkgray);
-    color: var(--corange);
+    background-color: var(--corange);
+    color: var(--cdarkgray);
     border-color: transparent;
 }
 

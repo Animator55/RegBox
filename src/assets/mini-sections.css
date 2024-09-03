@@ -1,13 +1,14 @@
 .mini-prod-list, .mini-map {
-    background-color: var(--corange);
+    background-color: var(--cdarkgray);
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     min-width: 15%;
     width: 20%;
-    border: 2px solid var(--cdarkgray);
+    border: 2px solid var(--corange);
     border-top: none;
     position: relative;
+    border-radius: 0 0 10px 10px;
     overflow: hidden;
 }
 
@@ -34,14 +35,14 @@
     bottom: 0;
     height: 4rem;
     width: 100%;
-    background: linear-gradient(180deg, transparent, var(--corange));
+    background: linear-gradient(180deg, transparent, var(--cdarkgray));
     pointer-events: none;
 }
 .mini-prod-list > button,
 .mini-map > button
 {
     background-color: transparent;
-    color: var(--cdarkgray);
+    color: var(--corange);
     font-size: 1.3rem;
 }
 

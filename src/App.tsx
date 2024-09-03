@@ -7,20 +7,28 @@ import InitialDataPop from './components/auth/InitialDataPop'
 
 export default function App() {
   const [session, setSession] = React.useState<sessionType>(
-    { _id: "gnidkasgm", role: "main", opened: "", domain: "domain-1", url: "", name: "Caja" }
-    // {_id: "", role: "", opened: "", domain: "", url: "", name: ""}
+    {_id: "", role: "", opened: "", domain: "", url: "", name: ""}
   )
   const [initialData, setInitialData] = React.useState()
   const [ref, refresh] = React.useState(false)
   const logout = ()=>{
-    window.location.reload()
-    // setSession({_id: "", role: "", opened: "", domain: "", url: "", name: ""})
-    // setInitialData(undefined)
-    // refresh(false)
+    window.location.reload()     
+    window.localStorage.setItem("RegBoxSession", "")
+  }
+  
+  const setSessionHandler = (val: sessionType)=>{
+    let stor = window.localStorage.getItem("RegBoxSession")
+    if(!stor || stor === "") window.localStorage.setItem("RegBoxSession", JSON.stringify(val))
+    else {
+      let parsed: sessionType = JSON.parse(stor)
+      if(val._id !== parsed._id || val.domain !== parsed.domain 
+        || val.url !== parsed.url) window.localStorage.setItem("RegBoxSession", JSON.stringify(val))
+    }
+    setSession(val)
   }
 
   return session._id === "" ?
-    <AuthScreen setSession={setSession} />
+    <AuthScreen setSession={setSessionHandler} />
     :
     <>
       {initialData === undefined && !ref && <InitialDataPop

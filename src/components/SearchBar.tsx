@@ -7,10 +7,11 @@ type Props = {
   placeholder: string
   defaultValue: string
   onChange: boolean
+  focus?: boolean
   id?: string
 }
 
-export default function SearchBar({ searchButton, placeholder, defaultValue, onChange, id }: Props) {
+export default function SearchBar({ searchButton, placeholder, defaultValue, onChange, id, focus}: Props) {
   const cleanInput = (e: React.MouseEvent) => {
     let input = e.currentTarget.previousSibling as HTMLInputElement
     input.value = ""
@@ -18,6 +19,7 @@ export default function SearchBar({ searchButton, placeholder, defaultValue, onC
   }
 
   React.useEffect(() => {
+    if(!focus) return
     let input = !id ? document.querySelector(".input-expand") as HTMLInputElement : document.getElementById(id) as HTMLInputElement
     if (input) input.focus()
   })

@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightArrowLeft, faCaretDown, faCheckToSlot, faClockRotateLeft, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
-import fixNum from '../logic/fixDateNumber'
 import { Configuration, Products } from '../roleMains/Main'
 import orderByTypes from '../logic/orderByTypes'
 import ConfirmPop from './ConfirmPop'
@@ -12,6 +11,7 @@ import PayMethodsPop from './PayMethodsPop'
 import SwitchTable from './SwitchTable'
 import Discount from './Discount'
 import { calculateTotal } from '../logic/calculateTotal'
+import { html_reciept } from '../defaults/reciept'
 
 type Props = {
     currentTable: TableType | undefined
@@ -37,6 +37,19 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
         let list = button.nextElementSibling as HTMLSpanElement
 
         list.classList.toggle("expanded")
+    }
+
+    const print = () => {
+        if(currentTable?.state !== "closed") return
+        let html = html_reciept(currentTable, p)
+        if (!html) return
+        var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+        if (!WinPrint) return
+        WinPrint.document.write(html);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
     }
 
     const openPop = ()=>{
@@ -152,7 +165,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
     const TableCommands = () => {
         return <section className='table-commands'>
             <div>
-                <p>{currentTable && `Caja abierta a las ${currentTable.opened[0]} el ${currentTable.opened[1]}`}</p>
+                <p>{currentTable && `Caja abierta a las ${currentTable.opened[0]} ${currentTable.opened[1]}`}</p>
                 <button className={currentTable ? "" : 'disabled'} onClick={()=>{openPop()}}>
                     <FontAwesomeIcon icon={faClockRotateLeft} />Historial
                 </button>
@@ -167,18 +180,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
             </div>
             <div className={currentTable ? "" : 'disabled'}>
                 <button className={!currentTable || currentTable && currentTable?.state === "closed" ? "" : 'disabled'}
-                 onClick={() => {
-                    if(currentTable?.state !== "closed") return
-                    let prtContent = document.querySelector(".reciept");
-                    if (!prtContent) return
-                    var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-                    if (!WinPrint) return
-                    WinPrint.document.write(prtContent.innerHTML);
-                    WinPrint.document.close();
-                    WinPrint.focus();
-                    WinPrint.print();
-                    WinPrint.close();
-                }}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
+                 onClick={print}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
                 <button className={currentTable?.state !== "closed" ? "": "confirm"} onClick={()=>{
                     if(currentTable?.state !== "unnactive") endTablePop(true)
                 }}><FontAwesomeIcon icon={faCheckToSlot } />
@@ -187,57 +189,10 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
             </div>
         </section>
     }
-    let total = 0
 
     const changeTableState = (state: "open" | "paying" | "closed" | "unnactive")=>{
         let comment = state === "closed" ? "Cierre de mesa: ": "Cobro de mesa: "
         if(currentTable) EditTable(currentTable._id, "state", state, comment + calculateTotal(currentTable.products, currentTable.discount),)
-    }
-
-    /*** */
-
-    const Reciept = () => {
-        if (!currentTable) return
-        let date = new Date()
-
-        let result = orderByTypes(currentTable.products, p, false)
-
-        return <div className='reciept'>
-            <style>{"*{font-family:'Kanit', sans-serif;} .content-reciept p{font-size:0.65rem;margin: 3px 0}"}</style>
-            <div className='content-reciept'>
-                <h3 style={{ textAlign: "center" }}>CLUB VERMUT</h3>
-                <h6 style={{ marginBottom: 2, textAlign: "right" }}>NO VALIDO COMO FACTURA</h6>
-                <hr></hr>
-                <div style={{ display: "flex", gap: "1rem" }}>
-                    <p>Mesa {currentTable?.number}</p>
-                </div>
-                <p>Abierta a las {currentTable.opened[0]} el {currentTable.opened[1]}</p>
-                <p>Cerrada a las {fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())} el {fixNum(date.getDate()) + "/" + fixNum(date.getMonth() + 1) + "/" + date.getFullYear()}</p>
-                <hr></hr>
-                <div style={{ display: "flex" }}>
-                    <p>Articulo</p>
-                    <p style={{ marginLeft: "auto" }}>Precio</p>
-                </div>
-                <hr></hr>
-                <div style={{ display: "grid", gridTemplateColumns: "70% 30%" }}>
-                    {result && result.map(el => {
-                        total += el.price * el.amount!
-
-                        let prefix = el.amount === 1 ? "" : `${el.amount + "*$" + el.price + " "}`
-
-                        return <React.Fragment key={Math.random()}>
-                            <p>{el.name}</p>
-                            <p style={{ textAlign: "right" }}>{prefix + "$" + el.price * el.amount!}</p>
-                        </React.Fragment>
-                    })}
-                </div>
-                <hr />
-                <div style={{ display: "flex" }}>
-                    <p style={{ fontSize: "0.9rem" }}><b>Total</b></p>
-                    <p style={{ marginLeft: "auto", fontSize: "0.9rem" }}><b>${total}</b></p>
-                </div>
-            </div>
-        </div>
     }
 
     /****/
@@ -294,7 +249,6 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
                 confirm={(val: string)=>{EditTable(currentTable._id, "discount", val, "Aplicado descuento del " + val + "%"); setPop("")}}
             />
         }
-        <Reciept />
         <Top />
         <List />
         <TableCommands />
