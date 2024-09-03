@@ -49,12 +49,12 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
     const Top = ()=>{
       return <section className='products-top'>
         <SearchBar searchButton={setSearch} placeholder={"Buscar producto"} defaultValue={search} onChange={true}/>
-        <button className='backgroundless-button' title='Editar productos' onClick={()=>{
+        <button className='default-button-2' title='Editar productos' onClick={()=>{
           OpenPop()
         }}>
           <FontAwesomeIcon icon={faPenToSquare}/>
         </button>
-        <button className='default-button' title='Cambiar disposición' onClick={()=>{
+        <button className='default-button-2' title='Cambiar disposición' onClick={()=>{
           changeDisplay()
         }}>
           <FontAwesomeIcon icon={displayList ? faList : faTableCells}/>
@@ -66,6 +66,15 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
       return <section className='alert absolute'>
           <FontAwesomeIcon icon={faWarning}/>
           <h2>No hay productos añadidos a este tipo.</h2>
+          <button className='default-button' onClick={()=>{OpenPop()}}>
+              {"Ir al editor"}
+          </button>
+      </section>
+    }
+    const AlertType = ()=>{
+      return <section className='alert absolute'>
+          <FontAwesomeIcon icon={faWarning}/>
+          <h2>No hay tipos añadidos en el dominio.</h2>
           <button className='default-button' onClick={()=>{OpenPop()}}>
               {"Ir al editor"}
           </button>
@@ -92,18 +101,17 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
     }
 
     return <section className='picker-section'>
-      <Router />
-      <div className='product-paging'>
         <Top/>
+      <div className='product-paging'>
+        <Router />
         <div className={displayList ? 'product-picker' : "product-picker grid"} id='product-picker'>
-          {p[ProductPage] && p[ProductPage].length === 0 && <Alert/>}
+          {Object.keys(p).length === 0 && <AlertType/>}
+          {!p[ProductPage] || p[ProductPage].length === 0 && <Alert/>}
           <RenderProducts/>
         </div>
       </div>
     </section>
   }
 
-  return <>
-    <ProductPicker />
-  </>
+  return <ProductPicker />
 }

@@ -1,4 +1,4 @@
-import { faCheck, faCircle, faList, faPen, faPlus, faTableCells, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faCircle, faList, faPen, faPlus, faTableCells, faTrash, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import SearchBar from './SearchBar'
@@ -13,6 +13,8 @@ type Props = {
 }
 
 let lastChanged: null | number = null
+let editedEntry: string = "name"
+let changeProductIndex = false
 
 let scrollHeight = 0
 
@@ -27,68 +29,75 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
     const [page, setPage] = React.useState(initialPage !== "" ? initialPage : "")
 
-    const changeProdDisplay = ()=>{
-        c.setConfig({...c.config, prodsInEditorAsList: !c.config.prodsInEditorAsList})
+    const changeProdDisplay = () => {
+        c.setConfig({ ...c.config, prodsInEditorAsList: !c.config.prodsInEditorAsList })
     }
 
-    const changeProd = (key: string, value:string, page:string, id: string, index: number)=>{
+    const changeProd = (key: string, value: string, page: string, id: string, index: number) => {
+        if (value === "") return
         let ul = document.getElementById("prod-list")
-        if(!ul) return
+        if (!ul) return
         lastChanged = index
         scrollHeight = ul.scrollTop
         let newValue = key === "price" ? parseFloat(value) : value
+        editedEntry = key === "name" ? "price" : "name" 
 
-        setResult({...resultProducts, [page]: resultProducts[page].map((el)=>{
-            return el._id !== id ? el : {...el, [key]: newValue} 
-        })})
+        setResult({
+            ...resultProducts, [page]: resultProducts[page].map((el) => {
+                return el._id !== id ? el : { ...el, [key]: newValue }
+            })
+        })
     }
 
-    const deleteProd = (id: string)=>{
+    const deleteProd = (id: string, type: string) => {
         let ul = document.getElementById("prod-list")
-        if(!ul) return
+        if (!ul) return
         scrollHeight = ul.scrollTop
 
-        setResult({...resultProducts, [page]: resultProducts[page].filter((el)=>{
-            if(el._id !== id) return el
-        })})
+        setResult({
+            ...resultProducts, [type]: resultProducts[type].filter((el) => {
+                if (el._id !== id) return el
+            })
+        })
     }
 
-    const closeHandle = ()=>{
+    const closeHandle = () => {
         p.setProds(resultProducts)
         close()
     }
 
-    const newType = ()=>{
+    const newType = () => {
         let string = "Tipo-"
         let count = 1
-        types.map(str=>{
-            if(str.substring(0, 5) === "Tipo-") count++
+        types.map(str => {
+            if (str.substring(0, 5) === "Tipo-") count++
         })
         string = string + count
 
-        setResult({...resultProducts, [string]: []})
+        setResult({ ...resultProducts, [string]: [] })
         setPage(string)
     }
-    const newProduct = ()=>{
+    const newProduct = () => {
+        if (!resultProducts[page]) return
         let Item = {
-            _id: `${Math.round((Math.random()*Math.random())*1000000000)}`,
-            name: "Nuevo producto",
+            _id: `${Math.round((Math.random() * Math.random()) * 1000000000)}`,
+            name: "Nombre del producto",
             price: 0,
             type: page,
         }
-        
+
         let ul = document.getElementById("prod-list")
-        if(!ul) return
+        if (!ul) return
         scrollHeight = 9999999
         lastChanged = resultProducts[page].length
-        setResult({...resultProducts, [page]: [...resultProducts[page], Item]})
+        setResult({ ...resultProducts, [page]: [...resultProducts[page], Item] })
     }
 
-    const editTypeName = (e: React.MouseEvent<HTMLButtonElement>)=>{
+    const editTypeName = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.currentTarget.classList.toggle("awaiting")
         let div = e.currentTarget.previousSibling as HTMLDivElement
         div.contentEditable = "true"
-        div.focus() 
+        div.focus()
         let selection = window.getSelection()
         if (selection) {
             var range = document.createRange();
@@ -98,68 +107,102 @@ export default function ProductEditor({ initialPage, close }: Props) {
         }
     }
 
-    const confirmName = (e: HTMLDivElement)=>{
+    const confirmName = (e: HTMLDivElement) => {
         let newName = `${e.textContent}`
-        if(newName === "") return 
-        
+        if (newName === "") return
+
         let newProducts = {}
 
-        for(let i=0;i<types.length;i++) {
+        for (let i = 0; i < types.length; i++) {
             let key = types[i]
-            newProducts = {...newProducts, [key === page ? newName:key]: resultProducts[key]}
+            newProducts = { ...newProducts, [key === page ? newName : key]: resultProducts[key] }
         }
-        
+
         setResult(newProducts)
         setPage(newName)
     }
 
-    const deleteType = () =>{
+    const deleteType = () => {
         let newProducts = {}
 
-        for(let i=0;i<types.length;i++) {
+        for (let i = 0; i < types.length; i++) {
             let key = types[i]
-            if(key === page) continue
-            newProducts = {...newProducts, [key]: resultProducts[key]}
+            if (key === page) continue
+            newProducts = { ...newProducts, [key]: resultProducts[key] }
         }
         setPop(false)
         setResult(newProducts)
         setPage(types[0] !== undefined ? types[0] : "")
     }
 
-    React.useEffect(()=>{
-        if(scrollHeight !== 0) {
-            let ul = document.getElementById("prod-list")
+    React.useEffect(() => {
+        let ul = document.getElementById("prod-list")
+        if (scrollHeight !== 0) {
             ul?.scrollTo({
                 top: scrollHeight,
             })
             scrollHeight = 0
-            if(!lastChanged) return
-            let added = ul?.children[lastChanged] as HTMLDivElement
-            if(added) added.classList.add("added")
+            
+        }
+        if (lastChanged === null) return
+        let added = ul?.children[lastChanged] as HTMLDivElement
+        if (added) {
+            added.classList.add("added")
+            added = changeProductIndex ? ul?.children[lastChanged+1] as HTMLDivElement : added
+            changeProductIndex=false
+            let div = editedEntry === "price" ? 
+            added.children[1] as HTMLDivElement : added.firstChild as HTMLDivElement
+            div.focus()
+            let selection = window.getSelection()
+            if (selection && editedEntry === "name") {
+                var range = document.createRange();
+                range.selectNodeContents(div);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
         }
     })
 
-    const compileTypes = ()=>{
-        if(!types[0] || types[0].length === 0) return 
+    const compileTypes = () => {
+        if (!types[0] || types[0].length === 0) return
         let result = []
 
-        for(const key in resultProducts) {
+        for (const key in resultProducts) {
             let array = resultProducts[key]
-            if(array.length === 0) continue
+            if (array.length === 0) continue
             result.push(...array)
         }
         return result
     }
 
-    let renderList = resultProducts[page] ? resultProducts[page] : page === "" ? compileTypes(): null
+    let renderList = resultProducts[page] ? resultProducts[page] : page === "" ? compileTypes() : null
+
+    const Alert = () => {
+        return <section className='alert absolute'>
+            <FontAwesomeIcon icon={faWarning} />
+            <h2>No hay productos añadidos a este tipo.</h2>
+            <button className='default-button' onClick={() => { newProduct() }}>
+                {"Añadir Producto"}
+            </button>
+        </section>
+    }
+    const AlertType = () => {
+        return <section className='alert absolute'>
+            <FontAwesomeIcon icon={faWarning} />
+            <h2>No hay tipos añadidos en el dominio.</h2>
+            <button className='default-button' onClick={() => { newType() }}>
+                {"Crear un tipo"}
+            </button>
+        </section>
+    }
 
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") closeHandle()
     }}>
-        {pop && <ConfirmPop title='¿Borrar lista de productos?' subTitle='Todos los productos de la lista actual se perderán' confirm={deleteType} close={()=>{setPop(false)}}/>}
+        {pop && <ConfirmPop title='¿Borrar lista de productos?' subTitle='Todos los productos de la lista actual se perderán' confirm={deleteType} close={() => { setPop(false) }} />}
         <section className='pop'>
-            <header> 
+            <header>
                 <div className='pop-top'>
                     <h2>Editar Productos</h2>
                     <button onClick={() => { closeHandle() }}><FontAwesomeIcon icon={faXmark} /></button>
@@ -171,8 +214,8 @@ export default function ProductEditor({ initialPage, close }: Props) {
                         searchButton={setSearch}
                         defaultValue={search}
                         placeholder='Buscar Producto...'
+                        focus={false}
                     />
-                    {/* <button className='default-button-2'><FontAwesomeIcon icon={faUpload} /></button> */}
                     <button onClick={changeProdDisplay} className='default-button-2' title='Cambiar disposición'>
                         <FontAwesomeIcon icon={c.config.prodsInEditorAsList ? faList : faTableCells} />
                     </button>
@@ -180,17 +223,17 @@ export default function ProductEditor({ initialPage, close }: Props) {
             </header>
             <section className='pop-content'>
                 <nav>
-                    <button onClick={()=>{newType()}}>
+                    <button onClick={() => { newType() }}>
                         <FontAwesomeIcon icon={faPlus} />
                         <p>Nuevo tipo</p>
                     </button>
-                    {types.length > 0 && 
+                    {types.length > 0 &&
                         <button
-                        className={"" === page ? "active" : ""}
-                        onClick={() => { setPage("") }}
-                    >
-                        <p>Todos</p>
-                    </button>
+                            className={"" === page ? "active" : ""}
+                            onClick={() => { setPage("") }}
+                        >
+                            <p>Todos</p>
+                        </button>
                     }
                     {types.map(type => {
                         return <button
@@ -207,46 +250,72 @@ export default function ProductEditor({ initialPage, close }: Props) {
                     <div>
                         {resultProducts[page] && page !== "" && <>
                             <h3
-                                onBlur={(e)=>{confirmName(e.currentTarget)}}
-                                onKeyDown={(e)=>{
-                                    if(e.key === "Enter") confirmName(e.currentTarget)
+                                onBlur={(e) => { e.currentTarget.textContent = page }}
+                                onKeyDown={(e) => {
+                                    if (e.key !== "Enter") return
+                                    if(e.currentTarget.textContent === null 
+                                        || e.currentTarget.textContent === "") e.currentTarget.textContent = page
+                                    else confirmName(e.currentTarget)
                                 }}
                             >{page}</h3>
-                            <button className='change' onClick={(e)=>{editTypeName(e)}}>
-                                <FontAwesomeIcon icon={faPen}/>
-                                <FontAwesomeIcon icon={faCheck}/>
+                            <button className='change' onClick={(e) => { editTypeName(e) }}>
+                                <FontAwesomeIcon icon={faPen} />
                             </button>
-                            <button onClick={()=>{setPop(true)}}><FontAwesomeIcon icon={faTrash}/></button>
+                            <button onClick={() => { setPop(true) }}><FontAwesomeIcon icon={faTrash} /></button>
                             <button
                                 className='add-prod'
-                                onClick={()=>{newProduct()}}
+                                onClick={() => { newProduct() }}
                             >
-                                <FontAwesomeIcon icon={faPlus}/>
+                                <FontAwesomeIcon icon={faPlus} />
                                 <p>Añadir Producto</p>
                             </button>
                         </>}
                     </div>
                     <hr></hr>
                     <ul id="prod-list" className={c.config.prodsInEditorAsList ? "" : "prod-grid-mode"}>
-                        {renderList && renderList.map((item, i) => {
-                            let check = checkSearch(item.name, search)
-                            return <div
-                                className={search !== "" && check === item.name ? "d-none" : 'item'} 
-                                key={Math.random()}
-                            >
-                                <p
-                                    dangerouslySetInnerHTML={{ __html: check }}
-                                    onBlur={(e)=>{
-                                        let div = e.target as HTMLDivElement
-                                        let val = div.textContent === null ? "" : div.textContent 
-                                        changeProd("name", val, item.type, item._id,i)
-                                    }}
-                                    contentEditable
-                                ></p>
-                                <input type='number' defaultValue={item.price} onBlur={(e)=>{changeProd("price", e.currentTarget.value, item.type, item._id,i)}}/>
-                                <button title='Borrar producto' onClick={()=>{deleteProd(item._id)}}><FontAwesomeIcon icon={faXmark}/></button>
-                            </div>
-                        })}
+                        {types.length === 0 ? <AlertType /> :
+                            !renderList || renderList.length === 0 ? <Alert /> :
+                                renderList.map((item, i) => {
+                                    let check = checkSearch(item.name, search)
+                                    return <div
+                                        className={search !== "" && check === item.name ? "d-none" : 'item'}
+                                        key={Math.random()}
+                                    >
+                                        <p
+                                            dangerouslySetInnerHTML={{ __html: check }}
+                                            onBlur={(e) => {
+                                                let div = e.target as HTMLDivElement
+                                                div.innerHTML = check
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if(e.key !== "Enter") return
+                                                e.preventDefault()
+                                                let div = e.target as HTMLDivElement
+                                                let val = div.textContent === null ? "" : div.textContent
+                                                if(val === "") div.innerHTML = check
+                                                changeProd("name", val, item.type, item._id, i)
+                                            }}
+                                            contentEditable
+                                        ></p>
+                                        <input 
+                                            type='number' 
+                                            defaultValue={item.price} 
+                                            onBlur={(e) => { 
+                                                let div = e.currentTarget as HTMLInputElement
+                                                div.value = `${item.price}`
+                                            }} 
+                                            onKeyDown={(e) => { 
+                                                if(e.key !== "Enter") return
+                                                e.preventDefault()
+                                                let div = e.currentTarget as HTMLInputElement
+                                                if(div.value === "") div.value = `${item.price}`
+                                                if(i !== renderList.length-1)changeProductIndex = true
+                                                changeProd("price", e.currentTarget.value, item.type, item._id, i) 
+                                            }} 
+                                        />
+                                        <button title='Borrar producto' onClick={() => { deleteProd(item._id, item.type) }}><FontAwesomeIcon icon={faXmark} /></button>
+                                    </div>
+                                })}
                     </ul>
                 </section>
             </section>

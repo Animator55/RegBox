@@ -119,10 +119,6 @@
     transition: border-color 300ms, background-color 300ms, color 300ms;
 }
 
-.product-editor-content>div>.change:not(.awaiting)> :last-child,
-.awaiting> :first-child {
-    display: none;
-}
 
 .add-prod {
     width: fit-content !important;
