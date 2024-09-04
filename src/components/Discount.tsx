@@ -27,6 +27,12 @@ export default function Discount({actual, close, confirm}: Props) {
                     className='discount-input'
                     type="number" 
                     onBlur={(e)=>{setValue(checkValue(parseFloat(e.currentTarget.value === "" ? "0" : e.currentTarget.value)))}}
+                    onKeyDown={(e)=>{
+                        if(e.key !== "Enter") return
+                        e.preventDefault()
+                        let val = checkValue(parseFloat(e.currentTarget.value === "" ? "0" : e.currentTarget.value))
+                        if(val !== actual) confirm(val )
+                    }}
                 />
             </div>
             <div className='buttons-confirm'>

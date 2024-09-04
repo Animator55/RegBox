@@ -51,9 +51,6 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
   const Top = () => {
     return <header className='map-header'>
-      <select>
-        <option>Mapa 1</option>
-      </select>
       <section className='edit-container'>
         {editMode && 
           <button

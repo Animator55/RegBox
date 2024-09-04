@@ -19,6 +19,7 @@
     display: flex;
     gap: 1rem;
     align-items: center;
+    margin-left: auto;
 }
 
 .edit-container > button.default-button {

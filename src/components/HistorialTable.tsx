@@ -5,6 +5,7 @@ import "../assets/historial.css"
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import fixNum from '../logic/fixDateNumber'
+import { stateTraductions } from '../defaults/stateTraductions'
 
 type Props = {
     table?: TableType
@@ -12,9 +13,6 @@ type Props = {
 }
 
 export default function HistorialTableComp({ table, close }: Props) {
-    const stateTraductions = {
-        "unnactive": "Concluida", "closed": "Cerrada", "open": "Abierta", "paying": "Pagando"
-    }
     const jump = (index: number) => {
         let ul = document.querySelector(".historial-list")
         if(ul && ul.children[index]) ul.children[index].scrollIntoView({ block: "start", behavior: "smooth" })

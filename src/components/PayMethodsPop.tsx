@@ -5,11 +5,12 @@ import { Item, PayMethod } from '../vite-env'
 
 type Props = {
     products: Item[]
+    discount: number
     close: Function
     confirm: Function
 }
 
-export default function PayMethodsPop({ products, close, confirm }: Props) {
+export default function PayMethodsPop({ products, discount, close, confirm }: Props) {
     const [methodsUsed, setMethods] = React.useState<PayMethod[]>([])
 
     let total = 0
@@ -18,6 +19,7 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
         total += products[i].amount! * products[i].price
     }
     let substractedTotal = total
+    substractedTotal = Math.floor(substractedTotal*(1-(discount/100)))
     for(let i=0; i<methodsUsed.length; i++) {
         substractedTotal -= parseFloat(methodsUsed[i].amount)
     }
@@ -101,7 +103,11 @@ export default function PayMethodsPop({ products, close, confirm }: Props) {
         <section className='pop pay-meth-pop'>
             <div className='top-total'>
                 <h5>Monto total de:</h5>
-                <h2>{substractedTotal}</h2>
+                {discount !== 0 ? <div className='d-flex-row'>
+                    <del style={{opacity: 0.5}}>{total}</del>
+                    <h2>{substractedTotal}</h2>
+                </div> : 
+                <h2>{substractedTotal}</h2>}
             </div>
             <hr></hr>
             <section className='methods-list'>
