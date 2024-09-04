@@ -6,6 +6,7 @@ import "../assets/productEditor.css"
 import { Configuration, Products } from '../roleMains/Main'
 import checkSearch from '../logic/checkSearch'
 import ConfirmPop from './ConfirmPop'
+import { selectAllText } from '../logic/selectAllText'
 
 type Props = {
     close: Function
@@ -98,13 +99,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
         let div = e.currentTarget.previousSibling as HTMLDivElement
         div.contentEditable = "true"
         div.focus()
-        let selection = window.getSelection()
-        if (selection) {
-            var range = document.createRange();
-            range.selectNodeContents(div);
-            selection.removeAllRanges();
-            selection.addRange(range);
-        }
+        selectAllText(div)
     }
 
     const confirmName = (e: HTMLDivElement) => {
@@ -150,16 +145,16 @@ export default function ProductEditor({ initialPage, close }: Props) {
             added.classList.add("added")
             added = changeProductIndex ? ul?.children[lastChanged+1] as HTMLDivElement : added
             changeProductIndex=false
-            let div = editedEntry === "price" ? 
-            added.children[1] as HTMLDivElement : added.firstChild as HTMLDivElement
-            div.focus()
-            let selection = window.getSelection()
-            if (selection && editedEntry === "name") {
-                var range = document.createRange();
-                range.selectNodeContents(div);
-                selection.removeAllRanges();
-                selection.addRange(range);
+            let div = undefined
+            if(editedEntry === "name") {
+                div = added.firstChild as HTMLDivElement
+                selectAllText(div)
             }
+            else {
+                div = added.children[1] as HTMLInputElement 
+                div.select()
+            }
+            div.focus()
         }
     })
 
@@ -298,7 +293,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                                             contentEditable
                                         ></p>
                                         <input 
-                                            type='number' 
+                                            type='number'
                                             defaultValue={item.price} 
                                             onBlur={(e) => { 
                                                 let div = e.currentTarget as HTMLInputElement
