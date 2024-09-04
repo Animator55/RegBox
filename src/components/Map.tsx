@@ -1,12 +1,13 @@
 import React from 'react'
 import { TablePlaceType, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGear, faMinus, faPen, faPlus, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faMinus, faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Configuration, TablesPlaces } from '../roleMains/Main'
 
 import "../assets/map.css"
 import { colorSelector } from '../logic/colorSelector'
 import { checkTable } from '../logic/checkTableState'
+import { selectAllText } from '../logic/selectAllText'
 
 type Props = {
   setCurrentID: Function
@@ -15,6 +16,7 @@ type Props = {
 }
 
 let deleteItem = false
+let autoEditName: string | undefined = undefined
 
 export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
   const c = React.useContext(Configuration)
@@ -28,8 +30,9 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     let x = map.parentElement!.clientWidth/2 - parseInt(map.style.left)
     let y = map.parentElement!.clientHeight/2 - parseInt(map.style.top)
     
+    let newID = `${Math.round((Math.random()*Math.random())*10000000000)}`
     let table: TablePlaceType = {
-      _id: `${Math.round((Math.random()*Math.random())*10000000000)}`,
+      _id: newID,
       number: `${Math.round(Math.random()*100)}`,
       coords: {
         x: x,
@@ -41,6 +44,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       }
     }
 
+    autoEditName = newID
+
     tdf.set([...tdf.tables, table])
   }
 
@@ -50,12 +55,15 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         <option>Mapa 1</option>
       </select>
       <section className='edit-container'>
-        {editMode && <button
-          onClick={addTable}
-          className='default-button'
-        ><FontAwesomeIcon icon={faPlus} /></button>}
-        <button className='activate-edit-button' onClick={() => { setEditMode(!editMode) }}>
-          <FontAwesomeIcon icon={editMode ? faXmark : faGear} />
+        {editMode && 
+          <button
+            onClick={addTable}
+            className='default-button-2'
+          ><FontAwesomeIcon icon={faPlus} />Añadir</button>
+        }
+        <button className='default-button-2' onClick={() => { setEditMode(!editMode) }}>
+          <FontAwesomeIcon icon={editMode ? faCheck : faPen} />
+          {editMode ? "Confirmar" : "Editar"}
         </button>
       </section>
     </header>
@@ -127,8 +135,6 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
       if (!target.classList.contains("table")) return
 
-      let shift = e.shiftKey
-
       const move = (e2: MouseEvent) => {
         let left = parseFloat(target.style.left)
         let top = parseFloat(target.style.top)
@@ -136,7 +142,56 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         target.style.left = left + (e2.movementX / c.config.map.zoom) + "px"
         target.style.top = top + (e2.movementY / c.config.map.zoom) + "px"
       }
-      const resize = (e2: MouseEvent) => {
+      const drop = () => {
+        let tableToEdit: TablePlaceType | undefined
+        for (let i = 0; i < tdf.tables.length; i++) {
+          if (target.id === tdf.tables[i]._id) {
+            tableToEdit = tdf.tables[i]
+            break
+          }
+        }
+
+        if (!tableToEdit) return
+
+        let x = parseInt(target.style.left)
+        let y = parseInt(target.style.top)
+
+        let val = []
+
+        for (let i = 0; i < tdf.tables.length; i++) {
+          if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
+          else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
+            _id: tableToEdit._id,
+            number: tableToEdit.number,
+            ["coords"]: {
+              x: x,
+              y: y
+            },
+            ["size"]: {
+              ...tableToEdit["size"]
+            }
+          } as TablePlaceType)
+        }
+
+        if (x !== tableToEdit.coords.x || y !== tableToEdit.coords.y) tdf.set(val)
+
+        deleteItem = false
+
+        document.removeEventListener("mousemove", move)
+        document.removeEventListener("mouseup", drop)
+        document.removeEventListener("mouseleave", drop)
+      }
+
+      document.addEventListener("mousemove", move)
+      document.addEventListener("mouseup", drop)
+      document.addEventListener("mouseleave", drop)
+    }
+    const resize = (e: React.MouseEvent) => {
+      let target = e.target as HTMLButtonElement
+
+      if (target.classList.contains("table")) return
+      target = target.parentElement as HTMLButtonElement
+      const movement = (e2: MouseEvent) => {
         let width = parseInt(target.style.width)
         let height = parseInt(target.style.height)
 
@@ -154,8 +209,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
         if (!tableToEdit) return
 
-        let x = parseInt(shift ? target.style.width : target.style.left)
-        let y = parseInt(shift ? target.style.height : target.style.top)
+        let x = parseInt(target.style.width)
+        let y = parseInt(target.style.height)
 
         let val = []
 
@@ -164,26 +219,24 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
           else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
             _id: tableToEdit._id,
             number: tableToEdit.number,
-            [shift ? "size" : "coords"]: {
+            ["size"]: {
               x: x,
               y: y
             },
-            [!shift ? "size" : "coords"]: {
-              ...tableToEdit[!shift ? "size" : "coords"]
+            ["coords"]: {
+              ...tableToEdit["coords"]
             }
           } as TablePlaceType)
         }
 
-        if (x !== tableToEdit.coords.x || y !== tableToEdit.coords.y) tdf.set(val)
+        if (x !== tableToEdit.size.x || y !== tableToEdit.size.y) tdf.set(val)
 
-        deleteItem = false
 
-        document.removeEventListener("mousemove", shift ? resize : move)
+        document.removeEventListener("mousemove", movement)
         document.removeEventListener("mouseup", drop)
         document.removeEventListener("mouseleave", drop)
       }
-
-      document.addEventListener("mousemove", shift ? resize : move)
+      document.addEventListener("mousemove", movement)
       document.addEventListener("mouseup", drop)
       document.addEventListener("mouseleave", drop)
     }
@@ -195,7 +248,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
       name.contentEditable = "true"
       name.focus()
-      console.log("focus")
+      selectAllText(name)
     }
 
     const changeZoom = (zoomin: boolean) => {
@@ -245,14 +298,37 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
                 onBlur={(e)=>{
                   if(e.currentTarget.textContent !== null 
                     && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+                  else e.currentTarget.textContent = tbl.number
+                }}
+                onKeyDown={(e)=>{
+                  if(e.key !== "Enter") return
+                  e.preventDefault()
+                  if(e.currentTarget.textContent !== null 
+                    && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+                  else e.currentTarget.textContent = tbl.number
                 }}
               >{tbl.number}</p>
+              { editMode && <a className='resize' onMouseDown={resize}>
+              </a>}
             </button>
           })}
         </div>
       </section>
     </section>
   }
+
+  React.useEffect(()=>{
+    if(autoEditName) {
+      let table = document.getElementById(autoEditName)
+      autoEditName = undefined 
+      if(!table) return
+      let p = table.children[1] as HTMLParagraphElement
+      if(!p) return
+      p.contentEditable = "true"
+      p.focus()
+      selectAllText(p)
+    }
+  })
 
   return <section className='map'>
     <Top />

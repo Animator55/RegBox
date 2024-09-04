@@ -25,13 +25,6 @@
     padding: 0.3rem;
 }
 
-.activate-edit-button {
-    background-color: transparent;
-    color: var(--cwhite);
-    font-size: 1.3rem;
-}
-
-
 /***/
 
 .map-display {
@@ -148,12 +141,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor:text;
     scale: 0;
     transition: scale 300ms;
     z-index: 2;
 }
-.edit-name > * {
+.resize {
+    position: absolute;
+    background-color: var(--corange);
+    border: 1px solid var(--cwhite);
+    right: -0.2rem;   
+    width: 0.5rem;
+    height: 0.5rem;
+    top: auto;
+    bottom: -0.2rem;
+    cursor: se-resize;
+    z-index: 2;
+}
+.edit-name > *, .resize * {
     pointer-events: none;
 }
 [data-edit="true"] .table p[contenteditable="true"] {
