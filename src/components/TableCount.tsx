@@ -1,7 +1,7 @@
 import { Item, PayMethod, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faCaretDown, faCheckToSlot, faClockRotateLeft, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faCheckToSlot, faClockRotateLeft, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import { Configuration, Products } from '../roleMains/Main'
@@ -12,32 +12,22 @@ import SwitchTable from './SwitchTable'
 import Discount from './Discount'
 import { calculateTotal } from '../logic/calculateTotal'
 import { html_reciept } from '../defaults/reciept'
+import { stateTraductions } from '../defaults/stateTraductions'
 
 type Props = {
     currentTable: TableType | undefined
     EditTable: Function
-    setCurrentTable: Function
     addItem: Function
     tablesMin: {_id: string, number: string, state: "open" | "paying" | "closed" | "unnactive"}[]
 }
 let scrollHeight = 0
 
-export default function TableCount({ currentTable, EditTable, addItem, tablesMin, setCurrentTable}: Props) {
+export default function TableCount({ currentTable, EditTable, addItem, tablesMin}: Props) {
     const [endPop, endTablePop] = React.useState(false)
     const [pop, setPop] = React.useState("")
 
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
-
-    let spanListlength = !currentTable ? tablesMin.length : tablesMin.length -1
-    let disabled = spanListlength <= 0 ? " disabled" : ""
-
-    const expandList = (e: React.MouseEvent) => {
-        let button = e.currentTarget as HTMLButtonElement
-        let list = button.nextElementSibling as HTMLSpanElement
-
-        list.classList.toggle("expanded")
-    }
 
     const print = () => {
         if(currentTable?.state !== "closed") return
@@ -72,19 +62,8 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
     const Top = () => {
         return <header className='table-head'>
             {currentTable ? <>
-                <button className={'expand-button' + disabled} onClick={expandList}><FontAwesomeIcon icon={faCaretDown} /></button>
-                <span className="expand-list">
-                    {tablesMin.map(el=>{
-                        return el._id !== currentTable._id && <button
-                        key={Math.random()}
-                        onClick={()=>{setCurrentTable(el._id)}}
-                        >
-                            Mesa {el.number}
-                            <div className='after' style={{ backgroundColor: colorSelector[el.state] }}></div>
-                        </button>
-                    })}
-                </span>
                 <h2>Mesa {currentTable.number}</h2>
+                <p style={{color:  colorSelector[currentTable.state]}}>{stateTraductions[currentTable.state]}</p>
                 <div className='after' style={{ backgroundColor: colorSelector[currentTable.state] }}></div>
             </> 
             :
@@ -229,6 +208,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
         />}
         {endPop && currentTable?.state === "closed" && <PayMethodsPop 
             products={currentTable.products}
+            discount={currentTable.discount}
             confirm={(val:PayMethod[])=>{
                 EditTable(currentTable?._id, "payMethod", val, "Metodo de pago: " +val.map(el=>{return el.type +": "+el.amount}).join(", "))
             }}

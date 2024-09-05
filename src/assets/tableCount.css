@@ -22,7 +22,7 @@
 
 .table-head .after {
     border-radius: 50%;
-    margin-left: auto;
+    margin-left: 1rem;
     margin-right: 0.5rem;
     width: 1.5rem;
     height: 1.5rem;
@@ -35,19 +35,16 @@
 
 .table-head h2 {
     margin: 0;
+    margin-left: 1rem;
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 50%;
-    max-height: 2rem;
 }
 
 .table-head p {
     color: var(--clightgray);
     margin: 0;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: 50%;
-    max-height: 1.2rem;
+    margin-left: auto;
 }
 
 .table-head>.expand-button {

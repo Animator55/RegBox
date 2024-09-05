@@ -92,7 +92,8 @@ export default function CloseSession({ close, logout }: Props) {
         "Debito": "#65ffd8",
         "Credito": "#ff6d6d",
         "Efectivo": "#46c446",
-        "Transferencia": "#fdff6c"
+        "Transferencia": "#fdff6c",
+        "Descontado": "#fdff6c"
     }
 
     const CakeChart = () => {
@@ -154,16 +155,20 @@ export default function CloseSession({ close, logout }: Props) {
                 </div>
             </header>
             <section className='pop-content'>
-                <ul className='result-prod-list'>
-                    <li><div>Nombre</div><div>Cantidad</div></li>
-                    {headers && headers.map(el => {
-                        return el.header ? <label key={Math.random()}>{el.type}</label> :
-                            <li key={Math.random()}>
-                                <div>{el.name}</div>
-                                <div>{el.amount}</div>
-                            </li>
-                    })}
-                </ul>
+                <div className='prod-container'>
+                    <div className='top-result-prod'>
+                        <div>Nombre</div><div>Cantidad</div>
+                    </div>
+                    <ul className='result-prod-list'>
+                        {headers && headers.map(el => {
+                            return el.header ? <label key={Math.random()}>{el.type}</label> :
+                                <li key={Math.random()}>
+                                    <div>{el.name}</div>
+                                    <div>{el.amount}</div>
+                                </li>
+                        })}
+                    </ul>
+                </div>
                 <section className='result-side'>
                     <div className='result-container'>
                         <CakeChart />

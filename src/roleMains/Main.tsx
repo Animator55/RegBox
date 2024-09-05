@@ -396,7 +396,7 @@ export default function Main({ initialData, logout }: Props) {
                 <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
                     <TopBar OpenPop={OpenPop} download={download} />
                     <section className='d-flex'>
-                        <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin} setCurrentTable={setCurrentHandler} />
+                        <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin}/>
                         <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                     </section>
                     {popUp.pop !== "" && popUps[popUp.pop]}

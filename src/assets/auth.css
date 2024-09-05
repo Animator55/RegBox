@@ -151,6 +151,8 @@
 
 .info-background {
     position: absolute;
+    background-color: var(--clightgray);
+
     inset: 0;
 }
 .info-background .ball-1 {
