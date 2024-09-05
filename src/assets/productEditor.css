@@ -476,9 +476,10 @@ main:has(.notifications) .notifications-pop-button {
     padding: 0.5rem;
     margin: 1rem 0;
     align-items: center;
-    width: 90%;
+    width: 100%;
 }
-.pay-numbers > div {
+.pay-numbers > div:not(.dot) {
+    min-width: 6rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -512,8 +513,8 @@ main:has(.notifications) .notifications-pop-button {
     background-color: var(--clightgray);
     color: var(--cblack);
     padding: 0.5rem;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 60% 25% 15%;
 }
 .result-prod-list >label {
     color: var(--cwhite);
@@ -524,6 +525,6 @@ main:has(.notifications) .notifications-pop-button {
     color: var(--clightgray);
     padding: 0.2rem 0.5rem;
     padding-left: 1rem;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 60% 25% 15%;
 }

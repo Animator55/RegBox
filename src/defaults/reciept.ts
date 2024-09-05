@@ -87,7 +87,7 @@ export const html_result = (array: any[], payMethods: router) => {
         total += payMethods[key]
         payArray.push(`
             <p style="font-size:0.85rem;margin: 3px 0;">${key}</p>
-            <p style="font-size:0.85rem;margin: 3px 0;text-align: right;">${payMethods[key]}</p>`)
+            <p style="font-size:0.85rem;margin: 3px 0;text-align: right;">$${payMethods[key]}</p>`)
     }
 
 

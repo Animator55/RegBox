@@ -89,11 +89,22 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
         return <div key={Math.random()} className='method-item'>
             <select defaultValue={el.type} onChange={(e)=>{edit(e, "type")}}>
                 {payTypes.map(type => {
+                    if(type === "Descontado") return
                     return <option key={Math.random()} value={type}>{type}</option>
                 })}</select>
             <input type='number' defaultValue={el.amount} onBlur={(e)=>{edit(e, "amount")}}
             ></input>
         </div>
+    }
+
+    const handleConfirm = ()=>{
+        if(substractedTotal !== 0) return
+        let result = methodsUsed
+        if(discount !== 0) {
+            let amount = total - Math.floor(total*(1-(discount/100))) 
+            result = [...methodsUsed, {type: "Descontado", amount: `${amount}`}]
+        }
+        confirm(result)
     }
 
     return <section className='back-blur' onClick={(e) => {
@@ -116,6 +127,7 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
                 })}
                 <div className='method-item'>
                     <select>{payTypes.map(type => {
+                        if(type === "Descontado") return null
                         return <option key={Math.random()} value={type}>{type}</option>
                     })}</select>
                     <input type='number' defaultValue={0} max={substractedTotal} onBlur={(e) => { addNew(e) }}></input>
@@ -123,7 +135,7 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
             </section>
             <div className='buttons-confirm'>
                 <button className='secondary-button' onClick={() => { close() }}>Cancelar</button>
-                <button className={substractedTotal !== 0 ? "default-button-2 disabled" : "default-button-2"} onClick={() => { if(substractedTotal === 0) confirm(methodsUsed) }}>Confirmar</button>
+                <button className={substractedTotal !== 0 ? "default-button-2 disabled" : "default-button-2"} onClick={() => { handleConfirm() }}>Confirmar</button>
             </div>
         </section>
     </section>

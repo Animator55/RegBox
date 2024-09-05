@@ -46,7 +46,7 @@ export default function CloseSession({ close, logout }: Props) {
         }
     }
     let combinedArray = compiledProdList.flat().reduce((acc: Item[], curr) => {
-        const found = acc.find((item: Item) => { if (item._id === curr._id) return item })
+        const found = acc.find((item: Item) => { if (item._id === curr._id && item.price === curr.price) return item })
         if (found) {
             let item = found as Item
             item.amount! += curr.amount!;
@@ -62,7 +62,7 @@ export default function CloseSession({ close, logout }: Props) {
     let payNumbersArray = []
 
     for (const key in payMethodsObj) {
-        total += payMethodsObj[key]
+        total += key === "Descontado" ? 0:payMethodsObj[key]
         payNumbersArray.push(<div key={Math.random()}>{key} : {" $" + payMethodsObj[key]}</div>)
     }
     const getAngle = (percent: number) => {
@@ -93,7 +93,7 @@ export default function CloseSession({ close, logout }: Props) {
         "Credito": "#ff6d6d",
         "Efectivo": "#46c446",
         "Transferencia": "#fdff6c",
-        "Descontado": "#fdff6c"
+        "Descontado": "#ffffff"
     }
 
     const CakeChart = () => {
@@ -102,6 +102,7 @@ export default function CloseSession({ close, logout }: Props) {
 
         return <section className='pie-container'>
             {entries.map((key, i) => {
+                if(key === "Descontado")return null
                 let val = i === 0 ? entries[0] : entries[i - 1]
                 let value = getPercent(payMethodsObj[val])
                 stacked += value
@@ -122,7 +123,7 @@ export default function CloseSession({ close, logout }: Props) {
                 return <React.Fragment key={Math.random()}>
                     <div style={{ background: payColorSelector[key] }} className="dot"></div>
                     <div>{key}</div>
-                    <div className='number'>{"$" + payMethodsObj[key]}</div>
+                    <div style={key === "Descontado" ? {opacity: 0.7}:{}} className='number'>{"$" + payMethodsObj[key]}</div>
                 </React.Fragment>
             })}
             <><div className='dot'></div><div><b>Total</b></div><div className='number'><b>${total}</b></div></>
@@ -154,16 +155,19 @@ export default function CloseSession({ close, logout }: Props) {
                     <button onClick={() => { close() }}><FontAwesomeIcon icon={faXmark} /></button>
                 </div>
             </header>
-            <section className='pop-content'>
+            <section className='pop-content' style={{padding: "1rem 1.5rem"}}>
                 <div className='prod-container'>
                     <div className='top-result-prod'>
-                        <div>Nombre</div><div>Cantidad</div>
+                        <div>Nombre</div>
+                        <div>Precio</div>
+                        <div>Cantidad</div>
                     </div>
                     <ul className='result-prod-list'>
                         {headers && headers.map(el => {
                             return el.header ? <label key={Math.random()}>{el.type}</label> :
                                 <li key={Math.random()}>
                                     <div>{el.name}</div>
+                                    <div>${el.price}</div>
                                     <div>{el.amount}</div>
                                 </li>
                         })}
