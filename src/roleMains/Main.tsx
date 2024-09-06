@@ -14,6 +14,7 @@ import { checkImportancy } from '../logic/checkChangeImportancy'
 import { calculateTotal } from '../logic/calculateTotal'
 import HistorialTableComp from '../components/HistorialTable'
 import CloseSession from '../components/CloseSession'
+import Toast from '../components/pops/Toast'
 
 type Props = {
     initialData?: {
@@ -390,6 +391,10 @@ export default function Main({ initialData, logout }: Props) {
         EditTable(id, "number", val, "Cambio de nombre de mesa de " + prev + " a " + val)
     }
 
+    let defaultToast = {
+        title: "toast!",content: "toast content its so long that the idea is to make it break the line", icon: "warn"
+    }
+
     return <>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
@@ -400,6 +405,7 @@ export default function Main({ initialData, logout }: Props) {
                         <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                     </section>
                     {popUp.pop !== "" && popUps[popUp.pop]}
+                    <Toast data={defaultToast}/>
                 </Products.Provider>
             </Configuration.Provider>
         </TablesPlaces.Provider>

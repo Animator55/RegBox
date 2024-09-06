@@ -395,3 +395,25 @@ body:has(.initial-data-pop) main .prod-map-container::after {
     font-size: 1.2rem;
     margin-bottom: 0.7rem;
 }
+
+
+.toast {
+    position: fixed;
+    z-index: 10;
+    background-color: var(--cwhite);
+    padding: 1.5rem;
+    right: 0;
+    bottom: 1rem;
+    max-width: 30dvw;
+    color: var(--cdarkgray);
+}
+
+.toast header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.toast header svg {
+    font-size: 1.2rem;
+}

@@ -131,7 +131,8 @@
 
 .products-top {
     display: flex;
-    padding: 0.5rem 1rem 0.5rem 0.5rem;
+    padding: 0.2rem 1rem 0.2rem 0.5rem;
+    margin-top: 0.7rem;
     gap: 1rem;
     background: var(--corange);
 }
