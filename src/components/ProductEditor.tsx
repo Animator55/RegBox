@@ -18,6 +18,7 @@ let editedEntry: string = "name"
 let changeProductIndex = false
 
 let scrollHeight = 0
+let someEdit = false
 
 export default function ProductEditor({ initialPage, close }: Props) {
     const p = React.useContext(Products)
@@ -38,6 +39,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
         if (value === "") return
         let ul = document.getElementById("prod-list")
         if (!ul) return
+        someEdit= true
         lastChanged = index
         scrollHeight = ul.scrollTop
         let newValue = key === "price" ? parseFloat(value) : value
@@ -54,6 +56,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
         let ul = document.getElementById("prod-list")
         if (!ul) return
         scrollHeight = ul.scrollTop
+        someEdit= true
 
         setResult({
             ...resultProducts, [type]: resultProducts[type].filter((el) => {
@@ -63,7 +66,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
     }
 
     const closeHandle = () => {
-        p.setProds(resultProducts)
+        p.setProds(resultProducts, someEdit)
         close()
     }
 
@@ -74,6 +77,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
             if (str.substring(0, 5) === "Tipo-") count++
         })
         string = string + count
+        someEdit= true
 
         setResult({ ...resultProducts, [string]: [] })
         setPage(string)
@@ -89,6 +93,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
         let ul = document.getElementById("prod-list")
         if (!ul) return
+        someEdit= true
         scrollHeight = 9999999
         lastChanged = resultProducts[page].length
         setResult({ ...resultProducts, [page]: [...resultProducts[page], Item] })
@@ -112,6 +117,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
             let key = types[i]
             newProducts = { ...newProducts, [key === page ? newName : key]: resultProducts[key] }
         }
+        someEdit= true
 
         setResult(newProducts)
         setPage(newName)
@@ -119,6 +125,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
     const deleteType = () => {
         let newProducts = {}
+        someEdit= true
 
         for (let i = 0; i < types.length; i++) {
             let key = types[i]

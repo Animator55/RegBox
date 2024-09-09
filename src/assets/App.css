@@ -402,10 +402,43 @@ body:has(.initial-data-pop) main .prod-map-container::after {
     z-index: 10;
     background-color: var(--cwhite);
     padding: 1.5rem;
-    right: 0;
     bottom: 1rem;
     max-width: 30dvw;
     color: var(--cdarkgray);
+    right: -10rem;
+    opacity: 0;
+    animation: toast 2300ms 200ms;
+}
+
+.toast::after {
+    content: "";
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 0%;
+    height: 0.5rem;
+    background-color: var(--corange);
+    animation: progress-toast 2300ms 300ms linear forwards;
+}
+
+@keyframes progress-toast {
+    0% {
+        width: 0%;
+    }
+    75%, 100% {
+        width: 100%;
+    }
+}
+
+@keyframes toast {
+    0%, 100% {
+        right: -10rem;
+        opacity: 0;
+    }
+    20%,80%,50%{
+        opacity: 1;
+        right: 0;
+    }
 }
 
 .toast header {

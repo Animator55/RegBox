@@ -42,8 +42,14 @@ export const Configuration = React.createContext({
     }, setConfig: (val: configType) => { console.log(val) }
 })
 export const Products = React.createContext({
-    list: {} as productsType, setProds: (val: productsType) => { console.log(val) }
+    list: {} as productsType, setProds: (val: productsType, someEdit: boolean) => { console.log(val, someEdit) }
 })
+export const ToastActivation = React.createContext((val: {
+    title: string
+    content: string
+    icon: string
+    _id: string
+})=>{console.log(val)})
 
 export const TablesPlaces = React.createContext({
     tables: [] as TablePlaceType[],
@@ -79,6 +85,12 @@ export default function Main({ initialData, logout }: Props) {
             y: 0
         }
     })
+    const [toastAlert, setToastAlert] = React.useState<{
+        title: string
+        content: string
+        icon: string
+        _id: string
+    } | undefined>(undefined)
 
     const setConfigHandle = (val: configType) => {
         setConfig(val)
@@ -294,6 +306,28 @@ export default function Main({ initialData, logout }: Props) {
         else EditMassiveTable(table_id, value, comment)
     }
 
+
+    const editProdsHandle = (prods:productsType, someEdit: boolean)=>{
+        ///send to db and obtain results
+
+        if(!someEdit) return
+        let result = true
+        let toastData = result ? {
+            title: "Productos editados Exitosamente",
+            content: "Los productos fueron editados y actualizados en la base de datos con éxito. Se mostrará la nueva lista editada.",
+            icon: "check",
+            _id: `${Math.random()}`
+        }:{
+            title: "Edición de productos Fallida",
+            content: "La conexión falló y los productos no fueron editados, la lista se mostrará con su estado anterior para evitar errores de sincronización.",
+            icon: "xmark",
+            _id: `${Math.random()}`
+        }
+
+        if(result) setProdsState(prods)
+        setToastAlert(toastData)
+    }
+
     let currentTableData: undefined | TableType
     for (let i = 0; i < tables.length; i++) {
         if (tables[i]._id === current) { currentTableData = tables[i]; break }
@@ -340,6 +374,12 @@ export default function Main({ initialData, logout }: Props) {
             setProdsState(initialData.products)
             setTablesPlaces(initialData.tablePlaces)
             setConfig(initialData.config)
+            setToastAlert({
+                title: "Datos iniciales cargados",
+                content: "Los datos vinculados con esta cuenta o datos locales fueron cargados exitosamente.",
+                icon: "check",
+                _id: `${Math.random()}`
+            })
         }
     }, [initialData])
     React.useEffect(() => {
@@ -391,22 +431,20 @@ export default function Main({ initialData, logout }: Props) {
         EditTable(id, "number", val, "Cambio de nombre de mesa de " + prev + " a " + val)
     }
 
-    let defaultToast = {
-        title: "toast!",content: "toast content its so long that the idea is to make it break the line", icon: "warn"
-    }
-
     return <>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
-                <Products.Provider value={{ list: ProductsState, setProds: setProdsState }}>
+                <ToastActivation.Provider value={setToastAlert}>
+                <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>
                     <TopBar OpenPop={OpenPop} download={download} />
                     <section className='d-flex'>
                         <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin}/>
                         <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                     </section>
                     {popUp.pop !== "" && popUps[popUp.pop]}
-                    <Toast data={defaultToast}/>
+                    {toastAlert && <Toast data={toastAlert} setToast={setToastAlert}/>}
                 </Products.Provider>
+                </ToastActivation.Provider>
             </Configuration.Provider>
         </TablesPlaces.Provider>
     </>

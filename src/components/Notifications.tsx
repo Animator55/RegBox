@@ -20,7 +20,7 @@ export default function Notifications({ close, EditMassiveTable }: Props) {
   }
 
   React.useEffect(()=>{
-    if(!list) setTimeout(()=>{requestNotifications()}, 500)
+    if(!list) setTimeout(()=>{requestNotifications()}, 300)
   }, [])
 
   const Alert = ()=>{
