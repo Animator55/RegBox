@@ -10,6 +10,17 @@ export type TableType = {
     payMethod: PayMethod[] | undefined
     state: "open" | "paying" | "closed" | "unnactive"
 }
+export type TableEvents = {
+    _id?: string
+    number?: string
+    discount: number
+    products: Item[],
+    opened: string[]
+    total: string
+    events: SingleEvent[]
+    payMethod: PayMethod[] | undefined
+    state: "open" | "paying" | "closed" | "unnactive"
+}
 export type SingleEvent = {
     important: boolean
     type: string
@@ -21,17 +32,6 @@ export type SingleEvent = {
     products?: Item[] /// only for notification events
     owner: string
     owner_name?: string /// only for notification events
-}
-export type TableEvents = {
-    _id?: string
-    number?: string
-    opened: string[]
-    state: "open" | "paying" | "closed" | "unnactive"
-    products: Item[],
-    total: string
-    discount: number
-    payMethod: PayMethod[] | undefined
-    events: SingleEvent[]
 }
 
 export type HistorialTableType = {
@@ -99,4 +99,12 @@ export type PayMethod = {
 
 export type router = {
     [key:string] : any
+}
+
+
+export type alertType = {
+    _id: string
+    title: string
+    icon: "check" | "xmark" | "warn"
+    content: string
 }

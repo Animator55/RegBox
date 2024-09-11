@@ -182,7 +182,7 @@ export default function CloseSession({ close, logout }: Props) {
                         <FontAwesomeIcon icon={faPrint} />
                         Imprimir
                     </button>
-                    <button className='default-button' onClick={() => { window.localStorage.clear(); logout() }}>
+                    <button className='default-button' onClick={() => { logout() }}>
                         <FontAwesomeIcon icon={faRightFromBracket} />
                         Cerrar Sesión
                     </button>

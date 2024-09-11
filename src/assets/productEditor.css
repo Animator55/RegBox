@@ -456,6 +456,7 @@ main:has(.notifications) .notifications-pop-button {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    margin-left: 1.5rem;
 }
 .result-side > button {
     width: 100%;
@@ -494,10 +495,6 @@ main:has(.notifications) .notifications-pop-button {
     height: 0.5rem;
     background: black;
 } 
-
-.prod-container {
-    margin-right: 1.5rem;
-}
 
 .result-prod-list {
     padding: 0.5rem 0!important;

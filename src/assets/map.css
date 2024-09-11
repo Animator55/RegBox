@@ -97,7 +97,7 @@
 .draggable {
     width: 2000px;
     height: 2000px;
-    transform-origin:center;
+    transform-origin:1000px 1000px;
     position: absolute;
     cursor: all-scroll;
     background-image:  linear-gradient(var(--cdarkgray) 1px, transparent 1px), linear-gradient(to right, var(--cdarkgray) 1px, #131313 1px);

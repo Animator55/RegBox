@@ -1,4 +1,5 @@
-import { Item, sessionType, SingleEvent, userType } from "../vite-env";
+import { alertType, HistorialTableType, Item, sessionType, SingleEvent, TableEvents, TableType, userType } from "../vite-env";
+import { calculateTotal } from "./calculateTotal";
 import fixNum from "./fixDateNumber";
 
 type domainType = {
@@ -135,9 +136,105 @@ const defaultNotifications: SingleEvent[] = [
     },
 ]
 
-export const getHistorialGeneral = ()=>{
+export const getNotificationsGeneral = ()=>{
     let array: SingleEvent[]= []
 
     array = [...defaultNotifications]
     return array
+}
+
+export const back_addEventToHistorial = (prevData: HistorialTableType,entry: string, comment: string, importancy: boolean, value?: any, table?: TableType, discount?: number)=>{
+    let prev = prevData
+    let current = prev.historial[prev.historial.length - 1]
+    let date = new Date()
+    let newEvent: SingleEvent = {
+        type: entry,
+        important: importancy,
+        comment: comment,
+        timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()) + ":" + fixNum(date.getSeconds()),
+        owner: "main"
+    }
+    let resultChange = { ...current, events: [...current.events, newEvent] }
+    if(entry === "products" && table) {
+        resultChange.products = [...table.products]
+    }
+    else if(entry === "discount")resultChange.discount = discount!
+    else if (entry === "state" && value) {
+        resultChange.state = value
+        if (value === "unnactive" && table) {
+            let total = calculateTotal(table.products, 0)
+            resultChange.total = total
+            resultChange.payMethod = table.payMethod
+            resultChange.products = [...table.products]
+            resultChange.discount = discount!
+        }
+    }
+
+    prev.historial = [...prev.historial.map((el, i) => {
+        if (i !== prev.historial.length - 1) return el
+        else return resultChange
+    }) as TableEvents[]]
+
+    return prev
+}
+
+export const back_addTableOrSwitch_Historial = (prevData:HistorialTableType,newTable: TableType, isSwitch: boolean, prevId?: string)=>{
+    let date = new Date()
+    let storage = window.localStorage
+    let prev = prevData
+    
+    let initialEvents: SingleEvent[] = [{
+        important: true,
+        type: "state",
+        comment: isSwitch ? ("Se cambió la mesa a " + newTable.number) : ("Se crea la mesa " + newTable.number),
+        timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds()),
+        owner: "main"
+    }]
+    let sJSONStr = undefined
+    if (isSwitch && prevId) {
+        let prevTable: HistorialTableType = JSON.parse(storage.getItem("RegBoxID:"+prevId) as string) 
+        initialEvents = [
+            ...prevTable.historial[prevTable.historial.length-1].events, {
+                important: true,
+                type: "state",
+                comment: isSwitch ? ("Se cambió la mesa a " + newTable.number) : ("Se crea la mesa " + newTable.number),
+                timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds()),
+                owner: "main"
+            }
+        ]
+        let splicedHistorial = prevTable.historial.filter((el,i)=>{
+            if(i !== prevTable.historial.length-1)return el
+        })
+        prevTable.historial = splicedHistorial
+        sJSONStr = JSON.stringify(prevTable)
+    }
+    let newEntrie: TableEvents = {
+        opened: newTable.opened,
+        state: "open",
+        total: "$0",
+        payMethod: undefined,
+        products: newTable.products,
+        discount: 0,
+        events: initialEvents
+    }
+    prev.historial =[...prev.historial, newEntrie]
+    let JSONStr = JSON.stringify(prev)
+    let result = {
+        JSONStr,
+        sJSONStr
+    }
+    return result
+}
+
+export const setTableHistorial = (table_id:string, historialJSONString: string)=>{
+    table_id
+    historialJSONString
+
+    let alert: alertType = {
+        _id: "gkimnasgkia",
+        title: "Error de conexión",
+        content: "La conexión con base de datos falló y los datos solo se cargaron en el navegador local.",
+        icon: "xmark"
+    }
+    return alert
 }

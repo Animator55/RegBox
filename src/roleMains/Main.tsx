@@ -2,7 +2,7 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import TableCount from '../components/TableCount'
 import ProdAndMap from '../components/ProdAndMap'
-import { HistorialTableType, Item, SingleEvent, TableEvents, TablePlaceType, TableType, configType } from '../vite-env'
+import { HistorialTableType, Item, TablePlaceType, TableType, configType } from '../vite-env'
 import getTableData from '../logic/getTableData'
 import fixNum from '../logic/fixDateNumber'
 import { productsType } from '../defaults/products'
@@ -11,10 +11,10 @@ import Notifications from '../components/Notifications'
 import ConfigurationComp from '../components/Configuration'
 import DownloadTsObject from '../logic/download'
 import { checkImportancy } from '../logic/checkChangeImportancy'
-import { calculateTotal } from '../logic/calculateTotal'
 import HistorialTableComp from '../components/HistorialTable'
 import CloseSession from '../components/CloseSession'
 import Toast from '../components/pops/Toast'
+import { back_addEventToHistorial, back_addTableOrSwitch_Historial, setTableHistorial } from '../logic/API'
 
 type Props = {
     initialData?: {
@@ -23,6 +23,7 @@ type Props = {
         tablePlaces: TablePlaceType[]
     }
     logout: Function
+    initialHistorial: TableType[]
 }
 
 
@@ -61,17 +62,9 @@ export const TablesPlaces = React.createContext({
 
 let lastChanged = ""
 let productPickerScroll = 0
-window.addEventListener('beforeunload', function (event) {
-    // Establece el mensaje que se mostrará en algunos navegadores
-    event.preventDefault(); // Este método es obsoleto, pero se incluye por compatibilidad
-    event.returnValue = ''; // Chrome requiere esta asignación
-
-    // El mensaje predeterminado del navegador se mostrará.
-    // No es posible personalizar el texto en la mayoría de los navegadores modernos.
-});
 
 let massive: {table_id:string, value:Item[], comment:string}|undefined = undefined ///when massiveChange happens and the table is not created yet. 
-export default function Main({ initialData, logout }: Props) {
+export default function Main({ initialData, initialHistorial, logout }: Props) {
     const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config : {
         prodsAsList: false,
         orderedLists: true,
@@ -139,86 +132,38 @@ export default function Main({ initialData, logout }: Props) {
     }
 
     const addTableToHistorial = (newTable: TableType, isSwitch: boolean, prevId?: string) => {
-        let date = new Date()
         let storage = window.localStorage
         let testVal = storage.getItem("RegBoxID:"+newTable._id)
-        let prev: HistorialTableType = testVal ? JSON.parse(testVal) as HistorialTableType : { _id: newTable._id, number: newTable.number, historial: [] }
+        let prevData: HistorialTableType = testVal ? JSON.parse(testVal) as HistorialTableType : { _id: newTable._id, number: newTable.number, historial: [] }
 
-        let initialEvents: SingleEvent[] = [{
-            important: true,
-            type: "state",
-            comment: isSwitch ? ("Se cambió la mesa a " + newTable.number) : ("Se crea la mesa " + newTable.number),
-            timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds()),
-            owner: "main"
-        }]
-        if (isSwitch && prevId) {
-            let prevTable: HistorialTableType = JSON.parse(storage.getItem("RegBoxID:"+prevId) as string) 
-            initialEvents = [
-                ...prevTable.historial[prevTable.historial.length-1].events, {
-                    important: true,
-                    type: "state",
-                    comment: isSwitch ? ("Se cambió la mesa a " + newTable.number) : ("Se crea la mesa " + newTable.number),
-                    timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds()),
-                    owner: "main"
-                }
-            ]
-            let splicedHistorial = prevTable.historial.filter((el,i)=>{
-                if(i !== prevTable.historial.length-1)return el
-            })
-            prevTable.historial = splicedHistorial
-            storage.setItem("RegBoxID:"+prevId, JSON.stringify(prevTable))
+        let {JSONStr, sJSONStr} = back_addTableOrSwitch_Historial(prevData,newTable, isSwitch, prevId)
+        if(sJSONStr){
+            storage.setItem("RegBoxID:"+newTable._id, sJSONStr)
+            let result = setTableHistorial(newTable._id, sJSONStr)
+            
+            if(result) setToastAlert(result)
         }
-        let newEntrie: TableEvents = {
-            opened: newTable.opened,
-            state: "open",
-            total: "$0",
-            payMethod: undefined,
-            products: newTable.products,
-            discount: 0,
-            events: initialEvents
-        }
-        prev.historial =[...prev.historial, newEntrie]
-        storage.setItem("RegBoxID:"+newTable._id, JSON.stringify(prev))
+        storage.setItem("RegBoxID:"+newTable._id, JSONStr)
+        let result = setTableHistorial(newTable._id, JSONStr)
+        
+        if(result) setToastAlert(result)
     }
 
     const addEventToHistorial = (table_id: string, entry: string, comment: string, importancy: boolean, value?: any, table?: TableType, discount?: number) => {
         let storage = window.localStorage
         let testVal = storage.getItem("RegBoxID:"+table_id)
         if (!testVal) return
-        let prev: HistorialTableType = JSON.parse(testVal) as HistorialTableType
-        if (prev.historial.length === 0) return
+        let prevData: HistorialTableType = JSON.parse(testVal) as HistorialTableType
+        if (prevData.historial.length === 0) return
 
+        /// returns modified tableHistorial
+        let prev = back_addEventToHistorial(prevData,entry, comment, importancy, value, table, discount)
 
-        let current = prev.historial[prev.historial.length - 1]
-        let date = new Date()
-        let newEvent: SingleEvent = {
-            type: entry,
-            important: importancy,
-            comment: comment,
-            timestamp: fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()) + ":" + fixNum(date.getSeconds()),
-            owner: "main"
-        }
-        let resultChange = { ...current, events: [...current.events, newEvent] }
-        if(entry === "products" && table) {
-            resultChange.products = [...table.products]
-        }
-        else if (entry === "state" && value) {
-            resultChange.state = value
-            if (value === "unnactive" && table) {
-                let total = calculateTotal(table.products, 0)
-                resultChange.total = total
-                resultChange.payMethod = table.payMethod
-                resultChange.products = [...table.products]
-                resultChange.discount = discount!
-            }
-        }
-
-        prev.historial = [...prev.historial.map((el, i) => {
-            if (i !== prev.historial.length - 1) return el
-            else return resultChange
-        }) as TableEvents[]]
-
+        let JSONStr = JSON.stringify(prev)
         storage.setItem("RegBoxID:"+table_id, JSON.stringify(prev))
+        let result = setTableHistorial(table_id, JSONStr)
+
+        if(result) setToastAlert(result)
     }
 
     const EditTable = (table_id: string, entry: string, value: any, comment: string) => {
@@ -244,7 +189,7 @@ export default function Main({ initialData, logout }: Props) {
         }
         ///if is only changing any entry
         else if (table.state !== "closed" && table.state !== "unnactive") {
-            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, entry === "products" ? {...table, products: value} : undefined)
+            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, entry === "products" ? {...table, products: value} : undefined, entry === "discount" ? value : undefined)
             setTables([
                 ...tables.filter(el => { if (el._id !== table._id) return el }),
                 { ...table, [entry]: value }
@@ -334,11 +279,22 @@ export default function Main({ initialData, logout }: Props) {
     }
 
     
+    const logout_handler = ()=>{
+        if(tables.length !== 0) {
+            setToastAlert({
+                _id: `${Math.random()}`,title: "Error al cerrar sesión",
+                content: "Cierra y cobra todas las mesas para cerrar la sesión.",
+                icon: "warn"
+            })
+        }
+        else logout()
+    }
+
     const popUps: { [key: string]: any } = {
         "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
         "configuration": <ConfigurationComp close={close} />,
         "notifications": <Notifications close={close} EditMassiveTable={EditMassiveTableHandle} />,
-        "closesession": <CloseSession close={close} logout={logout}/>,
+        "closesession": <CloseSession close={close} logout={logout_handler}/>,
         "historial": <HistorialTableComp
                 table={popUp.initialPage === "true" ? currentTableData : undefined} 
                 close={close}
@@ -371,6 +327,7 @@ export default function Main({ initialData, logout }: Props) {
 
     React.useEffect(() => {
         if (initialData !== undefined) {
+            if(initialHistorial) setTables(initialHistorial)
             setProdsState(initialData.products)
             setTablesPlaces(initialData.tablePlaces)
             setConfig(initialData.config)
@@ -413,6 +370,14 @@ export default function Main({ initialData, logout }: Props) {
             products: ProductsState,
             tablePlaces: tablesPlacesPH
         })
+        setTimeout(()=>{
+            setToastAlert({
+                title: "Datos Locales decargados",
+                content: "Los productos, configuraciones y mapa fueron descargados. Utilizalo como datos locales en caso de no tener conexión.",
+                icon: "check",
+                _id: `${Math.random()}`
+            })
+        },1000)
     }
 
     const EditTableName = (id: string, val: string) => {

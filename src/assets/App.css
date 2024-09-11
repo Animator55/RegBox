@@ -399,15 +399,16 @@ body:has(.initial-data-pop) main .prod-map-container::after {
 
 .toast {
     position: fixed;
-    z-index: 10;
-    background-color: var(--cwhite);
-    padding: 1.5rem;
-    bottom: 1rem;
+    z-index: 100;
+    background-color: var(--cdarkgray);
+    padding: 1rem;
+    bottom: 0.7rem;
     max-width: 30dvw;
-    color: var(--cdarkgray);
+    min-width: 300px;
+    color: var(--cwhite);
     right: -10rem;
     opacity: 0;
-    animation: toast 2300ms 200ms;
+    animation: toast 3000ms 200ms;
 }
 
 .toast::after {
@@ -418,7 +419,7 @@ body:has(.initial-data-pop) main .prod-map-container::after {
     width: 0%;
     height: 0.5rem;
     background-color: var(--corange);
-    animation: progress-toast 2300ms 300ms linear forwards;
+    animation: progress-toast 3000ms 300ms linear forwards;
 }
 
 @keyframes progress-toast {
@@ -445,8 +446,13 @@ body:has(.initial-data-pop) main .prod-map-container::after {
     display: flex;
     gap: 1rem;
     align-items: center;
+    font-size: 1rem;
 }
 
 .toast header svg {
-    font-size: 1.2rem;
+    font-size: 2rem;
+}
+.toast p {
+    margin: 0;
+    font-size: 0.8rem;
 }

@@ -1,6 +1,6 @@
 import { faCheck, faCircleNotch, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { getHistorialGeneral } from '../logic/API'
+import { getNotificationsGeneral } from '../logic/API'
 import React from 'react'
 import { SingleEvent } from '../vite-env'
 
@@ -15,7 +15,7 @@ export default function Notifications({ close, EditMassiveTable }: Props) {
   const [pop, OpenPop] = React.useState<SingleEvent | undefined>()
 
   const requestNotifications = ()=>{
-    let data = getHistorialGeneral()
+    let data = getNotificationsGeneral()
     setList(data)
   }
 
@@ -99,9 +99,24 @@ export default function Notifications({ close, EditMassiveTable }: Props) {
                   {pop.owner_name && <p>Origen: <i>{pop.owner_name}</i></p>}
               </div>
               <hr></hr>
-              <ul>
-                {pop.comment}
-              </ul>
+              
+              <div className='prod-container'>
+                    <div className='top-result-prod'>
+                        <div>Nombre</div>
+                        <div>Precio</div>
+                        <div>Cantidad</div>
+                    </div>
+                    <ul className='result-prod-list'>
+                        {pop.products && pop.products.map(el => {
+                            return el.header ? <label key={Math.random()}>{el.type}</label> :
+                                <li key={Math.random()}>
+                                    <div>{el.name}</div>
+                                    <div>${el.price}</div>
+                                    <div>{el.amount}</div>
+                                </li>
+                        })}
+                    </ul>
+                </div>
           </div>
         </section>
       </section>
