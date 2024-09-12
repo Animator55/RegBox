@@ -6,6 +6,7 @@ import React from 'react'
 import orderByTypes from '../logic/orderByTypes'
 import { payTypes } from '../defaults/payTypes'
 import { html_result } from '../defaults/reciept'
+import ConfirmPop from './ConfirmPop'
 
 type Props = {
     close: Function
@@ -14,6 +15,8 @@ type Props = {
 
 export default function CloseSession({ close, logout }: Props) {
     /// creating Tables historial, each entry as (open > prods > close)
+
+    const [pop, setPop] =React.useState(false)
     const p = React.useContext(Products)
     let array: TableEvents[] = []
 
@@ -148,6 +151,12 @@ export default function CloseSession({ close, logout }: Props) {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") close()
     }}>
+        {pop && <ConfirmPop
+            title={"¿Cerrar Sesión?"}
+            subTitle={"El historial se borrará y se cerrará la sesión, reinciando la página. Deseas proseguir?"}
+            confirm={()=>{setPop(false); logout()}}
+            close={()=>{setPop(false)}}
+        />}
         <section className='pop'>
             <header>
                 <div className='pop-top'>
@@ -182,7 +191,7 @@ export default function CloseSession({ close, logout }: Props) {
                         <FontAwesomeIcon icon={faPrint} />
                         Imprimir
                     </button>
-                    <button className='default-button' onClick={() => { logout() }}>
+                    <button className='default-button' onClick={() => { setPop(true) }}>
                         <FontAwesomeIcon icon={faRightFromBracket} />
                         Cerrar Sesión
                     </button>
