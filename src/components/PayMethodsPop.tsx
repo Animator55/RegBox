@@ -25,7 +25,7 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
     }
 
 
-    const addNew = (e: React.FocusEvent) => {
+    const addNew = (e: React.FocusEvent | React.KeyboardEvent ) => {
         let div = e.currentTarget as HTMLInputElement
         if(div.value === ""|| parseFloat(div.value) < 0) return
         let value = div.value
@@ -51,7 +51,7 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
     }
 
     const Item = (el: PayMethod, index: number) => {
-        const edit = (e: React.FocusEvent | React.ChangeEvent, entry: string) => {
+        const edit = (e: React.FocusEvent | React.ChangeEvent | React.KeyboardEvent, entry: string) => {
             let div = e.currentTarget as HTMLInputElement
 
             let value = div.value
@@ -92,7 +92,14 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
                     if(type === "Descontado") return
                     return <option key={Math.random()} value={type}>{type}</option>
                 })}</select>
-            <input type='number' defaultValue={el.amount} onBlur={(e)=>{edit(e, "amount")}}
+            <input type='number' 
+                defaultValue={el.amount} 
+                onBlur={(e)=>{edit(e, "amount")}}
+                onKeyDown={(e)=>{
+                    if(e.key !== "Enter") return 
+                    e.preventDefault()
+                    edit(e, "amount")
+                }}
             ></input>
         </div>
     }
@@ -130,7 +137,14 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
                         if(type === "Descontado") return null
                         return <option key={Math.random()} value={type}>{type}</option>
                     })}</select>
-                    <input type='number' defaultValue={0} max={substractedTotal} onBlur={(e) => { addNew(e) }}></input>
+                    <input type='number' defaultValue={0} max={substractedTotal} 
+                        onBlur={(e) => { addNew(e) }}
+                        onKeyDown={(e) => { 
+                            if(e.key !== "Enter") return 
+                            e.preventDefault()
+                            addNew(e) 
+                        }}
+                    ></input>
                 </div>
             </section>
             <div className='buttons-confirm'>
