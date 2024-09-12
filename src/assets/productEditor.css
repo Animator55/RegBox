@@ -2,6 +2,17 @@
     background-color: var(--cwhite);
     border-radius: 12px;
     overflow: hidden;
+    opacity: 0;
+    position: relative;
+    top: -5rem;
+    animation: fade 300ms forwards;
+}
+
+@keyframes fade {
+    to {
+        opacity: 1;
+        top: 0rem;
+    }
 }
 
 .pop>header {

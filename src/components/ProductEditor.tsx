@@ -1,10 +1,8 @@
-import { faCircle, faList, faPen, faPlus, faTableCells, faTrash, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faPen, faPlus, faTrash, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
-import SearchBar from './SearchBar'
 import "../assets/productEditor.css"
 import { Configuration, Products } from '../roleMains/Main'
-import checkSearch from '../logic/checkSearch'
 import ConfirmPop from './ConfirmPop'
 import { selectAllText } from '../logic/selectAllText'
 
@@ -25,15 +23,10 @@ export default function ProductEditor({ initialPage, close }: Props) {
     let c = React.useContext(Configuration)
 
     const [pop, setPop] = React.useState(false)
-    const [search, setSearch] = React.useState("")
     const [resultProducts, setResult] = React.useState(p.list)
     const types = Object.keys(resultProducts)
 
     const [page, setPage] = React.useState(initialPage !== "" ? initialPage : "")
-
-    const changeProdDisplay = () => {
-        c.setConfig({ ...c.config, prodsInEditorAsList: !c.config.prodsInEditorAsList })
-    }
 
     const changeProd = (key: string, value: string, page: string, id: string, index: number) => {
         if (value === "") return
@@ -209,19 +202,6 @@ export default function ProductEditor({ initialPage, close }: Props) {
                     <h2>Editar Productos</h2>
                     <button onClick={() => { closeHandle() }}><FontAwesomeIcon icon={faXmark} /></button>
                 </div>
-                <div className='pop-options'>
-                    <SearchBar
-                        id={"prods-editor-search"}
-                        onChange={true}
-                        searchButton={setSearch}
-                        defaultValue={search}
-                        placeholder='Buscar Producto...'
-                        focus={false}
-                    />
-                    <button onClick={changeProdDisplay} className='default-button-2' title='Cambiar disposición'>
-                        <FontAwesomeIcon icon={c.config.prodsInEditorAsList ? faList : faTableCells} />
-                    </button>
-                </div>
             </header>
             <section className='pop-content'>
                 <nav>
@@ -278,23 +258,22 @@ export default function ProductEditor({ initialPage, close }: Props) {
                         {types.length === 0 ? <AlertType /> :
                             !renderList || renderList.length === 0 ? <Alert /> :
                                 renderList.map((item, i) => {
-                                    let check = checkSearch(item.name, search)
                                     return <div
-                                        className={search !== "" && check === item.name ? "d-none" : 'item'}
+                                        className={'item'}
                                         key={Math.random()}
                                     >
                                         <p
-                                            dangerouslySetInnerHTML={{ __html: check }}
+                                            dangerouslySetInnerHTML={{ __html: item.name }}
                                             onBlur={(e) => {
                                                 let div = e.target as HTMLDivElement
-                                                div.innerHTML = check
+                                                div.innerHTML = item.name
                                             }}
                                             onKeyDown={(e) => {
                                                 if(e.key !== "Enter") return
                                                 e.preventDefault()
                                                 let div = e.target as HTMLDivElement
                                                 let val = div.textContent === null ? "" : div.textContent
-                                                if(val === "") div.innerHTML = check
+                                                if(val === "") div.innerHTML = item.name
                                                 changeProd("name", val, item.type, item._id, i)
                                             }}
                                             contentEditable

@@ -1,4 +1,4 @@
-import { alertType, HistorialTableType, Item, sessionType, SingleEvent, TableEvents, TableType, userType } from "../vite-env";
+import {  HistorialTableType, Item, sessionType, SingleEvent, TableEvents, TableType, userType } from "../vite-env";
 import { calculateTotal } from "./calculateTotal";
 import fixNum from "./fixDateNumber";
 
@@ -230,11 +230,12 @@ export const setTableHistorial = (table_id:string, historialJSONString: string)=
     table_id
     historialJSONString
 
-    let alert: alertType = {
-        _id: "gkimnasgkia",
-        title: "Error de conexión",
-        content: "La conexión con base de datos falló y los datos solo se cargaron en el navegador local.",
-        icon: "xmark"
-    }
-    return alert
+    return null
+    // let alert: alertType = {
+    //     _id: "gkimnasgkia",
+    //     title: "Error de conexión",
+    //     content: "La conexión con base de datos falló y los datos solo se cargaron en el navegador local.",
+    //     icon: "xmark"
+    // }
+    // return alert
 }
