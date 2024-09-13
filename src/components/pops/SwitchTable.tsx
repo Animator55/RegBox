@@ -1,8 +1,8 @@
 import { faRepeat } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
-import { TablesPlaces } from '../roleMains/Main'
-import { TablePlaceType } from '../vite-env'
+import { TablesPlaces } from '../../roleMains/Main'
+import { TablePlaceType } from '../../vite-env'
 
 type Props = {
     close: Function

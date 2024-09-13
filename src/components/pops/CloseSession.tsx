@@ -1,12 +1,12 @@
 import { faPrint, faRightFromBracket, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { HistorialTableType, Item, router, TableEvents } from '../vite-env'
-import { Products } from '../roleMains/Main'
+import { HistorialTableType, Item, router, TableEvents } from '../../vite-env'
+import { Products } from '../../roleMains/Main'
 import React from 'react'
-import orderByTypes from '../logic/orderByTypes'
-import { payTypes } from '../defaults/payTypes'
-import { html_result } from '../defaults/reciept'
-import ConfirmPop from './ConfirmPop'
+import orderByTypes from '../../logic/orderByTypes'
+import { payTypes } from '../../defaults/payTypes'
+import { html_result } from '../../defaults/reciept'
+import ConfirmPop from '../ConfirmPop'
 
 type Props = {
     close: Function
