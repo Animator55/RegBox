@@ -15,6 +15,8 @@ import HistorialTableComp from '../components/HistorialTable'
 import CloseSession from '../components/CloseSession'
 import Toast from '../components/pops/Toast'
 import { back_addEventToHistorial, back_addTableOrSwitch_Historial, setTableHistorial } from '../logic/API'
+import AccountPop from '../components/pops/AccountPop'
+import AccountInfo from '../components/pops/AccountInfo'
 
 type Props = {
     initialData?: {
@@ -50,7 +52,7 @@ export const ToastActivation = React.createContext((val: {
     content: string
     icon: string
     _id: string
-})=>{console.log(val)})
+}) => { console.log(val) })
 
 export const TablesPlaces = React.createContext({
     tables: [] as TablePlaceType[],
@@ -63,7 +65,7 @@ export const TablesPlaces = React.createContext({
 let lastChanged = ""
 let productPickerScroll = 0
 
-let massive: {table_id:string, value:Item[], comment:string}|undefined = undefined ///when massiveChange happens and the table is not created yet. 
+let massive: { table_id: string, value: Item[], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
     const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config : {
         prodsAsList: false,
@@ -98,7 +100,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     const [popUp, setCurrentPop] = React.useState({ pop: "", initialPage: "" })
 
     const close = () => { setCurrentPop({ pop: "", initialPage: "" }) }
-    const createTable = (id:string)=>{
+    const createTable = (id: string) => {
         let date = new Date()
         let data = getTableData(id, tablesPlacesPH)
         if (!data) return false
@@ -127,43 +129,43 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         if (index !== -1) setCurrent(id)
         else {
             let result = createTable(id)
-            if(result) setCurrent(id)
+            if (result) setCurrent(id)
         }
     }
 
     const addTableToHistorial = (newTable: TableType, isSwitch: boolean, prevId?: string) => {
         let storage = window.localStorage
-        let testVal = storage.getItem("RegBoxID:"+newTable._id)
+        let testVal = storage.getItem("RegBoxID:" + newTable._id)
         let prevData: HistorialTableType = testVal ? JSON.parse(testVal) as HistorialTableType : { _id: newTable._id, number: newTable.number, historial: [] }
 
-        let {JSONStr, sJSONStr} = back_addTableOrSwitch_Historial(prevData,newTable, isSwitch, prevId)
-        if(sJSONStr){
-            storage.setItem("RegBoxID:"+newTable._id, sJSONStr)
+        let { JSONStr, sJSONStr } = back_addTableOrSwitch_Historial(prevData, newTable, isSwitch, prevId)
+        if (sJSONStr) {
+            storage.setItem("RegBoxID:" + newTable._id, sJSONStr)
             let result = setTableHistorial(newTable._id, sJSONStr)
-            
-            if(result) setToastAlert(result)
+
+            if (result) setToastAlert(result)
         }
-        storage.setItem("RegBoxID:"+newTable._id, JSONStr)
+        storage.setItem("RegBoxID:" + newTable._id, JSONStr)
         let result = setTableHistorial(newTable._id, JSONStr)
-        
-        if(result) setToastAlert(result)
+
+        if (result) setToastAlert(result)
     }
 
     const addEventToHistorial = (table_id: string, entry: string, comment: string, importancy: boolean, value?: any, table?: TableType, discount?: number) => {
         let storage = window.localStorage
-        let testVal = storage.getItem("RegBoxID:"+table_id)
+        let testVal = storage.getItem("RegBoxID:" + table_id)
         if (!testVal) return
         let prevData: HistorialTableType = JSON.parse(testVal) as HistorialTableType
         if (prevData.historial.length === 0) return
 
         /// returns modified tableHistorial
-        let prev = back_addEventToHistorial(prevData,entry, comment, importancy, value, table, discount)
+        let prev = back_addEventToHistorial(prevData, entry, comment, importancy, value, table, discount)
 
         let JSONStr = JSON.stringify(prev)
-        storage.setItem("RegBoxID:"+table_id, JSON.stringify(prev))
+        storage.setItem("RegBoxID:" + table_id, JSON.stringify(prev))
         let result = setTableHistorial(table_id, JSONStr)
 
-        if(result) setToastAlert(result)
+        if (result) setToastAlert(result)
     }
 
     const EditTable = (table_id: string, entry: string, value: any, comment: string) => {
@@ -189,21 +191,21 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         }
         ///if is only changing any entry
         else if (table.state !== "closed" && table.state !== "unnactive") {
-            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, entry === "products" ? {...table, products: value} : undefined, entry === "discount" ? value : undefined)
+            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, entry === "products" ? { ...table, products: value } : undefined, entry === "discount" ? value : undefined)
             setTables([
                 ...tables.filter(el => { if (el._id !== table._id) return el }),
                 { ...table, [entry]: value }
             ])
         }
-        else if(table.state === "closed" && entry === "payMethod") {
+        else if (table.state === "closed" && entry === "payMethod") {
             addEventToHistorial(table_id, entry, comment, true, undefined, undefined)
             setTables([
                 ...tables.filter(el => { if (el._id !== table._id) return el }),
-                { ...table, [entry]: value}
+                { ...table, [entry]: value }
             ])
         }
     }
-    const EditMassiveTable = (table_id: string, value: Item[], comment: string)=>{
+    const EditMassiveTable = (table_id: string, value: Item[], comment: string) => {
         let table
         for (let i = 0; i < tables.length; i++) {
             if (tables[i]._id === table_id) table = tables[i]
@@ -212,24 +214,24 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
         if (table.state !== "closed" && table.state !== "unnactive") {
             let array = [...table.products]
-            for(let i=0; i<value.length; i++) {
+            for (let i = 0; i < value.length; i++) {
                 let newItem = value[i]
 
                 /// search if new item already exists
                 let index = -1
                 for (let j = 0; j < array.length; j++) {
-                    if(newItem._id === array[j]._id){
+                    if (newItem._id === array[j]._id) {
                         index = j
                         break
                     }
                 }
-                if(index === -1) array = [...array, newItem]
-                else array = array.map((el, j)=>{
-                    if(j === index) return {...el, amount: el.amount! + newItem.amount!}
+                if (index === -1) array = [...array, newItem]
+                else array = array.map((el, j) => {
+                    if (j === index) return { ...el, amount: el.amount! + newItem.amount! }
                     else return el
                 })
             }
-            let editedTable ={ ...table, products: array }
+            let editedTable = { ...table, products: array }
 
             addEventToHistorial(table_id, "products", comment, false, undefined, editedTable)
             setTables([
@@ -239,37 +241,37 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         }
     }
 
-    const EditMassiveTableHandle = (table_id: string, value: Item[], comment: string)=>{
+    const EditMassiveTableHandle = (table_id: string, value: Item[], comment: string) => {
         let table
         for (let i = 0; i < tables.length; i++) {
             if (tables[i]._id === table_id) table = tables[i]
         }
         if (!table) {
             let result = createTable(table_id)
-            if(result) massive = {table_id, value, comment}
+            if (result) massive = { table_id, value, comment }
         }
         else EditMassiveTable(table_id, value, comment)
     }
 
 
-    const editProdsHandle = (prods:productsType, someEdit: boolean)=>{
+    const editProdsHandle = (prods: productsType, someEdit: boolean) => {
         ///send to db and obtain results
 
-        if(!someEdit) return
+        if (!someEdit) return
         let result = true
         let toastData = result ? {
             title: "Productos editados Exitosamente",
             content: "Los productos fueron editados y actualizados en la base de datos con éxito. Se mostrará la nueva lista editada.",
             icon: "check",
             _id: `${Math.random()}`
-        }:{
+        } : {
             title: "Edición de productos Fallida",
             content: "La conexión falló y los productos no fueron editados, la lista se mostrará con su estado anterior para evitar errores de sincronización.",
             icon: "xmark",
             _id: `${Math.random()}`
         }
 
-        if(result) setProdsState(prods)
+        if (result) setProdsState(prods)
         setToastAlert(toastData)
     }
 
@@ -278,27 +280,16 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         if (tables[i]._id === current) { currentTableData = tables[i]; break }
     }
 
-    
-    const logout_handler = ()=>{
-        if(tables.length !== 0) {
+
+    const logout_handler = () => {
+        if (tables.length !== 0) {
             setToastAlert({
-                _id: `${Math.random()}`,title: "Error al cerrar sesión",
+                _id: `${Math.random()}`, title: "Error al cerrar sesión",
                 content: "Cierra y cobra todas las mesas para cerrar la sesión.",
                 icon: "warn"
             })
         }
         else logout()
-    }
-
-    const popUps: { [key: string]: any } = {
-        "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
-        "configuration": <ConfigurationComp close={close} />,
-        "notifications": <Notifications close={close} EditMassiveTable={EditMassiveTableHandle} />,
-        "closesession": <CloseSession close={close} logout={logout_handler}/>,
-        "historial": <HistorialTableComp
-                table={popUp.initialPage === "true" ? currentTableData : undefined} 
-                close={close}
-            />
     }
 
     let tablesMin = tables.map(tbl => {
@@ -313,11 +304,11 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         for (let i = 0; i < prods.length; i++) if (prods[i]._id === item._id) { index = i; break }
 
         let amount = value !== undefined ? value : 1
-        let word = amount === 1 ? "Añadido": "Subtraido"
+        let word = amount === 1 ? "Añadido" : "Subtraido"
         lastChanged = item._id
         productPickerScroll = value !== undefined ? 0 : document.getElementById("product-picker")?.scrollTop!
 
-        if (item.amount && (item.amount + amount) <= 0) EditTable(currentTableData._id, "products", prods.filter(el => { if (el._id !== item._id) return el }), "Eliminado " + item.name+ " (" +item._id+ ")")
+        if (item.amount && (item.amount + amount) <= 0) EditTable(currentTableData._id, "products", prods.filter(el => { if (el._id !== item._id) return el }), "Eliminado " + item.name + " (" + item._id + ")")
         else if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: amount }], "Añadido 1 de " + item.name + " (" + item._id + ")")
         else EditTable(currentTableData?._id, "products", prods.map(el => {
             if (el._id === item._id) return { ...item, amount: prods[index].amount! + amount }
@@ -327,7 +318,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
     React.useEffect(() => {
         if (initialData !== undefined) {
-            if(initialHistorial) setTables(initialHistorial)
+            if (initialHistorial) setTables(initialHistorial)
             setProdsState(initialData.products)
             setTablesPlaces(initialData.tablePlaces)
             setConfig(initialData.config)
@@ -353,7 +344,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             let ul = document.getElementById("product-picker")
             ul?.scrollTo({ top: productPickerScroll, })
         }
-        if(massive !== undefined) {
+        if (massive !== undefined) {
             EditMassiveTable(massive.table_id, massive.value, massive.comment)
             massive = undefined
         }
@@ -370,14 +361,26 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             products: ProductsState,
             tablePlaces: tablesPlacesPH
         })
-        setTimeout(()=>{
+        setTimeout(() => {
             setToastAlert({
                 title: "Datos Locales decargados",
                 content: "Los productos, configuraciones y mapa fueron descargados. Utilizalo como datos locales en caso de no tener conexión.",
                 icon: "check",
                 _id: `${Math.random()}`
             })
-        },1000)
+        }, 1000)
+    }
+    const popUps: { [key: string]: any } = {
+        "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
+        "configuration": <ConfigurationComp close={close} />,
+        "information": <AccountInfo close={close} />,
+        "notifications": <Notifications close={close} EditMassiveTable={EditMassiveTableHandle} />,
+        "closesession": <CloseSession close={close} logout={logout_handler} />,
+        "account": <AccountPop download={download} OpenPop={OpenPop} close={close} />,
+        "historial": <HistorialTableComp
+            table={popUp.initialPage === "true" ? currentTableData : undefined}
+            close={close}
+        />
     }
 
     const EditTableName = (id: string, val: string) => {
@@ -400,15 +403,15 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
-                <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>
-                    <TopBar OpenPop={OpenPop} download={download} />
-                    <section className='d-flex'>
-                        <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin}/>
-                        <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
-                    </section>
-                    {popUp.pop !== "" && popUps[popUp.pop]}
-                    {toastAlert && <Toast data={toastAlert} setToast={setToastAlert}/>}
-                </Products.Provider>
+                    <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>
+                        <TopBar OpenPop={OpenPop} />
+                        <section className='d-flex'>
+                            <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin} />
+                            <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
+                        </section>
+                        {popUp.pop !== "" && popUps[popUp.pop]}
+                        {toastAlert && <Toast data={toastAlert} setToast={setToastAlert} />}
+                    </Products.Provider>
                 </ToastActivation.Provider>
             </Configuration.Provider>
         </TablesPlaces.Provider>

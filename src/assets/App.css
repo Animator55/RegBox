@@ -456,3 +456,44 @@ body:has(.initial-data-pop) main .prod-map-container::after {
     margin: 0;
     font-size: 0.8rem;
 }
+
+
+
+
+
+.account-span {
+    right: 0;
+    width: 10rem;
+    top: calc(1rem + 0.7rem + 3px + .8rem);
+    position: absolute;
+    background-color: var(--cdarkgray);
+    padding: .5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.account-span ul {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.account-span ul button {
+    width: 100%;
+    background-color: var(--cdarkgray);
+    color: var(--cwhite);
+    padding: .5rem 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.account-span ul button p {
+    margin: 0;
+    font-size: .8rem;
+}
+.account-span ul button:hover {
+    background-color: var(--corange);
+    color: var(--cdarkgray);
+}
