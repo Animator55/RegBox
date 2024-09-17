@@ -148,13 +148,13 @@ export default function ProductEditor({ initialPage, close }: Props) {
             let div = undefined
             if(editedEntry === "name") {
                 div = added.firstChild as HTMLDivElement
-                selectAllText(div)
+                if(div) selectAllText(div)
             }
             else {
                 div = added.children[1] as HTMLInputElement 
-                div.select()
+                if(div) div.select()
             }
-            div.focus()
+            if(div) div.focus()
         }
     })
 
