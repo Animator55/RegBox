@@ -396,19 +396,29 @@ body:has(.initial-data-pop) main .prod-map-container::after {
     margin-bottom: 0.7rem;
 }
 
-
-.toast {
+.toast-container {
     position: fixed;
     z-index: 100;
-    background-color: var(--cdarkgray);
-    padding: 1rem;
     bottom: 0.7rem;
+    right: 0;
+    pointer-events: none;
+}
+
+.toast {
+    position: relative;
+    background-color: var(--cdarkgray);
+    padding: 0rem;
     max-width: 30dvw;
     min-width: 300px;
     color: var(--cwhite);
     right: -10rem;
-    opacity: 0;
+    max-height: 0px;
     animation: toast 3000ms 200ms;
+}
+.toast:first-child {
+    max-height: 1000px!important;
+    padding: 1rem!important;
+    opacity: 0;
 }
 
 .toast::after {
@@ -430,15 +440,20 @@ body:has(.initial-data-pop) main .prod-map-container::after {
         width: 100%;
     }
 }
-
 @keyframes toast {
     0%, 100% {
         right: -10rem;
+        max-height: 0px;
+    }
+    100% {
         opacity: 0;
+        max-height: 1000px;
+        padding: 1rem;
     }
     20%,80%,50%{
         opacity: 1;
         right: 0;
+        padding: 1rem;
     }
 }
 
