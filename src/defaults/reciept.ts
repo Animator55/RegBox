@@ -1,3 +1,4 @@
+import { selectDomainById } from "../logic/API"
 import fixNum from "../logic/fixDateNumber"
 import orderByTypes from "../logic/orderByTypes"
 import { router, sessionType, TableType } from "../vite-env"
@@ -22,9 +23,16 @@ export const html_reciept = (currentTable: TableType, types: string[]) => {
             <p style="font-size:0.65rem;margin: 3px 0;text-align: right;">${prefix + "$" + el.price * el.amount!}</p>`)
     }
 
+    let stor = window.localStorage.getItem("RegBoxSession")
+    let title = "Cuenta"
+    if(stor && stor !== "") {
+        let dom = selectDomainById(JSON.parse(stor).domain)
+        if(dom) title = dom.name
+    }
+
     let HTML = `<div className='reciept' style="font-family:'Kanit', sans-serif;">
             <div className='content-reciept'>
-                <h3 style="text-align: center;">CLUB VERMUT</h3>
+                <h3 style="text-align: center;">${title}</h3>
                 <h6 style="marginBottom: 2; text-align:right;">NO VALIDO COMO FACTURA</h6>
                 <hr></hr>
                 <div style="display: flex; gap: 1rem;">

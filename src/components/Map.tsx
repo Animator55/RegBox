@@ -1,8 +1,8 @@
 import React from 'react'
 import { TablePlaceType, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faMinus, faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { Configuration, TablesPlaces } from '../roleMains/Main'
+import { faCheck, faMinus, faPen, faPlus, faTrash, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { Configuration, TablesPlaces, ToastActivation } from '../roleMains/Main'
 
 import "../assets/map.css"
 import { colorSelector } from '../logic/colorSelector'
@@ -19,6 +19,7 @@ let deleteItem = false
 let autoEditName: string | undefined = undefined
 
 export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
+  const toast = React.useContext(ToastActivation)
   const c = React.useContext(Configuration)
   const tdf = React.useContext(TablesPlaces)
 
@@ -26,21 +27,25 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
   const addTable = () => {
     let map = document.querySelector(".draggable") as HTMLDivElement
-
-    let x = map.parentElement!.clientWidth/2 - parseInt(map.style.left)
-    let y = map.parentElement!.clientHeight/2 - parseInt(map.style.top)
     
-    let newID = `${Math.round((Math.random()*Math.random())*10000000000)}`
+    let x = 100
+    let y = 100
+    if(map){
+      x = map.parentElement!.clientWidth / 2 - parseInt(map.style.left)
+      y = map.parentElement!.clientHeight / 2 - parseInt(map.style.top)
+    }
+
+    let newID = `${Math.round((Math.random() * Math.random()) * 10000000000)}`
     let table: TablePlaceType = {
       _id: newID,
-      number: `${Math.round(Math.random()*100)}`,
+      number: `${Math.round(Math.random() * 100)}`,
       coords: {
         x: x,
         y: y,
       },
       size: {
-        x: 70,
-        y: 70,
+        x: 35,
+        y: 35,
       }
     }
 
@@ -52,7 +57,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
   const Top = () => {
     return <header className='map-header'>
       <section className='edit-container'>
-        {editMode && 
+        {editMode &&
           <button
             onClick={addTable}
             className='default-button-2'
@@ -100,7 +105,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
     const drag = (e: React.MouseEvent) => {
       let back = e.target as HTMLDivElement
-      if (back.className !== "background" && back.className !== "draggable" ) return
+      if (back.className !== "background" && back.className !== "draggable") return
       let target = back.className !== "draggable" ? back.firstChild as HTMLDivElement : back
       const move = (e2: MouseEvent) => {
         let left = parseInt(target.style.left)
@@ -157,6 +162,15 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
         for (let i = 0; i < tdf.tables.length; i++) {
           if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
+          else if (deleteItem && checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
+            toast({
+              _id: "ibsgnfaig",
+              title: "Acción inválida",
+              content: "La mesa no puede ser eliminada si esta misma esta abierta o no fue cobrada.",
+              icon: "xmark"
+            })
+            val.push(tdf.tables[i])
+          }
           else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
             _id: tableToEdit._id,
             number: tableToEdit.number,
@@ -238,9 +252,9 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       document.addEventListener("mouseleave", drop)
     }
 
-    const editTableName = (e: React.MouseEvent)=>{
-      let div = e.target as HTMLButtonElement 
-      if(div.className !== "edit-name") return
+    const editTableName = (e: React.MouseEvent) => {
+      let div = e.target as HTMLButtonElement
+      if (div.className !== "edit-name") return
       let name = div.nextSibling as HTMLButtonElement
 
       name.contentEditable = "true"
@@ -252,75 +266,84 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       let zone = document.querySelector(".draggable") as HTMLDivElement
       let scale = parseFloat(zone.style.scale)
       let newScale = !zoomin ? scale - 0.02 : scale + 0.02
-      if(newScale < 0.05) return
+      if (newScale < 0.05) return
       zone.style.scale = `${newScale}`
-      if(!zone.parentElement) return
-      zone.parentElement.addEventListener("mousemove", ()=>{
+      if (!zone.parentElement) return
+      zone.parentElement.addEventListener("mousemove", () => {
         c.setConfig({ ...c.config, map: { ...c.config.map, zoom: newScale } })
       })
       let numberDiv = document.querySelector(".zoom-number") as HTMLDivElement
-      if(!numberDiv) return
-      numberDiv.textContent =`${Math.round(newScale* 100)}%`
+      if (!numberDiv) return
+      numberDiv.textContent = `${Math.round(newScale * 100)}%`
     }
 
     return <section className='map-display'>
       <Buttons />
       <section className='background' onMouseDown={drag} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
-        <div className='draggable' style={{ top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}` }} >
-          {tdf.tables.map((tbl) => {
-            let color = "var(--clightgray)"
-            let selected = false
-            let check = checkTable(tbl._id, tablesOpenMin)
-            if (tbl._id === current?._id) { color = colorSelector[current.state]; selected = true }
-            else if (check.result) color = colorSelector[check.state]
+        {tdf.tables.length !== 0 ?
+          <div className='draggable' style={{ top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}` }} >
+            {tdf.tables.map((tbl) => {
+              let color = "var(--clightgray)"
+              let selected = false
+              let check = checkTable(tbl._id, tablesOpenMin)
+              if (tbl._id === current?._id) { color = colorSelector[current.state]; selected = true }
+              else if (check.result) color = colorSelector[check.state]
 
-            return <button
-              id={tbl._id}
-              onMouseDown={(e) => { if (editMode && e.currentTarget.contentEditable !== "true") dragItem(e) }}
-              key={Math.random()}
-              onClick={() => { if (!editMode) setCurrentID(tbl._id, check.state === "unnactive" ? true : false) }}
-              className={selected ? "selected table" : "table"}
-              style={{
-                width: tbl.size.x,
-                height: tbl.size.y,
-                top: tbl.coords.y,
-                left: tbl.coords.x,
-                backgroundColor: color
-              }}
-            >
-              { editMode && <a className='edit-name' onClick={editTableName}>
-                <FontAwesomeIcon icon={faPen}/>
-              </a>}
-              <p
-                onBlur={(e)=>{
-                  if(e.currentTarget.textContent !== null 
-                    && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
-                  else e.currentTarget.textContent = tbl.number
+              return <button
+                id={tbl._id}
+                onMouseDown={(e) => { if (editMode && e.currentTarget.contentEditable !== "true") dragItem(e) }}
+                key={Math.random()}
+                onClick={() => { if (!editMode) setCurrentID(tbl._id, check.state === "unnactive" ? true : false) }}
+                className={selected ? "selected table" : "table"}
+                style={{
+                  width: tbl.size.x,
+                  height: tbl.size.y,
+                  top: tbl.coords.y,
+                  left: tbl.coords.x,
+                  backgroundColor: color
                 }}
-                onKeyDown={(e)=>{
-                  if(e.key !== "Enter") return
-                  e.preventDefault()
-                  if(e.currentTarget.textContent !== null 
-                    && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
-                  else e.currentTarget.textContent = tbl.number
-                }}
-              >{tbl.number}</p>
-              { editMode && <a className='resize' onMouseDown={resize}>
-              </a>}
+              >
+                {editMode && <a className='edit-name' onClick={editTableName}>
+                  <FontAwesomeIcon icon={faPen} />
+                </a>}
+                <p
+                  onBlur={(e) => {
+                    if (e.currentTarget.textContent !== null
+                      && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+                    else e.currentTarget.textContent = tbl.number
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key !== "Enter") return
+                    e.preventDefault()
+                    if (e.currentTarget.textContent !== null
+                      && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+                    else e.currentTarget.textContent = tbl.number
+                  }}
+                >{tbl.number}</p>
+                {editMode && <a className='resize' onMouseDown={resize}>
+                </a>}
+              </button>
+            })}
+          </div> :
+          <section className='alert'>
+            <FontAwesomeIcon icon={faWarning} />
+            <h2>No hay mesas añadidas a el mapa.</h2>
+            <button className='default-button' onClick={() => { addTable() }}>
+              Añadir mesa
             </button>
-          })}
-        </div>
+          </section>
+        }
       </section>
     </section>
   }
 
-  React.useEffect(()=>{
-    if(autoEditName) {
+  React.useEffect(() => {
+    if (autoEditName) {
       let table = document.getElementById(autoEditName)
-      autoEditName = undefined 
-      if(!table) return
+      autoEditName = undefined
+      if (!table) return
       let p = table.children[1] as HTMLParagraphElement
-      if(!p) return
+      if (!p) return
       p.contentEditable = "true"
       p.focus()
       selectAllText(p)

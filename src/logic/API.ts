@@ -15,7 +15,7 @@ type domainType = {
 let domains: domainType[] = [
     {
         _id: "gadeyhdfshj",
-        name: "domain-1",
+        name: "CLUB VERMUT",
         url: "",
         users: [
             {_id: "gnidkasgm", name: "Caja", role: "main", password: "1234"},
@@ -27,15 +27,26 @@ let domains: domainType[] = [
     },
     {
         _id: "gadeyhdfshj",
-        name: "domain-2",
+        name: "TestDomain",
         url: "",
-        users: [],
+        users: [
+            {_id: "gnidkasgm", name: "Caja", role: "main", password: "1234"}
+        ],
         roles: ["main", "pawn", "kitchen"],
         products: [],
         map: ""
     },
 ]
 
+export const selectDomainById = (dom_id: string): domainType | undefined=> {
+    let index = -1
+    for(let i=0; i<domains.length; i++) {
+        if(domains[i]._id === dom_id) {index = i; break}
+    }
+
+    if(index === -1) return
+    return domains[index]
+}
 const selectDomain = (dom: string)=> {
     let index = -1
     for(let i=0; i<domains.length; i++) {

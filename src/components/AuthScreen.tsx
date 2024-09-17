@@ -64,7 +64,7 @@ export default function AuthScreen({ setSession }: Props) {
             <form onSubmit={submit} className='form'>
                 <div className='labeled-input'>
                     <label>Dominio</label>
-                    <input name='domain' defaultValue={"domain-1"}/>
+                    <input name='domain' defaultValue={"TestDomain"}/>
                 </div>
                 <div className='labeled-input'>
                     <label>Usuario</label>

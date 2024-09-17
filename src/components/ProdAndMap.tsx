@@ -98,10 +98,9 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
                         addItem={addItem}
                     />
                     <MiniMap 
-                        OpenTable={(_id: string, isNew: boolean) => {
+                        openTable={(_id: string, isNew: boolean) => {
                             setCurrentHandler(_id, isNew)
                         }}
-                        Open={() => { setPage("map") }}
                         tablesOpenMin={tablesMin}
                         current={current}
                     />
