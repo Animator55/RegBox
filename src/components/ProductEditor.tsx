@@ -17,14 +17,17 @@ let changeProductIndex = false
 
 let scrollHeight = 0
 let someEdit = false
+let iterationLength = 15
 
 export default function ProductEditor({ initialPage, close }: Props) {
     const p = React.useContext(Products)
     let c = React.useContext(Configuration)
+    const UlRef = React.useRef<HTMLUListElement | null>(null);
 
     const [pop, setPop] = React.useState(false)
     const [resultProducts, setResult] = React.useState(p.list)
     const types = Object.keys(resultProducts)
+    const [loadedIteration, setLoadedIteration] = React.useState(1)
 
     const [page, setPage] = React.useState(initialPage !== "" ? initialPage : "")
 
@@ -32,11 +35,11 @@ export default function ProductEditor({ initialPage, close }: Props) {
         if (value === "") return
         let ul = document.getElementById("prod-list")
         if (!ul) return
-        someEdit= true
+        someEdit = true
         lastChanged = index
         scrollHeight = ul.scrollTop
         let newValue = key === "price" ? parseFloat(value) : value
-        editedEntry = key === "name" ? "price" : "name" 
+        editedEntry = key === "name" ? "price" : "name"
 
         setResult({
             ...resultProducts, [page]: resultProducts[page].map((el) => {
@@ -49,7 +52,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
         let ul = document.getElementById("prod-list")
         if (!ul) return
         scrollHeight = ul.scrollTop
-        someEdit= true
+        someEdit = true
 
         setResult({
             ...resultProducts, [type]: resultProducts[type].filter((el) => {
@@ -70,10 +73,11 @@ export default function ProductEditor({ initialPage, close }: Props) {
             if (str.substring(0, 5) === "Tipo-") count++
         })
         string = string + count
-        someEdit= true
+        someEdit = true
 
         setResult({ ...resultProducts, [string]: [] })
         setPage(string)
+        setLoadedIteration(1)
     }
     const newProduct = () => {
         if (!resultProducts[page]) return
@@ -86,9 +90,10 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
         let ul = document.getElementById("prod-list")
         if (!ul) return
-        someEdit= true
+        someEdit = true
         scrollHeight = 9999999
         lastChanged = resultProducts[page].length
+        setLoadedIteration(Math.floor(lastChanged / iterationLength) + 1)
         setResult({ ...resultProducts, [page]: [...resultProducts[page], Item] })
     }
 
@@ -110,7 +115,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
             let key = types[i]
             newProducts = { ...newProducts, [key === page ? newName : key]: resultProducts[key] }
         }
-        someEdit= true
+        someEdit = true
 
         setResult(newProducts)
         setPage(newName)
@@ -118,7 +123,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
     const deleteType = () => {
         let newProducts = {}
-        someEdit= true
+        someEdit = true
 
         for (let i = 0; i < types.length; i++) {
             let key = types[i]
@@ -128,33 +133,27 @@ export default function ProductEditor({ initialPage, close }: Props) {
         setPop(false)
         setResult(newProducts)
         setPage(types[0] !== undefined ? types[0] : "")
+        setLoadedIteration(1)
     }
 
     React.useEffect(() => {
         let ul = document.getElementById("prod-list")
-        if (scrollHeight !== 0) {
-            ul?.scrollTo({
-                top: scrollHeight,
-            })
-            scrollHeight = 0
-            
-        }
         if (lastChanged === null) return
         let added = ul?.children[lastChanged] as HTMLDivElement
         if (added) {
             added.classList.add("added")
-            added = changeProductIndex ? ul?.children[lastChanged+1] as HTMLDivElement : added
-            changeProductIndex=false
+            added = changeProductIndex ? ul?.children[lastChanged + 1] as HTMLDivElement : added
+            changeProductIndex = false
             let div = undefined
-            if(editedEntry === "name") {
+            if (editedEntry === "name") {
                 div = added.firstChild as HTMLDivElement
-                if(div) selectAllText(div)
+                if (div) selectAllText(div)
             }
             else {
-                div = added.children[1] as HTMLInputElement 
-                if(div) div.select()
+                div = added.children[1] as HTMLInputElement
+                if (div) div.select()
             }
-            if(div) div.focus()
+            if (div) div.focus()
         }
     })
 
@@ -191,6 +190,63 @@ export default function ProductEditor({ initialPage, close }: Props) {
         </section>
     }
 
+    const UlComp = () => {
+        if (types.length === 0) return <AlertType />
+        if (!renderList || renderList.length === 0) return <Alert />
+        let jsx = []
+        for (let i = 0; i < loadedIteration; i++) {
+            for (let j = i * iterationLength; j < i * iterationLength + iterationLength; j++) {
+                if (!renderList[j]) break
+                let item = renderList[j]
+                jsx.push(<div
+                    className={'item'}
+                    key={Math.random()}
+                >
+                    <p
+                        dangerouslySetInnerHTML={{ __html: item.name }}
+                        onBlur={(e) => {
+                            let div = e.target as HTMLDivElement
+                            div.innerHTML = item.name
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key !== "Enter") return
+                            e.preventDefault()
+                            let div = e.target as HTMLDivElement
+                            let val = div.textContent === null ? "" : div.textContent
+                            if (val === "") div.innerHTML = item.name
+                            changeProd("name", val, item.type, item._id, j)
+                        }}
+                        contentEditable
+                    ></p>
+                    <input
+                        type='number'
+                        defaultValue={item.price}
+                        onBlur={(e) => {
+                            let div = e.currentTarget as HTMLInputElement
+                            div.value = `${item.price}`
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key !== "Enter") return
+                            e.preventDefault()
+                            let div = e.currentTarget as HTMLInputElement
+                            if (div.value === "") div.value = `${item.price}`
+                            if (j !== renderList.length - 1) changeProductIndex = true
+                            changeProd("price", e.currentTarget.value, item.type, item._id, j)
+                        }}
+                    />
+                    <button title='Borrar producto' onClick={() => { deleteProd(item._id, item.type) }}><FontAwesomeIcon icon={faXmark} /></button>
+                </div>)
+            }
+        }
+
+        return jsx
+    }
+    const setScrollPosition = (element: HTMLUListElement) => {
+        if (!element) return
+        element.scrollTop = scrollHeight
+        scrollHeight = 0
+    }
+
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") closeHandle()
@@ -212,7 +268,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                     {types.length > 0 &&
                         <button
                             className={"" === page ? "active" : ""}
-                            onClick={() => { setPage("") }}
+                            onClick={() => { setPage(""); setLoadedIteration(1) }}
                         >
                             <p>Todos</p>
                         </button>
@@ -221,7 +277,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                         return <button
                             key={Math.random()}
                             className={type === page ? "active" : ""}
-                            onClick={() => { setPage(type) }}
+                            onClick={() => { setPage(type); setLoadedIteration(1) }}
                         >
                             <FontAwesomeIcon icon={faCircle} />
                             <p>{type}</p>
@@ -235,7 +291,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                                 onBlur={(e) => { e.currentTarget.textContent = page }}
                                 onKeyDown={(e) => {
                                     if (e.key !== "Enter") return
-                                    if(e.currentTarget.textContent === null 
+                                    if (e.currentTarget.textContent === null
                                         || e.currentTarget.textContent === "") e.currentTarget.textContent = page
                                     else confirmName(e.currentTarget)
                                 }}
@@ -254,49 +310,27 @@ export default function ProductEditor({ initialPage, close }: Props) {
                         </>}
                     </div>
                     <hr></hr>
-                    <ul id="prod-list" className={c.config.prodsInEditorAsList ? "" : "prod-grid-mode"}>
-                        {types.length === 0 ? <AlertType /> :
-                            !renderList || renderList.length === 0 ? <Alert /> :
-                                renderList.map((item, i) => {
-                                    return <div
-                                        className={'item'}
-                                        key={Math.random()}
-                                    >
-                                        <p
-                                            dangerouslySetInnerHTML={{ __html: item.name }}
-                                            onBlur={(e) => {
-                                                let div = e.target as HTMLDivElement
-                                                div.innerHTML = item.name
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if(e.key !== "Enter") return
-                                                e.preventDefault()
-                                                let div = e.target as HTMLDivElement
-                                                let val = div.textContent === null ? "" : div.textContent
-                                                if(val === "") div.innerHTML = item.name
-                                                changeProd("name", val, item.type, item._id, i)
-                                            }}
-                                            contentEditable
-                                        ></p>
-                                        <input 
-                                            type='number'
-                                            defaultValue={item.price} 
-                                            onBlur={(e) => { 
-                                                let div = e.currentTarget as HTMLInputElement
-                                                div.value = `${item.price}`
-                                            }} 
-                                            onKeyDown={(e) => { 
-                                                if(e.key !== "Enter") return
-                                                e.preventDefault()
-                                                let div = e.currentTarget as HTMLInputElement
-                                                if(div.value === "") div.value = `${item.price}`
-                                                if(i !== renderList.length-1)changeProductIndex = true
-                                                changeProd("price", e.currentTarget.value, item.type, item._id, i) 
-                                            }} 
-                                        />
-                                        <button title='Borrar producto' onClick={() => { deleteProd(item._id, item.type) }}><FontAwesomeIcon icon={faXmark} /></button>
-                                    </div>
-                                })}
+                    <ul
+                        id="prod-list"
+                        ref={(element: HTMLUListElement) => {
+                            UlRef.current = element;
+                            setScrollPosition(element)
+                        }}
+                        className={c.config.prodsInEditorAsList ? "" : "prod-grid-mode"}
+                        onScroll={(e) => {
+                            let ul = e.target as HTMLUListElement
+                            const isScrolledToBottom = ul.scrollHeight - (ul.scrollTop + 50) < ul.clientHeight;
+
+                            if (renderList
+                                && isScrolledToBottom
+                                && Math.floor(renderList?.length / iterationLength) + 1 > loadedIteration) {
+                                scrollHeight = ul.scrollTop
+                                setLoadedIteration(loadedIteration + 1)
+                            }
+                        }}
+
+                    >
+                        <UlComp />
                     </ul>
                 </section>
             </section>
