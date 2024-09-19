@@ -77,12 +77,13 @@ export type userType = {
 }
 
 export type configType = {
+    animations: boolean
+    topBarButtons: {
+        [key: string]: boolean
+    }
     prodsAsList: boolean
     orderedLists: boolean
     prodsInEditorAsList: boolean,
-    domain: {
-        name: string,
-    },
     map: {
         x: number
         y: number

@@ -1,4 +1,4 @@
-import { faFloppyDisk, faGear, faInfoCircle, faRightFromBracket} from "@fortawesome/free-solid-svg-icons"
+import { faFloppyDisk, faGear, faInfoCircle, faQuestionCircle, faRightFromBracket} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { sessionType } from "../../vite-env"
 
@@ -31,6 +31,9 @@ export default function AccountPop({ OpenPop, close, download }: Props) {
                     download()
                 }}><FontAwesomeIcon icon={faFloppyDisk} />
                     <p>Guardar datos</p>
+                </button>
+                <button onClick={() => {}}><FontAwesomeIcon icon={faQuestionCircle} />
+                    <p>Ayuda</p>
                 </button>
                 <button onClick={() => { OpenPop("closesession") }}><FontAwesomeIcon icon={faRightFromBracket} />
                     <p>Cerrar Sesión</p>

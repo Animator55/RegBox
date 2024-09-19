@@ -17,6 +17,7 @@ import Toast from '../components/pops/Toast'
 import { back_addEventToHistorial, back_addTableOrSwitch_Historial, setTableHistorial } from '../logic/API'
 import AccountPop from '../components/pops/AccountPop'
 import AccountInfo from '../components/pops/AccountInfo'
+import { defaultConfig } from '../defaults/config'
 
 type Props = {
     initialData?: {
@@ -31,18 +32,26 @@ type Props = {
 
 export const Configuration = React.createContext({
     config: {
+        animations: true,
+        topBarButtons: {
+            "notifications": true,
+            "products": true,
+            "historial": true,
+            "information": false,
+            "configuration": false,
+            "download": false,
+            "help": false,
+            "logout": true,
+        },
         orderedLists: true,
         prodsAsList: true,
         prodsInEditorAsList: true,
-        domain: {
-            name: "",
-        },
         map: {
             zoom: 1,
             x: 0,
             y: 0
         }
-    }, setConfig: (val: configType) => { console.log(val) }
+    } as configType, setConfig: (val: configType) => { console.log(val) }
 })
 export const Products = React.createContext({
     list: {} as productsType, setProds: (val: productsType, someEdit: boolean) => { console.log(val, someEdit) }
@@ -67,19 +76,7 @@ let productPickerScroll = 0
 
 let massive: { table_id: string, value: Item[], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
-    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config : {
-        prodsAsList: false,
-        orderedLists: true,
-        prodsInEditorAsList: false,
-        domain: {
-            name: "",
-        },
-        map: {
-            zoom: 1,
-            x: 0,
-            y: 0
-        }
-    })
+    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config : defaultConfig)
     const setToastAlert = (val: {
         title: string
         content: string
