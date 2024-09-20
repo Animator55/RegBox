@@ -512,3 +512,27 @@ body:has(.initial-data-pop) main .prod-map-container::after {
     background-color: var(--corange);
     color: var(--cdarkgray);
 }
+
+
+/***/
+
+.checkbox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.checkbox:hover{
+    background: rgba(0, 0, 0, 0.123);
+}
+
+.checkbox > p {
+    margin: 0;
+}
+.checkbox button {
+    background-color: transparent;
+}
+.checkbox svg {
+    font-size: 1.5rem;
+}

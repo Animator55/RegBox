@@ -19,9 +19,9 @@ export default function ConfigurationComp({ close }: Props) {
   let conf = c.config as router
 
   const CheckBox = ({ val, obj, edit}: { val: string, obj: { [key: string]: any }, edit: Function}) => {
-    return <div>
+    return <div className="checkbox" onClick={()=>{edit(val)}}>
       <p>{val}</p>
-      <button onClick={()=>{edit(val)}}>
+      <button>
         <FontAwesomeIcon icon={obj[val] === true ? faCheckSquare : faSquare} />
       </button>
     </div>
@@ -34,9 +34,11 @@ export default function ConfigurationComp({ close }: Props) {
 
     return <section>
       <label>{val}</label>
-      {Object.keys(conf[val]).map(el => {
-        return <CheckBox val={el} obj={conf[val]} edit={edit} />
-      })}
+      <ol>
+        {Object.keys(conf[val]).map(el => {
+          return <CheckBox val={el} obj={conf[val]} edit={edit} />
+        })}
+      </ol>
     </section>
   }
 
