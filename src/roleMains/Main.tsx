@@ -427,7 +427,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
                     <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>
-                        <TopBar OpenPop={OpenPop} />
+                        <TopBar OpenPop={OpenPop} download={download}/>
                         <section className='d-flex'>
                             <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin} />
                             <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />

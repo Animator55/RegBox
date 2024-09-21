@@ -12,6 +12,17 @@ type Props = {
 let bannedConfigs = ["map"]
 
 export default function ConfigurationComp({ close }: Props) {
+  const configTitles: router = {
+    topBarButtons: "Atajos",
+    prodsAsList: "Mostrar productos como lista.",
+    orderedLists: "Ordenar y dividir los productos sumados.",
+    prodsInEditorAsList: "Mostrar productos en el editor como lista.",
+    animations: "Mostrar animaciones.",
+  }
+  const setTitle = (val: string)=>{
+    if(Object.keys(configTitles).includes(val)) return configTitles[val]
+    return val
+  }
   const c = React.useContext(Configuration)
 
   let configKeys = Object.keys(c.config).filter(el => { if (!bannedConfigs.includes(el)) return el })
@@ -20,7 +31,7 @@ export default function ConfigurationComp({ close }: Props) {
 
   const CheckBox = ({ val, obj, edit}: { val: string, obj: { [key: string]: any }, edit: Function}) => {
     return <div className="checkbox" onClick={()=>{edit(val)}}>
-      <p>{val}</p>
+      <p>{setTitle(val)}</p>
       <button>
         <FontAwesomeIcon icon={obj[val] === true ? faCheckSquare : faSquare} />
       </button>
@@ -32,8 +43,8 @@ export default function ConfigurationComp({ close }: Props) {
       c.setConfig({...c.config, [val]: {...conf[val], [entry]: !conf[val][entry]}})
     }
 
-    return <section>
-      <label>{val}</label>
+    return <section className='block'>
+      <label>{setTitle(val)}</label>
       <ol>
         {Object.keys(conf[val]).map(el => {
           return <CheckBox val={el} obj={conf[val]} edit={edit} />
@@ -53,7 +64,7 @@ export default function ConfigurationComp({ close }: Props) {
           <button onClick={() => { close() }}><FontAwesomeIcon icon={faXmark} /></button>
         </div>
       </header>
-      <section className='pop-content'>
+      <section className='pop-content config-pop'>
         <ul>
           {configKeys.map(key => {
             const edit =(entry: string)=>{

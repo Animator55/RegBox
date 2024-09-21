@@ -24,6 +24,11 @@ body {
     user-select: none;
 }
 
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
 ::-webkit-scrollbar {
     background-color: transparent;
     width: 5px;
@@ -535,4 +540,16 @@ body:has(.initial-data-pop) main .prod-map-container::after {
 }
 .checkbox svg {
     font-size: 1.5rem;
+}
+
+ol {
+    padding: 0;
+}
+
+.config-pop label {
+    color: var(--corange);
+}
+
+.config-pop .block {
+    margin: 2rem 0;
 }
