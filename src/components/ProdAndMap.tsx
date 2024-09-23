@@ -28,6 +28,11 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
 
     const setPage = (pageStr: string, sub?: string) => {
         if (page === pageStr) return
+        if(c.config.animations === false) {
+            subPage = sub === undefined ? "" : sub
+            setPageState(pageStr)
+            return 
+        }
         let container = document.querySelector(".prod-map-container") as HTMLDivElement
         if (!container) return
         container.classList.remove("change-to-products")
@@ -58,7 +63,7 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
     }
 
     const setCurrentHandler = (id: string, creating: boolean) => {
-        if (creating) setLoading(id)
+        if (creating) setLoading(id) 
         else setCurrentID(id)
     }
     React.useEffect(() => {
@@ -68,8 +73,15 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
             subPage = ""
         }
         if (loading) {
+            if(!c.config.animations) {
+                setCurrentID(loading)
+                setLoading("")
+                setPageState("products")
+                return
+            }
             let container = document.querySelector(".prod-map-container") as HTMLDivElement
             if (!container) return
+
             if(page !== "products")container.classList.add("change-to-products")
             setTimeout(() => {
                 if(page !== "products") setTimeout(() => {

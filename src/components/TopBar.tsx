@@ -45,13 +45,15 @@ export default function TopBar({ OpenPop,download }: Props) {
 
   return <nav className="main-top-bar">
     {Object.keys(topButtons).map(btn=>{
-      if(topButtons[btn])return textButtons[btn]
+      if(topButtons[btn])return <React.Fragment key={Math.random()}>
+        {textButtons[btn]}
+      </React.Fragment>
       else return null
     })}
     
     <hr></hr>
     {Object.keys(topButtons).map(btn=>{
-      if(topButtons[btn])return shortButtons[btn]
+      if(topButtons[btn])return <React.Fragment key={Math.random()}>{shortButtons[btn]}</React.Fragment>
       else return null
     })}
 

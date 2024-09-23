@@ -33,6 +33,7 @@ type Props = {
 export const Configuration = React.createContext({
     config: {
         animations: true,
+        mainColor:"",
         topBarButtons: {
             "notifications": true,
             "products": true,
@@ -422,7 +423,13 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         EditTable(id, "number", val, "Cambio de nombre de mesa de " + prev + " a " + val)
     }
 
-    return <>
+    React.useEffect(()=>{
+        if(config.mainColor === "") return
+        document.body.style.setProperty("--corange", config.mainColor)
+    }, [config.mainColor])
+
+
+    return <main data-animations={`${config.animations}`}>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
@@ -438,5 +445,5 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 </ToastActivation.Provider>
             </Configuration.Provider>
         </TablesPlaces.Provider>
-    </>
+    </main>
 }

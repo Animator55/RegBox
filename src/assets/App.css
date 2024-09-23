@@ -60,6 +60,11 @@ main {
     flex-direction: column;
 }
 
+[data-animations="false"] *{
+    transition: none!important;
+    animation-duration: 0s !important;
+}
+
 button {
     border: none;
     padding: 0;

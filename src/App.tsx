@@ -1,9 +1,9 @@
 import React from 'react'
-import RoleRouter from './components/RoleRouter'
 import AuthScreen from './components/AuthScreen'
 import { HistorialTableType, sessionType, TableType } from './vite-env'
 import "./assets/App.css"
 import InitialDataPop from './components/auth/InitialDataPop'
+import Main from './roleMains/Main'
 
 export default function App() {
   const [session, setSession] = React.useState<sessionType>(
@@ -64,6 +64,6 @@ export default function App() {
         confirm={setInitialData}
       />
       }
-      <RoleRouter session={session} initialData={initialData} initialHistorial={initialHistorial} logout={logout} />
+      <Main initialData={initialData} initialHistorial={initialHistorial} logout={logout}/>
     </>
 }
