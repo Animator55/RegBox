@@ -528,7 +528,7 @@ body:has(.initial-data-pop) main .prod-map-container::after {
 
 .checkbox {
     display: flex;
-    justify-content: space-between;
+    gap: .5rem;
     align-items: center;
     padding: 0.5rem;
 }
@@ -539,6 +539,7 @@ body:has(.initial-data-pop) main .prod-map-container::after {
 
 .checkbox > p {
     margin: 0;
+    margin-right: auto;
 }
 .checkbox button {
     background-color: transparent;
@@ -549,10 +550,12 @@ body:has(.initial-data-pop) main .prod-map-container::after {
 
 ol {
     padding: 0;
+    margin: 1rem 0;
 }
 
 .config-pop label {
-    color: var(--corange);
+    color: var(--cblack);
+    font-weight: bold;
 }
 
 .config-pop .block {

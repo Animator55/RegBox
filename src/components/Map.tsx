@@ -264,6 +264,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
     const changeZoom = (zoomin: boolean) => {
       let zone = document.querySelector(".draggable") as HTMLDivElement
+      if(!zone ) return
       let scale = parseFloat(zone.style.scale)
       let newScale = !zoomin ? scale - 0.02 : scale + 0.02
       if (newScale < 0.05) return
@@ -279,7 +280,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
     return <section className='map-display'>
       <Buttons />
-      <section className='background' onMouseDown={drag} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
+      <section className='background' onMouseDown={drag} onWheel={(e) => { console.log(e);changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
         {tdf.tables.length !== 0 ?
           <div className='draggable' style={{ top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}` }} >
             {tdf.tables.map((tbl) => {

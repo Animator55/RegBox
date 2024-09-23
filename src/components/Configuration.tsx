@@ -13,6 +13,7 @@ let bannedConfigs = ["map"]
 
 export default function ConfigurationComp({ close }: Props) {
   const configTitles: router = {
+    mainColor:"Color principal",
     topBarButtons: "Atajos",
     prodsAsList: "Mostrar productos como lista",
     orderedLists: "Ordenar y dividir los productos sumados",
@@ -41,6 +42,9 @@ export default function ConfigurationComp({ close }: Props) {
     return <div className="checkbox">
       <p>{setTitle(val)}</p>
       <input type='color' defaultValue={obj[val]} onBlur={(e)=>{edit(val, e.currentTarget.value)}}/>
+      {obj[val] !== "#f07f34" && <button onClick={()=>{edit(val, "#f07f34")}}>
+        <FontAwesomeIcon icon={faXmark}/>
+        </button>}
     </div>
   }
 
