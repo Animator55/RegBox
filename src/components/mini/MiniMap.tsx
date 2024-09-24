@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../../assets/mini-sections.css"
-import { faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faArrowLeft, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { TablesPlaces, ToastActivation } from "../../roleMains/Main"
 import React from "react"
 import { TablePlaceType, TableType } from "../../vite-env"
@@ -10,11 +10,12 @@ import OpenTable from "../pops/OpenTable"
 
 type Props = {
   openTable:Function
+  Open:Function
   tablesOpenMin: { _id: string, number: string, state: "open" | "paying" | "closed" | "unnactive" }[]
   current?: TableType
 }
 
-export default function MiniMap({openTable, tablesOpenMin, current}: Props) {
+export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props) {
   const toast = React.useContext(ToastActivation)
   const [openTablePop, setPop] = React.useState(false)
 
@@ -54,9 +55,14 @@ export default function MiniMap({openTable, tablesOpenMin, current}: Props) {
 
   return <section className="mini-map">
     {openTablePop && <OpenTable confirm={confirmPop} close={()=>{setPop(false)}}/>}
-    <button onClick={()=>{setPop(true)}}>
-      <FontAwesomeIcon icon={faPlus}/>
-    </button>
+    {list.length!==0 ? 
+      <button onClick={()=>{setPop(true)}}>
+        <FontAwesomeIcon icon={faPlus}/>
+      </button>:
+      <button onClick={()=>{Open()}}>
+        <FontAwesomeIcon icon={faArrowLeft}/>
+      </button>
+    }
     <ul>
       {list.map(el=>{
         let selected = current && current._id === el._id ? "selected" : ""

@@ -14,7 +14,7 @@ import { checkImportancy } from '../logic/checkChangeImportancy'
 import HistorialTableComp from '../components/HistorialTable'
 import CloseSession from '../components/pops/CloseSession'
 import Toast from '../components/pops/Toast'
-import { back_addEventToHistorial, back_addTableOrSwitch_Historial, setTableHistorial } from '../logic/API'
+import { back_addEventToHistorial, back_addTableOrSwitch_Historial, back_setTablesPlaces, setTableHistorial } from '../logic/API'
 import AccountPop from '../components/pops/AccountPop'
 import AccountInfo from '../components/pops/AccountInfo'
 import { defaultConfig } from '../defaults/config'
@@ -407,9 +407,15 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         />
     }
 
+    const setTablesPlacesHandler = (val: TablePlaceType[])=>{
+        let result = back_setTablesPlaces(val)
+        if (result) setToastAlert(result)
+        setTablesPlaces(val)
+    }
+
     const EditTableName = (id: string, val: string) => {
         let prev = ""
-        setTablesPlaces([...tablesPlacesPH.map((el) => {
+        setTablesPlacesHandler([...tablesPlacesPH.map((el) => {
             if (el._id !== id) return el
             else {
                 prev = el.number
@@ -431,7 +437,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     let animations = config ? config.animations : true
 
     return <main data-animations={`${animations}`}>
-        <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
+        <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlacesHandler, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
                     <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>

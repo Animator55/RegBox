@@ -34,7 +34,7 @@ export default function AuthScreen({ setSession }: Props) {
             submit.classList.remove('loading-button')
             if (result.type === "error") return setError(result.data)
             else setSession(result.data)
-        }, 2000)
+        }, 500)
     }
 
     const togglePassword = (e: React.MouseEvent) => {

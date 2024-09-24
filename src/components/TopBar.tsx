@@ -10,50 +10,60 @@ type Props = {
   download: Function
 }
 
-export default function TopBar({ OpenPop,download }: Props) {
+export default function TopBar({ OpenPop, download }: Props) {
 
   const c = React.useContext(Configuration)
+  const topButtons = c.config.topBarButtons
 
   const textButtons: router = {
-    notifications:<button className='text-button notifications-pop-button' onClick={() => {
-      OpenPop("notifications")
-    }}><FontAwesomeIcon icon={faBell} />Notificaciones</button>,
-    products: <button className='text-button prod-edit-pop-button' data-page={""} onClick={(e) => {
-      OpenPop("products", e.currentTarget.dataset.page)
-    }}><FontAwesomeIcon icon={faCircleDollarToSlot} />Productos</button>,
-    historial: <button className='text-button historial-general-pop-button' data-page={"false"} onClick={(e) => {
-      OpenPop("historial", e.currentTarget.dataset.page)
-      e.currentTarget.dataset.page = "false"
-    }}><FontAwesomeIcon icon={faClockRotateLeft} />Historial</button>,
+    notifications: <button
+      className='text-button notifications-pop-button'
+      style={topButtons.notifications ? {}: {display: "none"}}
+      onClick={() => {
+        OpenPop("notifications")
+      }}><FontAwesomeIcon icon={faBell} />Notificaciones</button>,
+    products: <button
+      className='text-button prod-edit-pop-button'
+      data-page={""}
+      style={topButtons.products ? {}: {display: "none"}}
+      onClick={(e) => {
+        OpenPop("products", e.currentTarget.dataset.page)
+      }}><FontAwesomeIcon icon={faCircleDollarToSlot} />Productos</button>,
+    historial: <button
+      className='text-button historial-general-pop-button'
+      data-page={"false"}
+      style={topButtons.historial ? {}: {display: "none"}}
+      onClick={(e) => {
+        OpenPop("historial", e.currentTarget.dataset.page)
+        e.currentTarget.dataset.page = "false"
+      }}><FontAwesomeIcon icon={faClockRotateLeft} />Historial</button>,
   }
-  const shortButtons :router = {
-    "information":<button className="option" onClick={() => { OpenPop("information") }}><FontAwesomeIcon icon={faInfoCircle}/>
+  const shortButtons: router = {
+    "information": <button className="option" onClick={() => { OpenPop("information") }}><FontAwesomeIcon icon={faInfoCircle} />
     </button>,
-    "configuration":<button className="option" onClick={() => { OpenPop("configuration") }}><FontAwesomeIcon icon={faGear}/>
+    "configuration": <button className="option" onClick={() => { OpenPop("configuration") }}><FontAwesomeIcon icon={faGear} />
     </button>,
-    "download": <button className="option" onClick={() => { download() }}><FontAwesomeIcon icon={faFloppyDisk}/>
+    "download": <button className="option" onClick={() => { download() }}><FontAwesomeIcon icon={faFloppyDisk} />
     </button>,
     "help": <button className="option" >
       <a href='https://github.com/Animator55/RegBox' target='_blank'>
-        <FontAwesomeIcon icon={faQuestionCircle}/>
+        <FontAwesomeIcon icon={faQuestionCircle} />
       </a>
     </button>,
-    "logout": <button className="option" onClick={() => { OpenPop("closesession") }}><FontAwesomeIcon icon={faRightFromBracket}/>
+    "logout": <button className="option" onClick={() => { OpenPop("closesession") }}><FontAwesomeIcon icon={faRightFromBracket} />
     </button>
   }
-  const topButtons = c.config.topBarButtons
 
   return <nav className="main-top-bar">
-    {topButtons && Object.keys(topButtons).map(btn=>{
-      if(topButtons[btn])return <React.Fragment key={Math.random()}>
+    {topButtons && Object.keys(textButtons).map(btn => {
+      return <React.Fragment key={Math.random()}>
         {textButtons[btn]}
       </React.Fragment>
-      else return null
     })}
-    
+
     <hr></hr>
-    {topButtons && Object.keys(topButtons).map(btn=>{
-      if(topButtons[btn])return <React.Fragment key={Math.random()}>{shortButtons[btn]}</React.Fragment>
+    {topButtons && Object.keys(topButtons).map(btn => {
+      if (topButtons[btn]) return <React.Fragment key={Math.random()}>{shortButtons[btn]}</React.Fragment>
       else return null
     })}
 

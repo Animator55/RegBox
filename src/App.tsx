@@ -58,10 +58,10 @@ export default function App() {
       config: config,
       tablePlaces: tablePlaces, 
     }
+    setSession(val)
     setInitialData(initial)
 
     setInitialHistorial(array)
-    setSession(val)
   }
 
 

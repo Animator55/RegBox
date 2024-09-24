@@ -5,12 +5,18 @@ type Props = {
     confirm: Function
 }
 
-export default function OpenTable({ confirm, close }: Props) {
+export default function OpenTable({confirm, close }: Props) {
     const [selected, setSelected] = React.useState("")
     const confirmHandler = () => {
         if (selected === "" || selected === undefined) return
         confirm(selected)
     }
+
+    React.useEffect(()=>{
+        let input = document.querySelector(".discount-input") as HTMLInputElement
+        if(!input) return
+        input.focus()
+    })
 
 
     return <section className='back-blur' onClick={(e) => {
