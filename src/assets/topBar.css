@@ -8,7 +8,7 @@
 hr {
     margin: 0;
     margin-left: auto;
-    background-color: var(--clight);
+    border: none;
 }
 .main-top-bar>button {
     display: flex;

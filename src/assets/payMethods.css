@@ -21,4 +21,5 @@
 }
 .method-item > input {
     border: 1px solid var(--cdarkgray);
+    min-width: 10rem;
 }

@@ -88,6 +88,7 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
         let check = checkSearch(item.name, search)
 
         return <div
+          title={item.name}
           key={Math.random()}
           className={search !== "" && check === item.name ? "d-none" : 'pickeable-item'}
           onClick={()=>{addItem(item)}}

@@ -55,7 +55,7 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
             let div = e.currentTarget as HTMLInputElement
 
             let value = div.value
-            if(value === "" || parseFloat(value) < 0) return setMethods([...methodsUsed.filter((item, i) => {
+            if(value === "" || parseFloat(value) <= 0) return setMethods([...methodsUsed.filter((item, i) => {
                 if (i !== index) return item
             })])
             if(entry === "amount" && substractedTotal+parseFloat(el.amount) < parseFloat(value)) {
@@ -99,7 +99,7 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
                     if(e.key !== "Enter") return 
                     e.preventDefault()
                     edit(e, "amount")
-                }}
+                }} min={0}  max={substractedTotal} 
             ></input>
         </div>
     }
@@ -132,12 +132,13 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
                 {methodsUsed.length !== 0 && methodsUsed.map((el, i) => {
                     return Item(el, i)
                 })}
-                <div className='method-item'>
-                    <select>{payTypes.map(type => {
+                {substractedTotal !== 0 && <div className='method-item'>
+                    <select>
+                        {payTypes.map(type => {
                         if(type === "Descontado") return null
                         return <option key={Math.random()} value={type}>{type}</option>
                     })}</select>
-                    <input type='number' defaultValue={0} max={substractedTotal} 
+                    <input type='number' defaultValue={0} min={0} max={substractedTotal} 
                         onBlur={(e) => { addNew(e) }}
                         onKeyDown={(e) => { 
                             if(e.key !== "Enter") return 
@@ -145,7 +146,7 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
                             addNew(e) 
                         }}
                     ></input>
-                </div>
+                </div>}
             </section>
             <div className='buttons-confirm'>
                 <button className='secondary-button' onClick={() => { close() }}>Cancelar</button>

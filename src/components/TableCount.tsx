@@ -104,7 +104,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
                     else totalList += item.amount! * item.price
                     return header ? <div className='title' key={Math.random()}>{item.type}</div>
                         :
-                        <li id={item._id} key={Math.random()}>
+                        <li title={item.name} id={item._id} key={Math.random()}>
                             <div>{item.name}</div>
                             <div>${item.price}</div>
                             <div>${item.price*item.amount}</div>

@@ -289,12 +289,12 @@ export const setTableHistorial = (table_id:string, historialJSONString: string)=
 }
 export const back_setTablesPlaces = (tblPlaces: TablePlaceType[])=>{
     tblPlaces
-    // return null
-    let alert = {
-        _id: "gkimnasgkia",
-        title: "Error de conexión",
-        content: "La conexión con base de datos falló y los datos solo se cargaron en el navegador local.",
-        icon: "xmark"
-    }
-    return alert
+    return null
+    // let alert = {
+    //     _id: "gkimnasgkia",
+    //     title: "Error de conexión",
+    //     content: "La conexión con base de datos falló y los datos solo se cargaron en el navegador local.",
+    //     icon: "xmark"
+    // }
+    // return alert
 }
