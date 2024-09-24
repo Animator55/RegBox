@@ -3,6 +3,187 @@ import { Item } from "../vite-env"
 export type productsType = {
     [key:string] : Item[]
 }
+export const products1: productsType= {
+    "Entradas": [
+      {
+        _id: "ent01",
+        name: "Empanadas de Carne",
+        price: 900,
+        type: "Entradas"
+      },
+      {
+        _id: "ent02",
+        name: "Provoleta al Horno",
+        price: 1200,
+        type: "Entradas"
+      },
+      {
+        _id: "ent03",
+        name: "Bruschettas con Jamón Crudo",
+        price: 1300,
+        type: "Entradas"
+      }
+    ],
+    "Principales": [
+      {
+        _id: "main01",
+        name: "Bife de Chorizo con Papas Fritas",
+        price: 4000,
+        type: "Principales"
+      },
+      {
+        _id: "main02",
+        name: "Ravioles de Ricota con Salsa Bolognesa",
+        price: 3500,
+        type: "Principales"
+      }
+    ],
+    "Postres": [
+      {
+        _id: "dess01",
+        name: "Flan Casero con Dulce de Leche",
+        price: 1200,
+        type: "Postres"
+      },
+      {
+        _id: "dess02",
+        name: "Tiramisú",
+        price: 1500,
+        type: "Postres"
+      }
+    ],
+    "Bebidas": [
+      {
+        _id: "bev01",
+        name: "Agua Mineral sin Gas (500ml)",
+        price: 600,
+        type: "Bebidas"
+      },
+      {
+        _id: "bev02",
+        name: "Gaseosa (500ml)",
+        price: 800,
+        type: "Bebidas"
+      }
+    ],
+    "Guarniciones": [
+      {
+        _id: "side01",
+        name: "Papas Fritas",
+        price: 1000,
+        type: "Guarniciones"
+      },
+      {
+        _id: "side02",
+        name: "Puré de Papas",
+        price: 900,
+        type: "Guarniciones"
+      },
+      {
+        _id: "side03",
+        name: "Ensalada Mixta",
+        price: 800,
+        type: "Guarniciones"
+      }
+    ],
+    "Sopas": [
+      {
+        _id: "soup01",
+        name: "Sopa de Calabaza",
+        price: 1300,
+        type: "Sopas"
+      },
+      {
+        _id: "soup02",
+        name: "Sopa de Cebolla Gratinada",
+        price: 1400,
+        type: "Sopas"
+      }
+    ],
+    "Pizzas": [
+      {
+        _id: "pizza01",
+        name: "Pizza Margherita",
+        price: 1800,
+        type: "Pizzas"
+      },
+      {
+        _id: "pizza02",
+        name: "Pizza de Jamón y Morrones",
+        price: 2000,
+        type: "Pizzas"
+      },
+      {
+        _id: "pizza03",
+        name: "Pizza Fugazzetta",
+        price: 1900,
+        type: "Pizzas"
+      }
+    ],
+    "Sandwiches": [
+      {
+        _id: "sand01",
+        name: "Sandwich de Milanesa",
+        price: 2200,
+        type: "Sandwiches"
+      },
+      {
+        _id: "sand02",
+        name: "Lomito Completo",
+        price: 2500,
+        type: "Sandwiches"
+      },
+      {
+        _id: "sand03",
+        name: "Sandwich de Vegetales Asados",
+        price: 1800,
+        type: "Sandwiches"
+      }
+    ],
+    "Tartas": [
+      {
+        _id: "tart01",
+        name: "Tarta de Espinaca y Ricota",
+        price: 1700,
+        type: "Tartas"
+      },
+      {
+        _id: "tart02",
+        name: "Tarta de Calabaza y Queso",
+        price: 1650,
+        type: "Tartas"
+      }
+    ],
+    "Cervezas": [
+      {
+        _id: "beer01",
+        name: "Cerveza Rubia (Pinta)",
+        price: 1200,
+        type: "Cervezas"
+      },
+      {
+        _id: "beer02",
+        name: "Cerveza Negra (Pinta)",
+        price: 1300,
+        type: "Cervezas"
+      }
+    ],
+    "Vinos": [
+      {
+        _id: "wine01",
+        name: "Vino Tinto Malbec (Copa)",
+        price: 1500,
+        type: "Vinos"
+      },
+      {
+        _id: "wine02",
+        name: "Vino Blanco Chardonnay (Copa)",
+        price: 1400,
+        type: "Vinos"
+      }
+    ]
+  }
+  
 
 export const products: productsType = {
     "Entrada": [

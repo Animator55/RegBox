@@ -1,3 +1,4 @@
+import { products, products1, productsType } from "../defaults/products";
 import {  HistorialTableType, Item, sessionType, SingleEvent, TableEvents, TableType, userType } from "../vite-env";
 import { calculateTotal } from "./calculateTotal";
 import fixNum from "./fixDateNumber";
@@ -8,10 +9,21 @@ type domainType = {
     url: string
     users: userType[]
     roles: string[]
-    products: Item[]
+    products: string[]
     map: any
 }
-
+const productsD = [
+    {
+        _id: "prods1",
+        _domId : "asfasgadeyhdfshj",
+        list : products,
+    },
+    {
+        _id: "prods2",
+        _domId : "fsfsd",
+        list : products1,
+    },
+]
 let domains: domainType[] = [
     {
         _id: "gadeyhdfshj",
@@ -26,19 +38,41 @@ let domains: domainType[] = [
         map: ""
     },
     {
-        _id: "gadeyhdfshj",
+        _id: "asfasgadeyhdfshj",
         name: "TestDomain",
         url: "",
         users: [
             {_id: "gnidkasgm", name: "Caja", role: "main", password: "1234"}
         ],
         roles: ["main", "pawn", "kitchen"],
-        products: [],
+        products: ["prods1"],
+        map: ""
+    },
+    {
+        _id: "fsfsd",
+        name: "TestDomain2",
+        url: "",
+        users: [
+            {_id: "gnidkasgm", name: "Caja", role: "main", password: "1234"}
+        ],
+        roles: ["main", "pawn", "kitchen"],
+        products: ["prods2"],
         map: ""
     },
 ]
 
-export const selectDomainById = (dom_id: string): domainType | undefined=> {
+const getDomainProducts =(dom_id: string)=>{
+    let result: productsType = {}
+    for(let i=0; i<productsD.length; i++){
+        if(productsD[i]._domId === dom_id ){
+            result = productsD[i].list
+            break
+        }
+    }
+    return result
+}
+
+export const selectDomainById = (dom_id: string): domainType | undefined=> { // returns domain
     let index = -1
     for(let i=0; i<domains.length; i++) {
         if(domains[i]._id === dom_id) {index = i; break}
@@ -47,7 +81,7 @@ export const selectDomainById = (dom_id: string): domainType | undefined=> {
     if(index === -1) return
     return domains[index]
 }
-const selectDomain = (dom: string)=> {
+const selectDomain = (dom: string): number=> { /// returns index
     let index = -1
     for(let i=0; i<domains.length; i++) {
         if(domains[i].name === dom) {index = i; break}
