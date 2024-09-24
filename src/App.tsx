@@ -4,6 +4,7 @@ import { HistorialTableType, sessionType, TableType } from './vite-env'
 import "./assets/App.css"
 import InitialDataPop from './components/auth/InitialDataPop'
 import Main from './roleMains/Main'
+import { getDomainData } from './logic/API'
 
 export default function App() {
   const [session, setSession] = React.useState<sessionType>(
@@ -50,6 +51,15 @@ export default function App() {
       }
     }
 
+    ///getting prods 
+    let {prods, config, tablePlaces} = getDomainData(val.domain)
+    let initial = {
+      products: prods, 
+      config: config,
+      tablePlaces: tablePlaces, 
+    }
+    setInitialData(initial)
+
     setInitialHistorial(array)
     setSession(val)
   }
@@ -59,9 +69,9 @@ export default function App() {
     <AuthScreen setSession={setSessionHandler} />
     :
     <>
-      {initialData === undefined && !ref && <InitialDataPop
+      {!ref && <InitialDataPop
         close={() => { refresh(true) }}
-        confirm={setInitialData}
+        confirm={(val: any)=>{setInitialData(val); refresh(true)}}
       />
       }
       <Main initialData={initialData} initialHistorial={initialHistorial} logout={logout}/>

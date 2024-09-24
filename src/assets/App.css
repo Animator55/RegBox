@@ -106,7 +106,7 @@ main>.d-flex {
 .prod-map-container {
     display: flex;
     width: 50%;
-    max-height: calc(100dvh - 4.9rem);
+    max-height: calc(100dvh - 4.7rem);
     flex-direction: column;
     overflow: hidden;
     border-radius: 10px 10px;

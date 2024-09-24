@@ -77,7 +77,7 @@ let productPickerScroll = 0
 
 let massive: { table_id: string, value: Item[], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
-    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config : defaultConfig)
+    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config !== undefined ? initialData.config : defaultConfig: defaultConfig)
     const setToastAlert = (val: {
         title: string
         content: string
@@ -117,7 +117,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
     const [ProductsState, setProdsState] = React.useState<productsType>(initialData === undefined ? {} : initialData.products)
 
-    const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(initialData === undefined ? [] : initialData.tablePlaces)
+    const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(initialData !== undefined ?initialData.tablePlaces !== undefined ? initialData.tablePlaces : []:[])
 
     const [tables, setTables] = React.useState<TableType[]>([])
     const [current, setCurrent] = React.useState<string>()
@@ -424,12 +424,13 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     }
 
     React.useEffect(()=>{
-        if(config.mainColor === "") return
+        if(!config || config.mainColor === "") return
         document.body.style.setProperty("--corange", config.mainColor)
-    }, [config.mainColor])
+    }, [config])
 
+    let animations = config ? config.animations : true
 
-    return <main data-animations={`${config.animations}`}>
+    return <main data-animations={`${animations}`}>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlaces, editName: EditTableName }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>

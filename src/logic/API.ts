@@ -1,5 +1,6 @@
+import { defaultConfig } from "../defaults/config";
 import { products, products1, productsType } from "../defaults/products";
-import {  HistorialTableType, Item, sessionType, SingleEvent, TableEvents, TableType, userType } from "../vite-env";
+import {  configType, HistorialTableType, sessionType, SingleEvent, TableEvents, TablePlaceType, TableType, userType } from "../vite-env";
 import { calculateTotal } from "./calculateTotal";
 import fixNum from "./fixDateNumber";
 
@@ -16,12 +17,12 @@ const productsD = [
     {
         _id: "prods1",
         _domId : "asfasgadeyhdfshj",
-        list : products,
+        list : products1,
     },
     {
         _id: "prods2",
         _domId : "fsfsd",
-        list : products1,
+        list : products,
     },
 ]
 let domains: domainType[] = [
@@ -61,15 +62,17 @@ let domains: domainType[] = [
     },
 ]
 
-const getDomainProducts =(dom_id: string)=>{
-    let result: productsType = {}
+export const getDomainData =(dom_id: string)=>{
+    let prods: productsType = {}
+    let config: configType = defaultConfig
+    let tablePlaces: TablePlaceType[] = []
     for(let i=0; i<productsD.length; i++){
         if(productsD[i]._domId === dom_id ){
-            result = productsD[i].list
+            prods = productsD[i].list
             break
         }
     }
-    return result
+    return {prods, config, tablePlaces}
 }
 
 export const selectDomainById = (dom_id: string): domainType | undefined=> { // returns domain

@@ -280,8 +280,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
     return <section className='map-display'>
       <Buttons />
-      <section className='background' onMouseDown={drag} onWheel={(e) => { console.log(e);changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
-        {tdf.tables.length !== 0 ?
+      <section className='background' onMouseDown={drag} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
+        {tdf.tables && tdf.tables.length !== 0 ?
           <div className='draggable' style={{ top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}` }} >
             {tdf.tables.map((tbl) => {
               let color = "var(--clightgray)"
