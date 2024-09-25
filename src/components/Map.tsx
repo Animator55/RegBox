@@ -31,8 +31,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     let x = 100
     let y = 100
     if(map){
-      x = map.parentElement!.clientWidth / 2 - parseInt(map.style.left)
-      y = map.parentElement!.clientHeight / 2 - parseInt(map.style.top)
+      x = map.parentElement!.clientWidth / 2 - (parseInt(map.style.left)*parseFloat(map.style.scale))- 17.5
+      y = map.parentElement!.clientHeight / 2 - (parseInt(map.style.top)*parseFloat(map.style.scale)) - 17.5
     }
 
     let newID = `${Math.round((Math.random() * Math.random()) * 10000000000)}`
@@ -282,7 +282,9 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       <Buttons />
       <section className='background' onMouseDown={drag} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
         {tdf.tables && tdf.tables.length !== 0 ?
-          <div className='draggable' style={{ top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}` }} >
+          <div className='draggable' style={{ 
+            top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}`
+          }} >
             {tdf.tables.map((tbl) => {
               let color = "var(--clightgray)"
               let selected = false
