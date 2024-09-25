@@ -269,6 +269,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       let newScale = !zoomin ? scale - 0.02 : scale + 0.02
       if (newScale < 0.05) return
       zone.style.scale = `${newScale}`
+      zone.style.transformOrigin = `${(parseFloat(zone.style.left)*-1)/newScale}px ${(parseFloat(zone.style.top)*-1)/newScale}`
       if (!zone.parentElement) return
       zone.parentElement.addEventListener("mousemove", () => {
         c.setConfig({ ...c.config, map: { ...c.config.map, zoom: newScale } })
@@ -282,7 +283,14 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       <Buttons />
       <section className='background' onMouseDown={drag} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
         {tdf.tables && tdf.tables.length !== 0 ?
-          <div className='draggable' style={{ top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}` }} >
+          <div className='draggable' style={{ 
+            top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}` ,
+            transformOrigin: `${(c.config.map.x*-1)/c.config.map.zoom}px ${(c.config.map.y*-1)/c.config.map.zoom}px`
+          }} >
+            <li style={{
+              top: (c.config.map.y*-1)/c.config.map.zoom, left: (c.config.map.x*-1)/c.config.map.zoom,
+              scale: `${1/c.config.map.zoom}`
+            }}>{(c.config.map.x*-1)/c.config.map.zoom},{(c.config.map.y*-1)/c.config.map.zoom}</li>
             {tdf.tables.map((tbl) => {
               let color = "var(--clightgray)"
               let selected = false

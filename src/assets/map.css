@@ -105,6 +105,12 @@
     transition: scale 300ms;
 }
 
+.draggable li {
+    background-color: red;
+    position: absolute;
+    padding: .5rem;
+}
+
 .table {
     background-color: var(--clightgray);
     display: flex;
