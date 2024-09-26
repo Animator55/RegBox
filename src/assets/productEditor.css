@@ -536,3 +536,33 @@ main:has(.notifications) .notifications-pop-button {
     display: grid;
     grid-template-columns: 60% 25% 15%;
 }
+
+
+
+
+/**/
+
+.account-info {
+    padding: 1rem;   
+    width: 60dvw;
+    display: grid;
+    grid-template-columns: 49% 49%;
+    gap: 2%
+}
+.account-info div {
+    padding: 1rem;
+    box-shadow: 2px 2px 5px var(--clightgray);
+    border-radius: 5px;
+}
+.account-info label {
+    color: var(--cgray);
+    font-style: italic;
+    font-size: 1.1rem;
+}
+.account-info p {
+    border-radius: 5px;
+    margin-left: .5rem;
+    padding: .5rem;
+    background-color: var(--clightgray);
+    padding-left: 1rem;
+}

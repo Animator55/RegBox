@@ -1,6 +1,7 @@
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { sessionType } from '../../vite-env'
+import { selectDomainById } from '../../logic/API'
 
 type Props = {
   close: Function
@@ -21,13 +22,20 @@ export default function AccountInfo({ close }: Props) {
         </div>
       </header>
       <section className='pop-content'>
-        <ul>
-          <p>{parsed._id}</p>
-          <p>{parsed.role}</p>
-          <p>{parsed.name}</p>
-          <p>{parsed.domain}</p>
-          <p>{parsed.opened}</p>
-        </ul>
+        <section className='account-info'> 
+          <div>
+            <label>Dominio</label>
+            <p>{selectDomainById(parsed.domain)?.name}</p>
+          </div>
+          <div>
+            <label>Nombre de Usuario</label>
+            <p>{parsed.name}<i style={{opacity:.7}}>{" (ID:"+parsed._id+")"}</i></p>
+          </div>
+          <div>
+            <label>Hora de apertura</label>
+            <p>{parsed.opened}</p>
+          </div>
+        </section>
       </section>
     </section>
   </section>

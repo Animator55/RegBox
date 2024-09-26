@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import '../assets/topBar.css'
-import { faBell, faCircleDollarToSlot, faClockRotateLeft, faFloppyDisk, faGear, faInfoCircle, faQuestionCircle, faRightFromBracket, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faCircleDollarToSlot, faClockRotateLeft, faFloppyDisk, faGear, faInfoCircle, faQuestionCircle, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import { Configuration } from '../roleMains/Main'
 import { router } from '../vite-env'
@@ -69,7 +69,7 @@ export default function TopBar({ OpenPop, download }: Props) {
 
     <button className='user' onClick={() => {
       OpenPop("account")
-    }}><FontAwesomeIcon icon={faUserCircle} /></button>
+    }}><img src='../src/assets/logo.png' style={{width: "2rem"}}/></button>
 
   </nav>
 }

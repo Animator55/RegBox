@@ -82,7 +82,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
     const newProduct = () => {
         if (!resultProducts[page]) return
         let Item = {
-            _id: `${Math.round((Math.random() * Math.random()) * 1000000000)}`,
+            _id: `${Math.round((Math.random() * Math.random()) * 100000000000)}`,
             name: "Nombre del producto",
             price: 0,
             type: page,
@@ -258,6 +258,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                     <h2>Editar Productos</h2>
                     <button onClick={() => { closeHandle() }}><FontAwesomeIcon icon={faXmark} /></button>
                 </div>
+                <i>* Los productos se editarán una vez cerrada la ventana.</i>
             </header>
             <section className='pop-content'>
                 <nav>
