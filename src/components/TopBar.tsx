@@ -4,6 +4,7 @@ import { faBell, faCircleDollarToSlot, faClockRotateLeft, faFloppyDisk, faGear, 
 import React from 'react'
 import { Configuration } from '../roleMains/Main'
 import { router } from '../vite-env'
+import Logo from "../assets/logo.png"
 
 type Props = {
   OpenPop: Function
@@ -69,7 +70,7 @@ export default function TopBar({ OpenPop, download }: Props) {
 
     <button className='user' onClick={() => {
       OpenPop("account")
-    }}><img src='../src/assets/logo.png' style={{width: "2rem"}}/></button>
+    }}><img src={Logo} style={{width: "2rem"}}/></button>
 
   </nav>
 }
