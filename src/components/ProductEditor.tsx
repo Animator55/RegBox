@@ -34,7 +34,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
     const changeProd = (key: string, value: string, page: string, id: string, index: number) => {
         if (value === "") return
         let ul = document.getElementById("prod-list")
-        if (!ul) return
+        if (!ul || !resultProducts[page]) return
         someEdit = true
         lastChanged = index
         scrollHeight = ul.scrollTop
@@ -113,7 +113,14 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
         for (let i = 0; i < types.length; i++) {
             let key = types[i]
-            newProducts = { ...newProducts, [key === page ? newName : key]: resultProducts[key] }
+            let change = key === page
+            newProducts = { ...newProducts, [change ? newName : key]: change ?
+                resultProducts[key].map(el=>{
+                    return {...el, type: newName}
+                })
+                :
+                resultProducts[key]
+              }
         }
         someEdit = true
 
@@ -151,7 +158,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
             }
             else {
                 div = added.children[1] as HTMLInputElement
-                if (div) div.select()
+                if (div && div.select) div.select()
             }
             if (div) div.focus()
         }
@@ -188,6 +195,43 @@ export default function ProductEditor({ initialPage, close }: Props) {
                 {"Crear un tipo"}
             </button>
         </section>
+    }
+
+    const setScrollPosition = (element: HTMLUListElement) => {
+        if (!element) return
+        element.scrollTop = scrollHeight
+        scrollHeight = 0
+    }
+
+
+    ///////// COMPONENTS
+
+
+    const TypeRouter = ()=>{
+        return <nav>
+        <button onClick={() => { newType() }}>
+            <FontAwesomeIcon icon={faPlus} />
+            <p>Nuevo tipo</p>
+        </button>
+        {types.length > 0 &&
+            <button
+                className={"" === page ? "active" : ""}
+                onClick={() => { setPage(""); setLoadedIteration(1) }}
+            >
+                <p>Todos</p>
+            </button>
+        }
+        {types.map(type => {
+            return <button
+                key={Math.random()}
+                className={type === page ? "active" : ""}
+                onClick={() => { setPage(type); setLoadedIteration(1) }}
+            >
+                <FontAwesomeIcon icon={faCircle} />
+                <p>{type}</p>
+            </button>
+        })}
+    </nav>
     }
 
     const UlComp = () => {
@@ -241,12 +285,8 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
         return jsx
     }
-    const setScrollPosition = (element: HTMLUListElement) => {
-        if (!element) return
-        element.scrollTop = scrollHeight
-        scrollHeight = 0
-    }
 
+    console.log(resultProducts)
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") closeHandle()
@@ -261,30 +301,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                 <i>* Los productos se editarán una vez cerrada la ventana.</i>
             </header>
             <section className='pop-content'>
-                <nav>
-                    <button onClick={() => { newType() }}>
-                        <FontAwesomeIcon icon={faPlus} />
-                        <p>Nuevo tipo</p>
-                    </button>
-                    {types.length > 0 &&
-                        <button
-                            className={"" === page ? "active" : ""}
-                            onClick={() => { setPage(""); setLoadedIteration(1) }}
-                        >
-                            <p>Todos</p>
-                        </button>
-                    }
-                    {types.map(type => {
-                        return <button
-                            key={Math.random()}
-                            className={type === page ? "active" : ""}
-                            onClick={() => { setPage(type); setLoadedIteration(1) }}
-                        >
-                            <FontAwesomeIcon icon={faCircle} />
-                            <p>{type}</p>
-                        </button>
-                    })}
-                </nav>
+                <TypeRouter/>
                 <section className='product-editor-content' key={Math.random()} data-expanded={page === "" ? "true" : "false"}>
                     <div>
                         {resultProducts[page] && page !== "" && <>
