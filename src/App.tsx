@@ -43,6 +43,7 @@ export default function App() {
           _id: stor._id,
           number: stor.number,
           discount: table.discount,
+          discountType: table.discountType,
           products: table.products,
           opened: table.opened,
           payMethod: table.payMethod,
