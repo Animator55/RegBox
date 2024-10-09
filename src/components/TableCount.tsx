@@ -1,7 +1,7 @@
 import { Item, PayMethod, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faCheckToSlot, faClockRotateLeft, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faCheckToSlot, faClockRotateLeft, faDollarSign, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import { Configuration, Products } from '../roleMains/Main'
@@ -9,8 +9,8 @@ import orderByTypes from '../logic/orderByTypes'
 import ConfirmPop from './ConfirmPop'
 import PayMethodsPop from './PayMethodsPop'
 import SwitchTable from './pops/SwitchTable'
-import Discount from './Discount'
-import { calculateTotal } from '../logic/calculateTotal'
+import Discount from './pops/Discount'
+import { calculateTotal, calculateTotalAsNumber } from '../logic/calculateTotal'
 import { html_reciept } from '../defaults/reciept'
 import { stateTraductions } from '../defaults/stateTraductions'
 
@@ -133,7 +133,9 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
                     <div>Total</div>
                     {currentTable&& currentTable?.discount !== 0 ? <div>
                         <del style={{opacity: 0.5}}>{totalList}</del>
-                        {Math.floor(totalList*(1-(currentTable?.discount/100)))}
+                        {currentTable.discountType === "percent" ? 
+                            Math.floor(totalList*(1-(currentTable?.discount/100))): totalList - currentTable.discount
+                        }
                     </div> : 
                     <div>{totalList}</div>}
                 </div>
@@ -154,7 +156,12 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
                     <FontAwesomeIcon icon={faArrowRightArrowLeft} />Cambiar
                 </button>
                 <button style={currentTable?.discount ? {background: "var(--cwhite)"}: {}} onClick={()=>{if(currentTable?.state === "open")setPop("discount")}}>
-                    {currentTable?.discount}<FontAwesomeIcon icon={faPercentage} />Descuento
+                    <div>
+                        {currentTable?.discountType === "amount" && <FontAwesomeIcon icon={faDollarSign} />}
+                        {currentTable?.discount}
+                    </div>
+                    {currentTable?.discountType === "percent" && <FontAwesomeIcon icon={faPercentage} />}
+                    Descuento
                 </button>
             </div>
             <div className={currentTable ? "" : 'disabled'}>
@@ -171,7 +178,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
 
     const changeTableState = (state: "open" | "paying" | "closed" | "unnactive")=>{
         let comment = state === "closed" ? "Cierre de mesa: ": "Cobro de mesa: "
-        if(currentTable) EditTable(currentTable._id, "state", state, comment + calculateTotal(currentTable.products, currentTable.discount),)
+        if(currentTable) EditTable(currentTable._id, "state", state, comment + calculateTotal(currentTable.products, currentTable.discount, currentTable.discountType),)
     }
 
     /****/
@@ -209,6 +216,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
         {endPop && currentTable?.state === "closed" && <PayMethodsPop 
             products={currentTable.products}
             discount={currentTable.discount}
+            discountType={currentTable.discountType}
             confirm={(val:PayMethod[])=>{
                 EditTable(currentTable?._id, "payMethod", val, "Metodo de pago: " +val.map(el=>{return el.type +": "+el.amount}).join(", "))
             }}
@@ -224,9 +232,15 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
         }
         {pop === "discount" && currentTable &&
             <Discount
-                actual={currentTable?.discount} 
+                total={calculateTotalAsNumber(currentTable.products, 0, currentTable.discountType)}
+                actualVal={currentTable?.discount} 
+                actualType={currentTable?.discountType} 
                 close={()=>{setPop("")}}
-                confirm={(val: string)=>{EditTable(currentTable._id, "discount", val, "Aplicado descuento del " + val + "%"); setPop("")}}
+                confirm={(type: string, val: string)=>{
+                    let comment = type === "percent" ? ("Aplicado descuento del " + val+"%"): ("Aplicado descuento de $" + val )
+                    EditTable(currentTable._id, "discount", val, comment, type); 
+                    setPop("")}
+                }
             />
         }
         <Top />

@@ -56,7 +56,13 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
   return <section className="mini-map">
     {openTablePop && <OpenTable confirm={confirmPop} close={()=>{setPop(false)}}/>}
     {list.length!==0 ? 
-      <button onClick={()=>{setPop(true)}}>
+      <button onClick={()=>{
+          if(constructor.unnactive.length === 0) return toast({
+            _id: "tege", title:"Acción inválida", icon: "xmark",
+            content: "No hay mesas inactivas existentes."
+          })
+          setPop(true)
+        }}>
         <FontAwesomeIcon icon={faPlus}/>
       </button>:
       <button onClick={()=>{Open()}}>

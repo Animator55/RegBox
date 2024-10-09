@@ -309,6 +309,11 @@
     padding: 0.4rem;
     transition: border-color 300ms, background-color 300ms, color 300ms;
 }
+.table-commands button div{
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
 
 .table-commands button:hover {
     transition: border-color 300ms, background-color 300ms, color 300ms;
@@ -368,8 +373,29 @@
     margin: 0.3rem;
 }
 
+.discount-pop .pagging {
+    display: flex;
+    align-items: center;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
+    background-color: var(--clightgray);
+}
+
+.discount-pop .pagging button {
+    background-color: var(--clightgray);
+    color: var(--cblack);
+    padding: 0.5rem;
+    width: 100%;
+}
+.discount-pop .pagging button.active {
+    border-radius: 5px 5px 0 0;
+    background-color: var(--corange);
+}
+
 .discount-pop > div:has(.discount-input){
     position: relative;
+    border-radius: 0 0 5px 5px;
+    background-color: var(--corange);
 }
 
 .discount-pop > div:has(.discount-input)::after{
@@ -379,6 +405,9 @@
     top: 1rem;
     font-size: 1.3rem;
     color: var(--cgray);
+}
+.discount-pop > div:has(.discount-input.amount)::after{
+    content: "$";
 }
 
 .pop .discount-input {

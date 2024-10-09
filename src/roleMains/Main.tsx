@@ -136,6 +136,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             _id: data._id,
             number: data.number,
             discount: 0,
+            discountType: "percent",
             products: [],
             opened: opened,
             payMethod: undefined,
@@ -175,7 +176,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         if (result) setToastAlert(result)
     }
 
-    const addEventToHistorial = (table_id: string, entry: string, comment: string, importancy: boolean, value?: any, table?: TableType, discount?: number) => {
+    const addEventToHistorial = (table_id: string, entry: string, comment: string, importancy: boolean, value?: any, table?: TableType, discount?: number, discountType?: "percent" | "amount") => {
         let storage = window.localStorage
         let testVal = storage.getItem("RegBoxID:" + table_id)
         if (!testVal) return
@@ -183,7 +184,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         if (prevData.historial.length === 0) return
 
         /// returns modified tableHistorial
-        let prev = back_addEventToHistorial(prevData, entry, comment, importancy, value, table, discount)
+        let prev = back_addEventToHistorial(prevData, entry, comment, importancy, value, table, discount, discountType)
 
         let JSONStr = JSON.stringify(prev)
         storage.setItem("RegBoxID:" + table_id, JSON.stringify(prev))
@@ -192,7 +193,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         if (result) setToastAlert(result)
     }
 
-    const EditTable = (table_id: string, entry: string, value: any, comment: string) => {
+    const EditTable = (table_id: string, entry: string, value: any, comment: string, discountTypeChange?: "percent" | "amount") => {
         let table
         for (let i = 0; i < tables.length; i++) {
             if (tables[i]._id === table_id) table = tables[i]
@@ -215,11 +216,20 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         }
         ///if is only changing any entry
         else if (table.state !== "closed" && table.state !== "unnactive") {
-            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, entry === "products" ? { ...table, products: value } : undefined, entry === "discount" ? value : undefined)
-            setTables([
-                ...tables.filter(el => { if (el._id !== table._id) return el }),
-                { ...table, [entry]: value }
-            ])
+            if(entry === "discount" && discountTypeChange){ // edit discount and its type
+                addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, undefined, value, discountTypeChange)
+                setTables([
+                    ...tables.filter(el => { if (el._id !== table._id) return el }),
+                    { ...table, [entry]: value, discountType: discountTypeChange}
+                ])
+            }
+            else {
+                addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, entry === "products" ? { ...table, products: value } : undefined, entry === "discount" ? value : undefined)
+                setTables([
+                    ...tables.filter(el => { if (el._id !== table._id) return el }),
+                    { ...table, [entry]: value }
+                ])
+            }
         }
         else if (table.state === "closed" && entry === "payMethod") {
             addEventToHistorial(table_id, entry, comment, true, undefined, undefined)

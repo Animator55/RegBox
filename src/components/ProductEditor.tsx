@@ -286,7 +286,6 @@ export default function ProductEditor({ initialPage, close }: Props) {
         return jsx
     }
 
-    console.log(resultProducts)
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") closeHandle()

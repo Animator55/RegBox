@@ -44,8 +44,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         y: y,
       },
       size: {
-        x: 35,
-        y: 35,
+        x: 40,
+        y: 40,
       }
     }
 

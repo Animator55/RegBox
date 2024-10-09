@@ -6,11 +6,12 @@ import { Item, PayMethod } from '../vite-env'
 type Props = {
     products: Item[]
     discount: number
+    discountType: "percent" | "amount"
     close: Function
     confirm: Function
 }
 
-export default function PayMethodsPop({ products, discount, close, confirm }: Props) {
+export default function PayMethodsPop({ products, discount, discountType, close, confirm }: Props) {
     const [methodsUsed, setMethods] = React.useState<PayMethod[]>([])
 
     let total = 0
@@ -19,11 +20,13 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
         total += products[i].amount! * products[i].price
     }
     let substractedTotal = total
-    substractedTotal = Math.floor(substractedTotal*(1-(discount/100)))
+    substractedTotal = discountType === "percent" ? 
+        Math.floor(substractedTotal*(1-(discount/100))) : substractedTotal -discount
+
+
     for(let i=0; i<methodsUsed.length; i++) {
         substractedTotal -= parseFloat(methodsUsed[i].amount)
     }
-
 
     const addNew = (e: React.FocusEvent | React.KeyboardEvent ) => {
         let div = e.currentTarget as HTMLInputElement
@@ -108,7 +111,8 @@ export default function PayMethodsPop({ products, discount, close, confirm }: Pr
         if(substractedTotal !== 0) return
         let result = methodsUsed
         if(discount !== 0) {
-            let amount = total - Math.floor(total*(1-(discount/100))) 
+            let disc = discountType === "percent" ? Math.floor(total*(1-(discount/100))) : total - discount
+            let amount = total - disc
             result = [...methodsUsed, {type: "Descontado", amount: `${amount}`}]
         }
         confirm(result)

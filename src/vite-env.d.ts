@@ -5,6 +5,7 @@ export type TableType = {
     _id: string
     number: string
     discount: number
+    discountType: "percent" | "amount"
     products: Item[]
     opened: string[]
     payMethod: PayMethod[] | undefined
@@ -14,6 +15,7 @@ export type TableEvents = {
     _id?: string
     number?: string
     discount: number
+    discountType: "percent" | "amount"
     products: Item[],
     opened: string[]
     total: string

@@ -191,7 +191,16 @@ export const getNotificationsGeneral = ()=>{
     return array
 }
 
-export const back_addEventToHistorial = (prevData: HistorialTableType,entry: string, comment: string, importancy: boolean, value?: any, table?: TableType, discount?: number)=>{
+export const back_addEventToHistorial = (
+    prevData: HistorialTableType,
+    entry: string, 
+    comment: string, 
+    importancy: boolean, 
+    value?: any, 
+    table?: TableType, 
+    discount?: number, 
+    discountType?: "percent" | "amount"
+)=>{
     let prev = prevData
     let current = prev.historial[prev.historial.length - 1]
     let date = new Date()
@@ -207,14 +216,16 @@ export const back_addEventToHistorial = (prevData: HistorialTableType,entry: str
         resultChange.products = [...table.products]
     }
     else if(entry === "discount")resultChange.discount = discount!
+    else if(entry === "discount")resultChange.discountType = discountType!
     else if (entry === "state" && value) {
         resultChange.state = value
         if (value === "unnactive" && table) {
-            let total = calculateTotal(table.products, 0)
+            let total = calculateTotal(table.products, 0, table.discountType)
             resultChange.total = total
             resultChange.payMethod = table.payMethod
             resultChange.products = [...table.products]
             resultChange.discount = discount!
+            resultChange.discountType = discountType!
         }
     }
 
@@ -263,6 +274,7 @@ export const back_addTableOrSwitch_Historial = (prevData:HistorialTableType,newT
         payMethod: undefined,
         products: newTable.products,
         discount: 0,
+        discountType: "percent",
         events: initialEvents
     }
     prev.historial =[...prev.historial, newEntrie]
