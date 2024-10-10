@@ -1,7 +1,7 @@
 import React from 'react'
 import { TablePlaceType, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faMinus, faPen, faPlus, faTrash, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faExpand, faMinus, faPen, faPlus, faTrash, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { Configuration, TablesPlaces, ToastActivation } from '../roleMains/Main'
 
 import "../assets/map.css"
@@ -27,12 +27,12 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
   const addTable = () => {
     let map = document.querySelector(".draggable") as HTMLDivElement
-    
+
     let x = 100
     let y = 100
-    if(map){
-      x = map.parentElement!.clientWidth / 2 - (parseInt(map.style.left)*parseFloat(map.style.scale))- 17.5
-      y = map.parentElement!.clientHeight / 2 - (parseInt(map.style.top)*parseFloat(map.style.scale)) - 17.5
+    if (map) {
+      x = map.parentElement!.clientWidth / 2 - (parseInt(map.style.left) * parseFloat(map.style.scale)) - 17.5
+      y = map.parentElement!.clientHeight / 2 - (parseInt(map.style.top) * parseFloat(map.style.scale)) - 17.5
     }
 
     let newID = `${Math.round((Math.random() * Math.random()) * 10000000000)}`
@@ -91,12 +91,14 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>}
+        <button title='Centrar mapa' className='center-map' onClick={() => { c.setConfig({ ...c.config, map: { ...c.config.map, x: 0, y: 0 } }) }
+        }><FontAwesomeIcon icon={faExpand} /></button>
         <div className='zoom-container'>
-          <button onClick={() => { changeZoom(false) }}>
+          <button title='Alejar' onClick={() => { changeZoom(false) }}>
             <FontAwesomeIcon icon={faMinus} />
           </button>
-          <p className='zoom-number'>{Math.round(c.config.map.zoom * 100)}%</p>
-          <button onClick={() => { changeZoom(true) }}>
+          <p title='Zoom' className='zoom-number'>{Math.round(c.config.map.zoom * 100)}%</p>
+          <button title='Acercar' onClick={() => { changeZoom(true) }}>
             <FontAwesomeIcon icon={faPlus} />
           </button>
         </div>
@@ -131,6 +133,40 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       document.addEventListener("mousemove", move)
       document.addEventListener("mouseup", drop)
       document.addEventListener("mouseleave", drop)
+    }
+    const drag_Touch = (e: React.TouchEvent) => {
+      e.preventDefault()
+      let back = e.target as HTMLDivElement
+      if (back.className !== "background" && back.className !== "draggable") return
+      let target = back.className !== "draggable" ? back.firstChild as HTMLDivElement : back
+
+      let left = parseInt(target.style.left)
+      let top = parseInt(target.style.top)
+      let origin_x = e.touches[0].pageX - left
+      let origin_y = e.touches[0].pageY - top
+      const move = (e2: TouchEvent) => {
+        let changeX = e2.touches[0].pageX - origin_x
+        let changeY = e2.touches[0].pageY - origin_y
+        target.style.left = changeX + "px"
+        target.style.top = changeY + "px"
+      }
+      const drop = () => {
+        let target = document.querySelector(".draggable") as HTMLDivElement
+
+        let x = parseInt(target.style.left)
+        let y = parseInt(target.style.top)
+
+        if (x !== c.config.map.x || y !== c.config.map.y) c.setConfig(
+          { ...c.config, map: { ...c.config.map, x: x, y: y } })
+
+        document.removeEventListener("touchmove", move)
+        document.removeEventListener("touchend", drop)
+        document.removeEventListener("touchcancel", drop)
+      }
+
+      document.addEventListener("touchmove", move)
+      document.addEventListener("touchend", drop)
+      document.addEventListener("touchcancel", drop)
     }
     const dragItem = (e: React.MouseEvent) => {
       let target = e.target as HTMLButtonElement
@@ -196,6 +232,74 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       document.addEventListener("mousemove", move)
       document.addEventListener("mouseup", drop)
       document.addEventListener("mouseleave", drop)
+    }
+    const dragItem_Touch = (e: React.TouchEvent) => {
+      let target = e.target as HTMLButtonElement
+
+      if (!target.classList.contains("table")) return
+      let left = parseInt(target.style.left)
+      let top = parseInt(target.style.top)
+      let origin_x = (e.touches[0].pageX - left) / c.config.map.zoom
+      let origin_y = (e.touches[0].pageY - top) / c.config.map.zoom
+
+      const move = (e2: TouchEvent) => {
+        let changeX = e2.touches[0].pageX - origin_x
+        let changeY = e2.touches[0].pageY - origin_y
+        target.style.left = changeX / c.config.map.zoom + "px"
+        target.style.top = changeY / c.config.map.zoom + "px"
+      }
+      const drop = () => {
+        let tableToEdit: TablePlaceType | undefined
+        for (let i = 0; i < tdf.tables.length; i++) {
+          if (target.id === tdf.tables[i]._id) {
+            tableToEdit = tdf.tables[i]
+            break
+          }
+        }
+
+        if (!tableToEdit) return
+
+        let x = parseInt(target.style.left)
+        let y = parseInt(target.style.top)
+
+        let val = []
+
+        for (let i = 0; i < tdf.tables.length; i++) {
+          if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
+          else if (deleteItem && checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
+            toast({
+              _id: "ibsgnfaig",
+              title: "Acción inválida",
+              content: "La mesa no puede ser eliminada si esta misma esta abierta o no fue cobrada.",
+              icon: "xmark"
+            })
+            val.push(tdf.tables[i])
+          }
+          else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
+            _id: tableToEdit._id,
+            number: tableToEdit.number,
+            ["coords"]: {
+              x: x,
+              y: y
+            },
+            ["size"]: {
+              ...tableToEdit["size"]
+            }
+          } as TablePlaceType)
+        }
+
+        if (x !== tableToEdit.coords.x || y !== tableToEdit.coords.y) tdf.set(val)
+
+        deleteItem = false
+
+        document.removeEventListener("touchmove", move)
+        document.removeEventListener("touchend", drop)
+        document.removeEventListener("touchcancel", drop)
+      }
+
+      document.addEventListener("touchmove", move)
+      document.addEventListener("touchend", drop)
+      document.addEventListener("touchcancel", drop)
     }
     const resize = (e: React.MouseEvent) => {
       let target = e.target as HTMLButtonElement
@@ -264,7 +368,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
     const changeZoom = (zoomin: boolean) => {
       let zone = document.querySelector(".draggable") as HTMLDivElement
-      if(!zone ) return
+      if (!zone) return
       let scale = parseFloat(zone.style.scale)
       let newScale = !zoomin ? scale - 0.02 : scale + 0.02
       if (newScale < 0.05) return
@@ -278,63 +382,73 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       numberDiv.textContent = `${Math.round(newScale * 100)}%`
     }
 
+
+    ///components 
+
+    const TableDraggable = ({ tbl }: { tbl: TablePlaceType }) => {
+      let color = "var(--clightgray)"
+      let selected = false
+      let check = checkTable(tbl._id, tablesOpenMin)
+      if (tbl._id === current?._id) { color = colorSelector[current.state]; selected = true }
+      else if (check.result) color = colorSelector[check.state]
+
+
+      return <button
+        id={tbl._id}
+        onMouseDown={(e) => { if (editMode && e.currentTarget.contentEditable !== "true") dragItem(e) }}
+        onTouchStart={(e) => { if (editMode && e.currentTarget.contentEditable !== "true") dragItem_Touch(e) }}
+        key={Math.random()}
+        onClick={() => { if (!editMode) setCurrentID(tbl._id, check.state === "unnactive" ? true : false) }}
+        className={selected ? "selected table" : "table"}
+        style={{
+          width: tbl.size.x,
+          height: tbl.size.y,
+          top: tbl.coords.y,
+          left: tbl.coords.x,
+          backgroundColor: color
+        }}
+      >
+        {editMode && <a className='edit-name' onClick={editTableName}>
+          <FontAwesomeIcon icon={faPen} />
+        </a>}
+        <p
+          onBlur={(e) => {
+            if (e.currentTarget.textContent !== null
+              && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+            else e.currentTarget.textContent = tbl.number
+          }}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter") return
+            e.preventDefault()
+            if (e.currentTarget.textContent !== null
+              && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+            else e.currentTarget.textContent = tbl.number
+          }}
+        >{tbl.number}</p>
+        {editMode && <a className='resize' onMouseDown={resize}>
+        </a>}
+      </button>
+    }
+
+    const Alert = () => {
+      return <section className='alert'>
+        <FontAwesomeIcon icon={faWarning} />
+        <h2>No hay mesas añadidas a el mapa.</h2>
+        <button className='default-button' onClick={() => { addTable() }}>
+          Añadir mesa
+        </button>
+      </section>
+    }
+
     return <section className='map-display'>
       <Buttons />
-      <section className='background' onMouseDown={drag} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
+      <section className='background' onMouseDown={drag} onTouchStart={drag_Touch} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
         {tdf.tables && tdf.tables.length !== 0 ?
-          <div className='draggable' style={{ 
+          <div className='draggable' style={{
             top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}`
           }} >
-            {tdf.tables.map((tbl) => {
-              let color = "var(--clightgray)"
-              let selected = false
-              let check = checkTable(tbl._id, tablesOpenMin)
-              if (tbl._id === current?._id) { color = colorSelector[current.state]; selected = true }
-              else if (check.result) color = colorSelector[check.state]
-
-              return <button
-                id={tbl._id}
-                onMouseDown={(e) => { if (editMode && e.currentTarget.contentEditable !== "true") dragItem(e) }}
-                key={Math.random()}
-                onClick={() => { if (!editMode) setCurrentID(tbl._id, check.state === "unnactive" ? true : false) }}
-                className={selected ? "selected table" : "table"}
-                style={{
-                  width: tbl.size.x,
-                  height: tbl.size.y,
-                  top: tbl.coords.y,
-                  left: tbl.coords.x,
-                  backgroundColor: color
-                }}
-              >
-                {editMode && <a className='edit-name' onClick={editTableName}>
-                  <FontAwesomeIcon icon={faPen} />
-                </a>}
-                <p
-                  onBlur={(e) => {
-                    if (e.currentTarget.textContent !== null
-                      && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
-                    else e.currentTarget.textContent = tbl.number
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key !== "Enter") return
-                    e.preventDefault()
-                    if (e.currentTarget.textContent !== null
-                      && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
-                    else e.currentTarget.textContent = tbl.number
-                  }}
-                >{tbl.number}</p>
-                {editMode && <a className='resize' onMouseDown={resize}>
-                </a>}
-              </button>
-            })}
-          </div> :
-          <section className='alert'>
-            <FontAwesomeIcon icon={faWarning} />
-            <h2>No hay mesas añadidas a el mapa.</h2>
-            <button className='default-button' onClick={() => { addTable() }}>
-              Añadir mesa
-            </button>
-          </section>
+            {tdf.tables.map((tbl) => <TableDraggable tbl={tbl} />)}
+          </div> :<Alert/>          
         }
       </section>
     </section>
