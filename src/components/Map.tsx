@@ -135,7 +135,6 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       document.addEventListener("mouseleave", drop)
     }
     const drag_Touch = (e: React.TouchEvent) => {
-      e.preventDefault()
       let back = e.target as HTMLDivElement
       if (back.className !== "background" && back.className !== "draggable") return
       let target = back.className !== "draggable" ? back.firstChild as HTMLDivElement : back
@@ -239,9 +238,9 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       if (!target.classList.contains("table")) return
       let left = parseInt(target.style.left)
       let top = parseInt(target.style.top)
-      let origin_x = (e.touches[0].pageX - left) / c.config.map.zoom
-      let origin_y = (e.touches[0].pageY - top) / c.config.map.zoom
-
+      let origin_x = (e.touches[0].pageX - left)
+      let origin_y = (e.touches[0].pageY - top)
+      
       const move = (e2: TouchEvent) => {
         let changeX = e2.touches[0].pageX - origin_x
         let changeY = e2.touches[0].pageY - origin_y
@@ -397,7 +396,6 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         id={tbl._id}
         onMouseDown={(e) => { if (editMode && e.currentTarget.contentEditable !== "true") dragItem(e) }}
         onTouchStart={(e) => { if (editMode && e.currentTarget.contentEditable !== "true") dragItem_Touch(e) }}
-        key={Math.random()}
         onClick={() => { if (!editMode) setCurrentID(tbl._id, check.state === "unnactive" ? true : false) }}
         className={selected ? "selected table" : "table"}
         style={{
@@ -447,7 +445,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
           <div className='draggable' style={{
             top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}`
           }} >
-            {tdf.tables.map((tbl) => <TableDraggable tbl={tbl} />)}
+            {tdf.tables.map((tbl) => <TableDraggable key={Math.random()} tbl={tbl} />)}
           </div> :<Alert/>          
         }
       </section>
