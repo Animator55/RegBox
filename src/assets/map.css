@@ -20,10 +20,17 @@
     gap: 1rem;
     align-items: center;
     margin-left: auto;
+    width: 100%;
+    justify-content: end;
 }
 
 .edit-container > button.default-button {
     padding: 0.3rem;
+}
+
+.align-tables {
+    padding: .5rem;
+    margin-right: auto;
 }
 
 /***/

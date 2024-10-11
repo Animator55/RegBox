@@ -91,6 +91,7 @@ export type configType = {
         x: number
         y: number
         zoom: number
+        align: boolean
     }
 }
 

@@ -19,6 +19,7 @@ export const defaultConfig: configType = {
     map: {
         zoom: 1,
         x: 0,
-        y: 0
+        y: 0,
+        align: true
     }
 }

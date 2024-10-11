@@ -1,7 +1,7 @@
 import React from 'react'
 import { TablePlaceType, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faExpand, faMinus, faPen, faPlus, faTrash, faWarning } from '@fortawesome/free-solid-svg-icons'
+import {  faCheck, faExpand, faLock, faMinus, faPen, faPlus, faTrash, faUnlock, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { Configuration, TablesPlaces, ToastActivation } from '../roleMains/Main'
 
 import "../assets/map.css"
@@ -24,6 +24,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
   const tdf = React.useContext(TablesPlaces)
 
   const [editMode, setEditMode] = React.useState(false)
+  const [deleteMode, setDeleteMode] = React.useState(false)
 
   const addTable = () => {
     let map = document.querySelector(".draggable") as HTMLDivElement
@@ -55,20 +56,41 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
   }
 
   const Top = () => {
+    let alignGrid = c.config.map.align
     return <header className='map-header'>
       <section className='edit-container'>
-        {editMode &&
+        {editMode && <>
+          <button
+            onClick={()=>{c.setConfig({...c.config, map: {...c.config.map, align: !alignGrid}})}}
+            className='default-button-2 align-tables'
+            title={alignGrid ? "Mesas alineadas" : "Mesas desalineadas"}
+          ><FontAwesomeIcon icon={alignGrid ? faLock : faUnlock} /></button>
+          <button
+            onClick={()=>{setDeleteMode(!deleteMode)}}
+            className={deleteMode ? 'default-button-2 active' : 'default-button-2'}
+          ><FontAwesomeIcon icon={faTrash} />Borrar</button>
           <button
             onClick={addTable}
-            className='default-button-2'
+            className={deleteMode ? 'default-button-2 disabled' : 'default-button-2'}
           ><FontAwesomeIcon icon={faPlus} />Añadir</button>
-        }
+        </>}
         <button className='default-button-2' onClick={() => { setEditMode(!editMode) }}>
           <FontAwesomeIcon icon={editMode ? faCheck : faPen} />
           {editMode ? "Confirmar" : "Editar"}
         </button>
       </section>
     </header>
+  }
+
+  const getTableFromId = (_id: string) => {
+    let tableToEdit: TablePlaceType | undefined
+    for (let i = 0; i < tdf.tables.length; i++) {
+      if (_id === tdf.tables[i]._id) {
+        tableToEdit = tdf.tables[i]
+        break
+      }
+    }
+    return tableToEdit
   }
 
   const MapDisplay = () => {
@@ -81,28 +103,6 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       let div = e.currentTarget as HTMLButtonElement
       div.classList.remove("hover")
       deleteItem = false
-    }
-
-    const Buttons = () => {
-      return <>
-        {editMode && <button className='trash'
-          onMouseEnter={trashDetect}
-          onMouseLeave={trashLeave}
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>}
-        <button title='Centrar mapa' className='center-map' onClick={() => { c.setConfig({ ...c.config, map: { ...c.config.map, x: 0, y: 0 } }) }
-        }><FontAwesomeIcon icon={faExpand} /></button>
-        <div className='zoom-container'>
-          <button title='Alejar' onClick={() => { changeZoom(false) }}>
-            <FontAwesomeIcon icon={faMinus} />
-          </button>
-          <p title='Zoom' className='zoom-number'>{Math.round(c.config.map.zoom * 100)}%</p>
-          <button title='Acercar' onClick={() => { changeZoom(true) }}>
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-        </div>
-      </>
     }
 
     const drag = (e: React.MouseEvent) => {
@@ -167,6 +167,49 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       document.addEventListener("touchend", drop)
       document.addEventListener("touchcancel", drop)
     }
+    const endGrabbingTable = (entry: "size" | "coords", _id: string, or_x: number, or_y: number) => {
+      let tableToEdit: TablePlaceType | undefined = getTableFromId(_id)
+      if (!tableToEdit) return
+      let x = or_x
+      let y = or_y
+      /// Check config
+      if (c.config.map.align) {
+        x = Math.round(or_x / 20) * 20
+        y = Math.round(or_y / 20) * 20
+      }
+      let val = []
+
+      for (let i = 0; i < tdf.tables.length; i++) {
+        if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
+        else if (deleteItem && checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
+          toast({
+            _id: "ibsgnfaig",
+            title: "Acción inválida",
+            content: "La mesa no puede ser eliminada si esta misma esta abierta o no fue cobrada.",
+            icon: "xmark"
+          })
+          val.push(tdf.tables[i])
+        }
+        else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
+          _id: tableToEdit._id,
+          number: tableToEdit.number,
+          [entry]: {
+            x: x,
+            y: y
+          },
+          [entry === "coords" ? "size" : "coords"]: {
+            ...tableToEdit[entry === "coords" ? "size" : "coords"]
+          }
+        } as TablePlaceType)
+      }
+
+      if (x !== tableToEdit[entry === "coords" ? "size" : "coords"].x
+        || y !== tableToEdit[entry === "coords" ? "size" : "coords"].y) tdf.set(val)
+
+      deleteItem = false
+
+    }
+
     const dragItem = (e: React.MouseEvent) => {
       let target = e.target as HTMLButtonElement
 
@@ -180,49 +223,10 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         target.style.top = top + (e2.movementY / c.config.map.zoom) + "px"
       }
       const drop = () => {
-        let tableToEdit: TablePlaceType | undefined
-        for (let i = 0; i < tdf.tables.length; i++) {
-          if (target.id === tdf.tables[i]._id) {
-            tableToEdit = tdf.tables[i]
-            break
-          }
-        }
-
-        if (!tableToEdit) return
-
         let x = parseInt(target.style.left)
         let y = parseInt(target.style.top)
 
-        let val = []
-
-        for (let i = 0; i < tdf.tables.length; i++) {
-          if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
-          else if (deleteItem && checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
-            toast({
-              _id: "ibsgnfaig",
-              title: "Acción inválida",
-              content: "La mesa no puede ser eliminada si esta misma esta abierta o no fue cobrada.",
-              icon: "xmark"
-            })
-            val.push(tdf.tables[i])
-          }
-          else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
-            _id: tableToEdit._id,
-            number: tableToEdit.number,
-            ["coords"]: {
-              x: x,
-              y: y
-            },
-            ["size"]: {
-              ...tableToEdit["size"]
-            }
-          } as TablePlaceType)
-        }
-
-        if (x !== tableToEdit.coords.x || y !== tableToEdit.coords.y) tdf.set(val)
-
-        deleteItem = false
-
+        endGrabbingTable("coords", target.id, x, y)
         document.removeEventListener("mousemove", move)
         document.removeEventListener("mouseup", drop)
         document.removeEventListener("mouseleave", drop)
@@ -240,7 +244,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       let top = parseInt(target.style.top)
       let origin_x = (e.touches[0].pageX - left)
       let origin_y = (e.touches[0].pageY - top)
-      
+
       const move = (e2: TouchEvent) => {
         let changeX = e2.touches[0].pageX - origin_x
         let changeY = e2.touches[0].pageY - origin_y
@@ -248,48 +252,10 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         target.style.top = changeY / c.config.map.zoom + "px"
       }
       const drop = () => {
-        let tableToEdit: TablePlaceType | undefined
-        for (let i = 0; i < tdf.tables.length; i++) {
-          if (target.id === tdf.tables[i]._id) {
-            tableToEdit = tdf.tables[i]
-            break
-          }
-        }
-
-        if (!tableToEdit) return
-
         let x = parseInt(target.style.left)
         let y = parseInt(target.style.top)
 
-        let val = []
-
-        for (let i = 0; i < tdf.tables.length; i++) {
-          if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
-          else if (deleteItem && checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
-            toast({
-              _id: "ibsgnfaig",
-              title: "Acción inválida",
-              content: "La mesa no puede ser eliminada si esta misma esta abierta o no fue cobrada.",
-              icon: "xmark"
-            })
-            val.push(tdf.tables[i])
-          }
-          else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
-            _id: tableToEdit._id,
-            number: tableToEdit.number,
-            ["coords"]: {
-              x: x,
-              y: y
-            },
-            ["size"]: {
-              ...tableToEdit["size"]
-            }
-          } as TablePlaceType)
-        }
-
-        if (x !== tableToEdit.coords.x || y !== tableToEdit.coords.y) tdf.set(val)
-
-        deleteItem = false
+        endGrabbingTable("coords", target.id, x, y)
 
         document.removeEventListener("touchmove", move)
         document.removeEventListener("touchend", drop)
@@ -313,39 +279,9 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         target.style.height = height < 30 ? "30px" : height + e2.movementY + "px"
       }
       const drop = () => {
-        let tableToEdit: TablePlaceType | undefined
-        for (let i = 0; i < tdf.tables.length; i++) {
-          if (target.id === tdf.tables[i]._id) {
-            tableToEdit = tdf.tables[i]
-            break
-          }
-        }
-
-        if (!tableToEdit) return
-
-        let x = parseInt(target.style.width)
-        let y = parseInt(target.style.height)
-
-        let val = []
-
-        for (let i = 0; i < tdf.tables.length; i++) {
-          if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
-          else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
-            _id: tableToEdit._id,
-            number: tableToEdit.number,
-            ["size"]: {
-              x: x,
-              y: y
-            },
-            ["coords"]: {
-              ...tableToEdit["coords"]
-            }
-          } as TablePlaceType)
-        }
-
-        if (x !== tableToEdit.size.x || y !== tableToEdit.size.y) tdf.set(val)
-
-
+        let x = parseFloat(target.style.width)
+        let y = parseFloat(target.style.height)
+        endGrabbingTable("size", target.id, x, y)
         document.removeEventListener("mousemove", movement)
         document.removeEventListener("mouseup", drop)
         document.removeEventListener("mouseleave", drop)
@@ -383,6 +319,28 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
 
     ///components 
+    
+    const Buttons = () => {
+      return <>
+        {editMode && <button className='trash'
+          onMouseEnter={trashDetect}
+          onMouseLeave={trashLeave}
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </button>}
+        <button title='Centrar mapa' className='center-map' onClick={() => { c.setConfig({ ...c.config, map: { ...c.config.map, x: 0, y: 0 } }) }
+        }><FontAwesomeIcon icon={faExpand} /></button>
+        <div className='zoom-container'>
+          <button title='Alejar' onClick={() => { changeZoom(false) }}>
+            <FontAwesomeIcon icon={faMinus} />
+          </button>
+          <p title='Zoom' className='zoom-number'>{Math.round(c.config.map.zoom * 100)}%</p>
+          <button title='Acercar' onClick={() => { changeZoom(true) }}>
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </div>
+      </>
+    }
 
     const TableDraggable = ({ tbl }: { tbl: TablePlaceType }) => {
       let color = "var(--clightgray)"
@@ -446,7 +404,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}`
           }} >
             {tdf.tables.map((tbl) => <TableDraggable key={Math.random()} tbl={tbl} />)}
-          </div> :<Alert/>          
+          </div> : <Alert />
         }
       </section>
     </section>
