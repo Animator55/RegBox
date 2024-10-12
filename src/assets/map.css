@@ -28,6 +28,16 @@
     padding: 0.3rem;
 }
 
+.edit-container > .active {
+    background-color: var(--cred);
+    color: var(--cdarkgray);
+    border-color: var(--cdarkgray);
+}
+.edit-container > .active:hover {
+    color: var(--cwhite);
+    border-color: var(--cwhite);
+}
+
 .align-tables {
     padding: .5rem;
     margin-right: auto;
@@ -119,7 +129,6 @@
 .draggable {
     width: 2000px;
     height: 2000px;
-    transform-origin:1000px 1000px;
     position: absolute;
     cursor: all-scroll;
     background-image:  linear-gradient(var(--cdarkgray) 1px, transparent 1px), linear-gradient(to right, var(--cdarkgray) 1px, #131313 1px);
@@ -162,6 +171,14 @@
     justify-content: center;
     cursor:text;
     z-index: 2;
+}
+.edit-name.delete {
+    cursor: pointer;
+    background-color: var(--cred);
+}
+.table:has(.edit-name.delete:hover) {
+    transition: opacity 200ms;
+    opacity: .7;
 }
 .resize {
     position: absolute;

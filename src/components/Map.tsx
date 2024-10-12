@@ -1,7 +1,7 @@
 import React from 'react'
 import { TablePlaceType, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {  faCheck, faExpand, faLock, faMinus, faPen, faPlus, faTrash, faUnlock, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faExpand, faLock, faMinus, faPen, faPlus, faTrash, faUnlock, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { Configuration, TablesPlaces, ToastActivation } from '../roleMains/Main'
 
 import "../assets/map.css"
@@ -61,18 +61,18 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       <section className='edit-container'>
         {editMode && <>
           <button
-            onClick={()=>{c.setConfig({...c.config, map: {...c.config.map, align: !alignGrid}})}}
+            onClick={() => { c.setConfig({ ...c.config, map: { ...c.config.map, align: !alignGrid } }) }}
             className='default-button-2 align-tables'
             title={alignGrid ? "Mesas alineadas" : "Mesas desalineadas"}
           ><FontAwesomeIcon icon={alignGrid ? faLock : faUnlock} /></button>
           <button
-            onClick={()=>{setDeleteMode(!deleteMode)}}
+            onClick={() => { setDeleteMode(!deleteMode) }}
             className={deleteMode ? 'default-button-2 active' : 'default-button-2'}
-          ><FontAwesomeIcon icon={faTrash} />Borrar</button>
-          <button
+          ><FontAwesomeIcon icon={faTrash} />{deleteMode ? "Dejar de Borrar" : "Borrar"}</button>
+          {!deleteMode && <button
             onClick={addTable}
-            className={deleteMode ? 'default-button-2 disabled' : 'default-button-2'}
-          ><FontAwesomeIcon icon={faPlus} />Añadir</button>
+            className='default-button-2'
+          ><FontAwesomeIcon icon={faPlus} />Añadir</button>}
         </>}
         <button className='default-button-2' onClick={() => { setEditMode(!editMode) }}>
           <FontAwesomeIcon icon={editMode ? faCheck : faPen} />
@@ -103,6 +103,30 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       let div = e.currentTarget as HTMLButtonElement
       div.classList.remove("hover")
       deleteItem = false
+    }
+
+    const deleteTable = (_id: string)=>{
+      if(!_id) return 
+
+      let tableToEdit: TablePlaceType | undefined = getTableFromId(_id)
+      if (!tableToEdit) return
+      
+      let val = []
+
+      for (let i = 0; i < tdf.tables.length; i++) {
+        if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
+        else if (checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
+          toast({
+            _id: "ibsgnfaig",
+            title: "Acción inválida",
+            content: "La mesa no puede ser eliminada si esta misma esta abierta o no fue cobrada.",
+            icon: "xmark"
+          })
+          val.push(tdf.tables[i])
+        }
+      }
+
+      tdf.set(val)
     }
 
     const drag = (e: React.MouseEvent) => {
@@ -291,6 +315,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       document.addEventListener("mouseleave", drop)
     }
 
+    /// touchresize
+
     const editTableName = (e: React.MouseEvent) => {
       let div = e.target as HTMLButtonElement
       if (div.className !== "edit-name") return
@@ -319,7 +345,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
 
     ///components 
-    
+
     const Buttons = () => {
       return <>
         {editMode && <button className='trash'
@@ -364,16 +390,23 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
           backgroundColor: color
         }}
       >
-        {editMode && <a className='edit-name' onClick={editTableName}>
-          <FontAwesomeIcon icon={faPen} />
-        </a>}
+        {editMode ? !deleteMode ?
+          <a className='edit-name' onClick={editTableName}>
+            <FontAwesomeIcon icon={faPen} />
+          </a> :
+          <a className='edit-name delete' onClick={() => { deleteTable(tbl._id) }}>
+            <FontAwesomeIcon icon={faXmark} />
+          </a>: null
+        }
         <p
           onBlur={(e) => {
+            if (deleteMode) return
             if (e.currentTarget.textContent !== null
               && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
             else e.currentTarget.textContent = tbl.number
           }}
           onKeyDown={(e) => {
+            if (deleteMode) return
             if (e.key !== "Enter") return
             e.preventDefault()
             if (e.currentTarget.textContent !== null
@@ -381,7 +414,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             else e.currentTarget.textContent = tbl.number
           }}
         >{tbl.number}</p>
-        {editMode && <a className='resize' onMouseDown={resize}>
+        {editMode && !deleteMode && <a className='resize' onMouseDown={resize}>
         </a>}
       </button>
     }
