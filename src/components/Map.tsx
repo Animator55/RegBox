@@ -314,6 +314,35 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       document.addEventListener("mouseup", drop)
       document.addEventListener("mouseleave", drop)
     }
+    const resize_Touch = (e: React.TouchEvent) => {
+      let target = e.target as HTMLButtonElement
+
+      if (target.classList.contains("table")) return
+      target = target.parentElement as HTMLButtonElement
+      let left = parseInt(target.style.left)
+      let top = parseInt(target.style.top)
+      let origin_x = (e.touches[0].pageX - left)
+      let origin_y = (e.touches[0].pageY - top)
+
+      const movement = (e2: TouchEvent) => {
+        let width = e2.touches[0].pageX - origin_x
+        let height = e2.touches[0].pageY - origin_y
+        
+        target.style.width = width < 30 ? "30px" : width + "px"
+        target.style.height = height < 30 ? "30px" : height + "px"
+      }
+      const drop = () => {
+        let x = parseFloat(target.style.width)
+        let y = parseFloat(target.style.height)
+        endGrabbingTable("size", target.id, x, y)
+        document.removeEventListener("touchmove", movement)
+        document.removeEventListener("touchend", drop)
+        document.removeEventListener("touchcancel", drop)
+      }
+      document.addEventListener("touchmove", movement)
+      document.addEventListener("touchend", drop)
+      document.addEventListener("touchcancel", drop)
+    }
 
     /// touchresize
 
@@ -414,7 +443,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             else e.currentTarget.textContent = tbl.number
           }}
         >{tbl.number}</p>
-        {editMode && !deleteMode && <a className='resize' onMouseDown={resize}>
+        {editMode && !deleteMode && 
+          <a className='resize' onMouseDown={resize} onTouchStart={resize_Touch}>
         </a>}
       </button>
     }
