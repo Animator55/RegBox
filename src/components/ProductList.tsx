@@ -114,5 +114,12 @@ export default function ProductList({displayList, changeDisplay, addItem}: Props
     </section>
   }
 
+  
+  React.useEffect(() => {
+    if(search === "") return
+    let input = document.querySelector(".input-expand") as HTMLInputElement
+    if (input) input.focus()
+  }, [search])
+
   return <ProductPicker />
 }
