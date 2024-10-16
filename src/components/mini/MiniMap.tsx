@@ -1,12 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../../assets/mini-sections.css"
-import { faArrowLeft, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faArrowLeft, faPlus, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons"
 import { TablesPlaces, ToastActivation } from "../../roleMains/Main"
 import React from "react"
 import { TablePlaceType, TableType } from "../../vite-env"
 import { checkTable } from "../../logic/checkTableState"
 import { colorSelector } from "../../logic/colorSelector"
 import OpenTable from "../pops/OpenTable"
+import OrderListPop from "../pops/OrderListPop"
 
 type Props = {
   openTable:Function
@@ -17,7 +18,7 @@ type Props = {
 
 export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props) {
   const toast = React.useContext(ToastActivation)
-  const [openTablePop, setPop] = React.useState(false)
+  const [openTablePop, setPop] = React.useState<undefined | "add" | "order">(undefined)
 
   const tdf = React.useContext(TablesPlaces)
 
@@ -50,20 +51,36 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
       content: "La mesa no esta inactiva o no existe."
     })
     openTable(table, true)
-    setPop(false)
+    setPop(undefined)
+  }
+
+  const confirmOrderList = (value: string)=>{
+    
+  }
+
+  const orderOptions = ["Alfabetico", "Alfabetico Inverso", "Creación", "Creación Inverso"]
+
+  const pops = {
+    "add": <OpenTable confirm={confirmPop} close={()=>{setPop(undefined)}}/>,
+    "order": <OrderListPop options={orderOptions} actual={"Creación"} confirm={confirmOrderList} close={()=>{setPop(undefined)}}/>
   }
 
   return <section className="mini-map">
-    {openTablePop && <OpenTable confirm={confirmPop} close={()=>{setPop(false)}}/>}
+    {openTablePop && pops[openTablePop]}
     {list.length!==0 ? <>
       <button onClick={()=>{
           if(constructor.unnactive.length === 0) return toast({
             _id: "tege", title:"Acción inválida", icon: "xmark",
             content: "No hay mesas inactivas existentes."
           })
-          setPop(true)
+          setPop("add")
         }}>
         <FontAwesomeIcon icon={faPlus}/>
+      </button>
+      <button onClick={()=>{
+          setPop("order")
+        }}>
+        <FontAwesomeIcon icon={faSortAmountDesc}/>
       </button>
     </>
       :
