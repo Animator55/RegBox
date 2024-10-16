@@ -12,7 +12,7 @@ import { selectAllText } from '../logic/selectAllText'
 type Props = {
   setCurrentID: Function
   current: TableType | undefined
-  tablesOpenMin: { _id: string, number: string, state: "open" | "paying" | "closed" | "unnactive" }[]
+  tablesOpenMin: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]
 }
 
 let deleteItem = false
@@ -39,7 +39,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     let newID = `${Math.round((Math.random() * Math.random()) * 10000000000)}`
     let table: TablePlaceType = {
       _id: newID,
-      number: `${Math.round(Math.random() * 100)}`,
+      name: `${Math.round(Math.random() * 100)}`,
       coords: {
         x: x,
         y: y,
@@ -216,7 +216,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
         }
         else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
           _id: tableToEdit._id,
-          number: tableToEdit.number,
+          name: tableToEdit.name,
           [entry]: {
             x: x,
             y: y
@@ -432,7 +432,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             if (deleteMode) return
             if (e.currentTarget.textContent !== null
               && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
-            else e.currentTarget.textContent = tbl.number
+            else e.currentTarget.textContent = tbl.name
           }}
           onKeyDown={(e) => {
             if (deleteMode) return
@@ -440,9 +440,9 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             e.preventDefault()
             if (e.currentTarget.textContent !== null
               && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
-            else e.currentTarget.textContent = tbl.number
+            else e.currentTarget.textContent = tbl.name
           }}
-        >{tbl.number}</p>
+        >{tbl.name}</p>
         {editMode && !deleteMode && 
           <a className='resize' onMouseDown={resize} onTouchStart={resize_Touch}>
         </a>}

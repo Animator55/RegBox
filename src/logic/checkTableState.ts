@@ -1,5 +1,5 @@
 
-export const checkTable = (tableID: string, array: { _id: string, number: string, state: "open" | "paying" | "closed" | "unnactive" }[]) => {
+export const checkTable = (tableID: string, array: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]) => {
     let state: "open" | "paying" | "closed" | "unnactive" = "unnactive"
     let result = false
     for (let i = 0; i < array.length; i++) {

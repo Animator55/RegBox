@@ -66,7 +66,7 @@ export default function Notifications({ close, EditMassiveTable }: Props) {
           if(target.className === "notification-item")OpenPop(el)
         }}
       >
-        <p>Mesa {el.number}</p>
+        <p>Mesa {el.name}</p>
         <p className='owner-tag'>{el.timestamp}</p>
 
         <div className='accept-zone'>{actionZone[`${el.accepted}`]}</div>
@@ -94,7 +94,7 @@ export default function Notifications({ close, EditMassiveTable }: Props) {
         <section className='pop-content'>
           <div className='product-editor-content'>
               <div>
-                  <h3>Mesa {pop.number}</h3>
+                  <h3>Mesa {pop.name}</h3>
                   <p>{pop.timestamp}</p>
                   {pop.owner_name && <p>Origen: <i>{pop.owner_name}</i></p>}
               </div>

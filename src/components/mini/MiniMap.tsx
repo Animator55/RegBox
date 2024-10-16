@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../../assets/mini-sections.css"
 import { faArrowLeft, faPlus, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons"
-import { TablesPlaces, ToastActivation } from "../../roleMains/Main"
+import { Configuration, TablesPlaces, ToastActivation } from "../../roleMains/Main"
 import React from "react"
 import { TablePlaceType, TableType } from "../../vite-env"
 import { checkTable } from "../../logic/checkTableState"
@@ -12,7 +12,7 @@ import OrderListPop from "../pops/OrderListPop"
 type Props = {
   openTable:Function
   Open:Function
-  tablesOpenMin: { _id: string, number: string, state: "open" | "paying" | "closed" | "unnactive" }[]
+  tablesOpenMin: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]
   current?: TableType
 }
 
@@ -21,6 +21,7 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
   const [openTablePop, setPop] = React.useState<undefined | "add" | "order">(undefined)
 
   const tdf = React.useContext(TablesPlaces)
+  const c = React.useContext(Configuration)
 
   const constructor: {[key:string]: TablePlaceType[]} = {
     open: [],
@@ -40,7 +41,7 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
     let table = ""
 
     for(let i=0; i<constructor.unnactive.length; i++) {
-      if(value === constructor.unnactive[i].number) {
+      if(value === constructor.unnactive[i].name) {
         table = constructor.unnactive[i]._id
         break
       }
@@ -55,10 +56,10 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
   }
 
   const confirmOrderList = (value: string)=>{
-    
+    c.setConfig({...c.config, miniMapOrder: value})
   }
 
-  const orderOptions = ["Alfabetico", "Alfabetico Inverso", "Creación", "Creación Inverso"]
+  const orderOptions = ["Alfabético", "Alfabético Inverso", "Creación", "Creación Inverso"]
 
   const pops = {
     "add": <OpenTable confirm={confirmPop} close={()=>{setPop(undefined)}}/>,
@@ -97,7 +98,7 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
           key={Math.random()}
           className={selected}
           onClick={()=>{openTable(el._id, check.state === "unnactive")}}
-        >{el.number}</button>
+        >{el.name}</button>
       })}
     </ul>
   </section>

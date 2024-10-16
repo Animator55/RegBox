@@ -245,7 +245,7 @@ export const back_addTableOrSwitch_Historial = (prevData:HistorialTableType,newT
     let initialEvents: SingleEvent[] = [{
         important: true,
         type: "state",
-        comment: isSwitch ? ("Se cambió la mesa a " + newTable.number) : ("Se crea la mesa " + newTable.number),
+        comment: isSwitch ? ("Se cambió la mesa a " + newTable.name) : ("Se crea la mesa " + newTable.name),
         timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds()),
         owner: "main"
     }]
@@ -256,7 +256,7 @@ export const back_addTableOrSwitch_Historial = (prevData:HistorialTableType,newT
             ...prevTable.historial[prevTable.historial.length-1].events, {
                 important: true,
                 type: "state",
-                comment: isSwitch ? ("Se cambió la mesa a " + newTable.number) : ("Se crea la mesa " + newTable.number),
+                comment: isSwitch ? ("Se cambió la mesa a " + newTable.name) : ("Se crea la mesa " + newTable.name),
                 timestamp: newTable.opened[0] + ":" + fixNum(date.getSeconds()),
                 owner: "main"
             }

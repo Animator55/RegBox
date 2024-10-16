@@ -18,7 +18,7 @@ type Props = {
     currentTable: TableType | undefined
     EditTable: Function
     addItem: Function
-    tablesMin: {_id: string, number: string, state: "open" | "paying" | "closed" | "unnactive"}[]
+    tablesMin: {_id: string, name: string, state: "open" | "paying" | "closed" | "unnactive"}[]
 }
 let scrollHeight = 0
 
@@ -62,7 +62,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
     const Top = () => {
         return <header className='table-head'>
             {currentTable ? <>
-                <h2>Mesa {currentTable.number}</h2>
+                <h2>Mesa {currentTable.name}</h2>
                 <p style={{color:  colorSelector[currentTable.state]}}>{stateTraductions[currentTable.state]}</p>
                 <div className='after' style={{ backgroundColor: colorSelector[currentTable.state] }}></div>
             </> 
@@ -224,7 +224,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
         />}
         {pop === "switch" && currentTable &&
             <SwitchTable
-                actual={{_id: currentTable?._id, name: currentTable.number}} 
+                actual={{_id: currentTable?._id, name: currentTable.name}} 
                 tablesMin={tablesMin.map(el=>{return el._id})}
                 close={()=>{setPop("")}}
                 confirm={(id: string, num: string)=>{switchTable(id, num); setPop("")}}

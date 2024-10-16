@@ -36,7 +36,7 @@ export const html_reciept = (currentTable: TableType, types: string[]) => {
                 <h6 style="marginBottom: 2; text-align:right;">NO VALIDO COMO FACTURA</h6>
                 <hr></hr>
                 <div style="display: flex; gap: 1rem;">
-                    <p style="font-size:0.65rem;margin: 3px 0;">Mesa ${currentTable?.number}</p>
+                    <p style="font-size:0.65rem;margin: 3px 0;">Mesa ${currentTable?.name}</p>
                 </div>
                 <p style="font-size:0.65rem;margin: 3px 0;">
                     Abierta a las ${currentTable.opened[0]} el ${currentTable.opened[1]}

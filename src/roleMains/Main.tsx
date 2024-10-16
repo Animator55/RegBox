@@ -50,8 +50,12 @@ export const Configuration = React.createContext({
         map: {
             zoom: 1,
             x: 0,
-            y: 0
-        }
+            y: 0,
+            align: true
+        },
+        miniMapOrder: "Creación",
+        prodListOrder: "Creación",
+        prodEditorOrder: "Creación",
     } as configType, setConfig: (val: configType) => { console.log(val) }
 })
 export const Products = React.createContext({
@@ -134,7 +138,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         let opened = [`${hour}`, ` ${day}`]
         let newTable: TableType = {
             _id: data._id,
-            number: data.number,
+            name: data.name,
             discount: 0,
             discountType: "percent",
             products: [],
@@ -161,7 +165,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     const addTableToHistorial = (newTable: TableType, isSwitch: boolean, prevId?: string) => {
         let storage = window.localStorage
         let testVal = storage.getItem("RegBoxID:" + newTable._id)
-        let prevData: HistorialTableType = testVal ? JSON.parse(testVal) as HistorialTableType : { _id: newTable._id, number: newTable.number, historial: [] }
+        let prevData: HistorialTableType = testVal ? JSON.parse(testVal) as HistorialTableType : { _id: newTable._id, name: newTable.name, historial: [] }
 
         let { JSONStr, sJSONStr } = back_addTableOrSwitch_Historial(prevData, newTable, isSwitch, prevId)
         if (sJSONStr) {
@@ -202,8 +206,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
         let isNotProducts = entry !== "products"
         if (entry === "switch") {/// if switch tables
-            let [id, number] = value.split("/")
-            let newTable = { ...table, _id: id, number: number }
+            let [id, name] = value.split("/")
+            let newTable = { ...table, _id: id, name: name }
             addTableToHistorial(newTable, true, table._id)
             setTables([...tables.filter(el => { if (el._id !== table._id) return el }), newTable])
             setCurrent(id)
@@ -327,7 +331,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     }
 
     let tablesMin = tables.map(tbl => {
-        return { _id: tbl._id, number: tbl.number, state: tbl.state }
+        return { _id: tbl._id, name: tbl.name, state: tbl.state }
     })
 
     const addItem = (item: Item, value?: 1 | -1,) => {
@@ -428,15 +432,15 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         setTablesPlacesHandler([...tablesPlacesPH.map((el) => {
             if (el._id !== id) return el
             else {
-                prev = el.number
+                prev = el.name
                 return {
                     ...el,
-                    number: val
+                    name: val
                 } as TablePlaceType
             }
         })])
 
-        EditTable(id, "number", val, "Cambio de nombre de mesa de " + prev + " a " + val)
+        EditTable(id, "name", val, "Cambio de nombre de mesa de " + prev + " a " + val)
     }
 
     React.useEffect(()=>{

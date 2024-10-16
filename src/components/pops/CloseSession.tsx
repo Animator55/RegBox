@@ -25,7 +25,7 @@ export default function CloseSession({ close, logout }: Props) {
             let stor: HistorialTableType = JSON.parse(window.localStorage[key])
 
             array.push(...stor.historial.map(el => {
-                return { ...el, number: stor.number, _id: stor._id }
+                return { ...el, name: stor.name, _id: stor._id }
             }))
         }
     }

@@ -41,7 +41,7 @@ export default function App() {
         if (!table || table.state === "unnactive") continue
         array.push({
           _id: stor._id,
-          number: stor.number,
+          name: stor.name,
           discount: table.discount,
           discountType: table.discountType,
           products: table.products,

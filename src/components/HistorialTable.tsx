@@ -78,7 +78,7 @@ export default function HistorialTableComp({ table, close }: Props) {
             </nav>
             <div className='product-editor-content'>
                 <div>
-                    {selectedTable && <h3>Mesa {selectedTable.number}</h3>}
+                    {selectedTable && <h3>Mesa {selectedTable.name}</h3>}
                 </div>
                 <hr></hr>
                 <ul className='historial-list'>
@@ -96,7 +96,7 @@ export default function HistorialTableComp({ table, close }: Props) {
                 let stor: HistorialTableType = JSON.parse(window.localStorage[key])
 
                 array.push(...stor.historial.map(el => {
-                    return { ...el, number: stor.number, _id: stor._id }
+                    return { ...el, name: stor.name, _id: stor._id }
                 }))
             }
         }
@@ -139,7 +139,7 @@ export default function HistorialTableComp({ table, close }: Props) {
                                 style={{ background: colorSelector[el.state] }}
                                 onClick={() => { setSelected(el) }}
                             >
-                                Mesa {el.number}
+                                Mesa {el.name}
                                 <p>{"(" + stateTraductions[el.state] + ")"}</p>
                                 <FontAwesomeIcon icon={faCaretRight} />
                             </button>

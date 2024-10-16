@@ -11,7 +11,7 @@ import MiniMap from './mini/MiniMap'
 type Props = {
     setCurrentID: Function
     current: TableType | undefined
-    tablesMin: { _id: string, number: string, state: "open" | "paying" | "closed" | "unnactive" }[]
+    tablesMin: { _id: string, name: string, state: "open" | "paying" | "closed" | "unnactive" }[]
     addItem: Function
 }
 

@@ -17,8 +17,8 @@ export default function SwitchTable({actual, tablesMin, close, confirm}: Props) 
 
     const confirmHandler = ()=>{
         if(selected === "" && selected === actual._id) return
-        let [id, number] = selected.split("/")
-        confirm(id, number)
+        let [id, name] = selected.split("/")
+        confirm(id, name)
     }
 
     return <section className='back-blur' onClick={(e) => {
@@ -38,8 +38,8 @@ export default function SwitchTable({actual, tablesMin, close, confirm}: Props) 
                 </option>
                 {tbl.tables.map((el: TablePlaceType)=>{
                     if(tablesMin.includes(el._id))return
-                    return <option key={Math.random()} value={el._id+"/"+el.number}>
-                        Mesa {el.number}
+                    return <option key={Math.random()} value={el._id+"/"+el.name}>
+                        Mesa {el.name}
                     </option>
                 })}
             </select>

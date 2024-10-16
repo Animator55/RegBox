@@ -3,7 +3,7 @@
 
 export type TableType = {
     _id: string
-    number: string
+    name: string
     discount: number
     discountType: "percent" | "amount"
     products: Item[]
@@ -13,7 +13,7 @@ export type TableType = {
 }
 export type TableEvents = {
     _id?: string
-    number?: string
+    name?: string
     discount: number
     discountType: "percent" | "amount"
     products: Item[],
@@ -29,7 +29,7 @@ export type SingleEvent = {
     comment: string
     timestamp: string
     _id?: string
-    number?: string
+    name?: string
     accepted?: boolean | undefined /// only for notification events
     products?: Item[] /// only for notification events
     owner: string
@@ -38,12 +38,12 @@ export type SingleEvent = {
 
 export type HistorialTableType = {
     _id: string
-    number: string
+    name: string
     historial: TableEvents[]
 }
 export type TablePlaceType = {
     _id: string
-    number: string
+    name: string
     coords: {
         x: number
         y: number
@@ -93,6 +93,9 @@ export type configType = {
         zoom: number
         align: boolean
     }
+    miniMapOrder: string
+    prodListOrder: string
+    prodEditorOrder: string
 }
 
 
