@@ -93,9 +93,9 @@ export type configType = {
         zoom: number
         align: boolean
     }
-    miniMapOrder: string
-    prodListOrder: string
-    prodEditorOrder: string
+    miniMapOrder: "abc"|"abc-r"|"def"|"def-r"
+    prodListOrder: "abc"|"abc-r"|"def"|"def-r"
+    prodEditorOrder: "abc"|"abc-r"|"def"|"def-r"
 }
 
 

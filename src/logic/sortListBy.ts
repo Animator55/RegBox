@@ -1,6 +1,7 @@
 
-function sortListByName(list: {name: string}[]) {
-    return list.sort((a, b) => {
+function sortListByName(list: {name: string}[], reversed?: boolean) {
+    let newList = [...list]
+    newList.sort((a, b) => {
       const nameA = a.name;
       const nameB = b.name;
       
@@ -20,21 +21,25 @@ function sortListByName(list: {name: string}[]) {
       // If both are words, compare alphabetically
       return nameA.localeCompare(nameB);
     });
+    if(reversed) newList.reverse()
+    return newList
   }
 
 
 
 export const sortBy = {
-    "Alfabetico": (list: {name:string}[])=>{
-
+    "abc": (list: {name:string}[])=>{
+        return sortListByName(list)
     }, 
-    "Alfabetico Inverso": ()=>{
-
+    "abc-r": (list: {name:string}[])=>{
+      return sortListByName(list, true)
+  }, 
+    "def": (list: any)=>{
+      return list
     }, 
-    "Creación": ()=>{
-
-    }, 
-    "Creación Inverso": ()=>{
-
+    "def-r": (list: any)=>{
+      let newList = [...list]
+      newList.reverse()
+      return newList
     }
 } 

@@ -5,6 +5,7 @@ import "../assets/productEditor.css"
 import { Configuration, Products } from '../roleMains/Main'
 import ConfirmPop from './ConfirmPop'
 import { selectAllText } from '../logic/selectAllText'
+import { sortBy } from '../logic/sortListBy'
 
 type Props = {
     close: Function
@@ -176,7 +177,8 @@ export default function ProductEditor({ initialPage, close }: Props) {
         return result
     }
 
-    let renderList = resultProducts[page] ? resultProducts[page] : page === "" ? compileTypes() : null
+    let preSortedList = resultProducts[page] ? resultProducts[page] : page === "" ? compileTypes() : null
+    let renderList = preSortedList !== null && preSortedList !== undefined ? sortBy[c.config.prodEditorOrder](preSortedList) : null
 
     const Alert = () => {
         return <section className='alert absolute'>

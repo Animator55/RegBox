@@ -22,7 +22,7 @@ export const defaultConfig: configType = {
         y: 0,
         align: true
     },
-    miniMapOrder: "Creación",
-    prodListOrder: "Creación",
-    prodEditorOrder: "Creación",
+    miniMapOrder: "def",
+    prodListOrder: "def",
+    prodEditorOrder: "def",
 }

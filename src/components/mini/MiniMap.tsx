@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "../../assets/mini-sections.css"
-import { faArrowLeft, faPlus, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons"
+import { faArrowLeft, faPlus,  faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons"
 import { Configuration, TablesPlaces, ToastActivation } from "../../roleMains/Main"
 import React from "react"
 import { TablePlaceType, TableType } from "../../vite-env"
@@ -8,6 +8,7 @@ import { checkTable } from "../../logic/checkTableState"
 import { colorSelector } from "../../logic/colorSelector"
 import OpenTable from "../pops/OpenTable"
 import OrderListPop from "../pops/OrderListPop"
+import { sortBy } from "../../logic/sortListBy"
 
 type Props = {
   openTable:Function
@@ -55,15 +56,25 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
     setPop(undefined)
   }
 
-  const confirmOrderList = (value: string)=>{
+  const confirmOrderList = (value: "abc" | "abc-r" | "def" | "def-r")=>{
     c.setConfig({...c.config, miniMapOrder: value})
+    setPop(undefined)
   }
 
-  const orderOptions = ["Alfabético", "Alfabético Inverso", "Creación", "Creación Inverso"]
+  const orderOptions = ["abc", "abc-r", "def", "def-r"]
 
   const pops = {
     "add": <OpenTable confirm={confirmPop} close={()=>{setPop(undefined)}}/>,
-    "order": <OrderListPop options={orderOptions} actual={"Creación"} confirm={confirmOrderList} close={()=>{setPop(undefined)}}/>
+    "order": <OrderListPop options={orderOptions} actual={c.config.miniMapOrder} confirm={confirmOrderList} close={()=>{setPop(undefined)}}/>
+  }
+  let sortValue = c.config.miniMapOrder
+  let sortedList: TablePlaceType[] = sortBy[sortValue](list)
+
+  const sortIcons:{[key:string]: any} = {
+    "abc-r": faSortAlphaDownAlt,
+    "def": faSortAmountDesc,
+    "abc": faSortAlphaUpAlt,
+    "def-r": faSortAmountAsc,
   }
 
   return <section className="mini-map">
@@ -81,7 +92,7 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
       <button onClick={()=>{
           setPop("order")
         }}>
-        <FontAwesomeIcon icon={faSortAmountDesc}/>
+        <FontAwesomeIcon icon={sortIcons[sortValue]}/>
       </button>
     </>
       :
@@ -90,7 +101,7 @@ export default function MiniMap({openTable, Open, tablesOpenMin, current}: Props
       </button>
     }
     <ul>
-      {list.map(el=>{
+      {sortedList.map(el=>{
         let selected = current && current._id === el._id ? "selected" : ""
         let check = checkTable(el._id, tablesOpenMin)
         return <button 
