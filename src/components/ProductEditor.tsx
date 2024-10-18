@@ -1,4 +1,4 @@
-import { faCircle, faPen, faPlus, faTrash, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faList, faPen, faPlus, faSortAlphaDownAlt, faSortAlphaUpAlt, faSortAmountAsc, faSortAmountDesc, faTableCells, faTrash, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import "../assets/productEditor.css"
@@ -6,6 +6,9 @@ import { Configuration, Products } from '../roleMains/Main'
 import ConfirmPop from './ConfirmPop'
 import { selectAllText } from '../logic/selectAllText'
 import { sortBy } from '../logic/sortListBy'
+import SearchBar from './SearchBar'
+import OrderListPop from './pops/OrderListPop'
+import checkSearch from '../logic/checkSearch'
 
 type Props = {
     close: Function
@@ -18,14 +21,15 @@ let changeProductIndex = false
 
 let scrollHeight = 0
 let someEdit = false
-let iterationLength = 15
+let iterationLength = 25
 
 export default function ProductEditor({ initialPage, close }: Props) {
     const p = React.useContext(Products)
     let c = React.useContext(Configuration)
     const UlRef = React.useRef<HTMLUListElement | null>(null);
 
-    const [pop, setPop] = React.useState(false)
+    const [search, setSearch] = React.useState("")
+    const [pop, setPop] = React.useState<string | undefined>(undefined)
     const [resultProducts, setResult] = React.useState(p.list)
     const types = Object.keys(resultProducts)
     const [loadedIteration, setLoadedIteration] = React.useState(1)
@@ -82,9 +86,10 @@ export default function ProductEditor({ initialPage, close }: Props) {
     }
     const newProduct = () => {
         if (!resultProducts[page]) return
+        let id = `${Math.round((Math.random() * Math.random()) * 100000000000)}`
         let Item = {
-            _id: `${Math.round((Math.random() * Math.random()) * 100000000000)}`,
-            name: "Nombre del producto",
+            _id: id,
+            name: "",
             price: 0,
             type: page,
         }
@@ -93,7 +98,13 @@ export default function ProductEditor({ initialPage, close }: Props) {
         if (!ul) return
         someEdit = true
         scrollHeight = 9999999
-        lastChanged = resultProducts[page].length
+        let simulateSorted = sortBy[c.config.prodEditorOrder]([...resultProducts[page], Item])
+
+        //getting item form sorted array
+        let index = -1
+        for(let i=0; i<simulateSorted.length; i++) if(simulateSorted[i]._id ===  id) {index = i; break}
+
+        lastChanged = index === -1 ? resultProducts[page].length : index
         setLoadedIteration(Math.floor(lastChanged / iterationLength) + 1)
         setResult({ ...resultProducts, [page]: [...resultProducts[page], Item] })
     }
@@ -115,13 +126,14 @@ export default function ProductEditor({ initialPage, close }: Props) {
         for (let i = 0; i < types.length; i++) {
             let key = types[i]
             let change = key === page
-            newProducts = { ...newProducts, [change ? newName : key]: change ?
-                resultProducts[key].map(el=>{
-                    return {...el, type: newName}
-                })
-                :
-                resultProducts[key]
-              }
+            newProducts = {
+                ...newProducts, [change ? newName : key]: change ?
+                    resultProducts[key].map(el => {
+                        return { ...el, type: newName }
+                    })
+                    :
+                    resultProducts[key]
+            }
         }
         someEdit = true
 
@@ -138,7 +150,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
             if (key === page) continue
             newProducts = { ...newProducts, [key]: resultProducts[key] }
         }
-        setPop(false)
+        setPop(undefined)
         setResult(newProducts)
         setPage(types[0] !== undefined ? types[0] : "")
         setLoadedIteration(1)
@@ -206,34 +218,52 @@ export default function ProductEditor({ initialPage, close }: Props) {
     }
 
 
+    const confirmOrderList = (value: "abc" | "abc-r" | "def" | "def-r") => {
+        c.setConfig({ ...c.config, prodEditorOrder: value })
+        setPop(undefined)
+    }
+    const changeDisplay = () => {
+        c.setConfig({ ...c.config, prodsInEditorAsList: !c.config.prodsInEditorAsList })
+    }
+
+    const orderOptions = ["abc", "abc-r", "def", "def-r"]
+    const sortIcons: { [key: string]: any } = {
+        "abc-r": faSortAlphaDownAlt,
+        "def": faSortAmountDesc,
+        "abc": faSortAlphaUpAlt,
+        "def-r": faSortAmountAsc,
+    }
+
+    let displayList = c.config.prodsInEditorAsList
+
     ///////// COMPONENTS
 
 
-    const TypeRouter = ()=>{
+    const TypeRouter = () => {
         return <nav>
-        <button onClick={() => { newType() }}>
-            <FontAwesomeIcon icon={faPlus} />
-            <p>Nuevo tipo</p>
-        </button>
-        {types.length > 0 &&
-            <button
-                className={"" === page ? "active" : ""}
-                onClick={() => { setPage(""); setLoadedIteration(1) }}
-            >
-                <p>Todos</p>
+            <button onClick={() => { newType() }}>
+                <FontAwesomeIcon icon={faPlus} />
+                <p>Nuevo tipo</p>
             </button>
-        }
-        {types.map(type => {
-            return <button
-                key={Math.random()}
-                className={type === page ? "active" : ""}
-                onClick={() => { setPage(type); setLoadedIteration(1) }}
-            >
-                <FontAwesomeIcon icon={faCircle} />
-                <p>{type}</p>
-            </button>
-        })}
-    </nav>
+            {types.length > 0 &&
+                <button
+                    className={"" === page ? "active" : ""}
+                    onClick={() => { setPage(""); setLoadedIteration(1) }}
+                >
+                    <p>Todos</p>
+                </button>
+            }
+            {types.map(type => {
+                return <button
+                    key={Math.random()}
+                    className={type === page ? "active" : ""}
+                    onClick={() => { setPage(type); setLoadedIteration(1) }}
+                >
+                    <FontAwesomeIcon icon={faCircle} />
+                    <p>{type}</p>
+                </button>
+            })}
+        </nav>
     }
 
     const UlComp = () => {
@@ -244,12 +274,13 @@ export default function ProductEditor({ initialPage, close }: Props) {
             for (let j = i * iterationLength; j < i * iterationLength + iterationLength; j++) {
                 if (!renderList[j]) break
                 let item = renderList[j]
+                let check = checkSearch(item.name, search)
                 jsx.push(<div
-                    className={'item'}
+                    className={search !== "" && check === item.name ? "d-none" : 'item'}
                     key={Math.random()}
                 >
                     <p
-                        dangerouslySetInnerHTML={{ __html: item.name }}
+                        dangerouslySetInnerHTML={{ __html: check }}
                         onBlur={(e) => {
                             let div = e.target as HTMLDivElement
                             div.innerHTML = item.name
@@ -288,21 +319,39 @@ export default function ProductEditor({ initialPage, close }: Props) {
         return jsx
     }
 
+    const pops: { [key: string]: any } = {
+        "order": <OrderListPop options={orderOptions} actual={c.config.prodEditorOrder} confirm={confirmOrderList} close={() => { setPop(undefined) }} />,
+        "confirm": <ConfirmPop title='¿Borrar lista de productos?' subTitle='Todos los productos de la lista actual se perderán' confirm={deleteType} close={() => { setPop(undefined) }} />
+    }
+
     return <section className='back-blur' onClick={(e) => {
         let target = e.target as HTMLDivElement
         if (target.className === "back-blur") closeHandle()
     }}>
-        {pop && <ConfirmPop title='¿Borrar lista de productos?' subTitle='Todos los productos de la lista actual se perderán' confirm={deleteType} close={() => { setPop(false) }} />}
+        {pop && pops[pop]}
         <section className='pop'>
             <header>
                 <div className='pop-top'>
                     <h2>Editar Productos</h2>
                     <button onClick={() => { closeHandle() }}><FontAwesomeIcon icon={faXmark} /></button>
                 </div>
+                <section className='pop-options'>
+                    <SearchBar searchButton={setSearch} placeholder={"Buscar producto"} defaultValue={search} onChange={true} />
+                    <button className='default-button-2' title='Ordenar Lista' onClick={() => {
+                        setPop("order")
+                    }}>
+                        <FontAwesomeIcon icon={sortIcons[c.config.prodEditorOrder]} />
+                    </button>
+                    <button className='default-button-2' title='Cambiar disposición' onClick={() => {
+                        changeDisplay()
+                    }}>
+                        <FontAwesomeIcon icon={displayList ? faList : faTableCells} />
+                    </button>
+                </section>
                 <i>* Los productos se editarán una vez cerrada la ventana.</i>
             </header>
             <section className='pop-content'>
-                <TypeRouter/>
+                <TypeRouter />
                 <section className='product-editor-content' key={Math.random()} data-expanded={page === "" ? "true" : "false"}>
                     <div>
                         {resultProducts[page] && page !== "" && <>
@@ -318,7 +367,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                             <button className='change' onClick={(e) => { editTypeName(e) }}>
                                 <FontAwesomeIcon icon={faPen} />
                             </button>
-                            <button onClick={() => { setPop(true) }}><FontAwesomeIcon icon={faTrash} /></button>
+                            <button onClick={() => { setPop("confirm") }}><FontAwesomeIcon icon={faTrash} /></button>
                             <button
                                 className='add-prod'
                                 onClick={() => { newProduct() }}
@@ -335,7 +384,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                             UlRef.current = element;
                             setScrollPosition(element)
                         }}
-                        className={c.config.prodsInEditorAsList ? "" : "prod-grid-mode"}
+                        className={displayList ? "" : "prod-grid-mode"}
                         onScroll={(e) => {
                             let ul = e.target as HTMLUListElement
                             const isScrolledToBottom = ul.scrollHeight - (ul.scrollTop + 50) < ul.clientHeight;
