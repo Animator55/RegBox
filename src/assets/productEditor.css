@@ -199,6 +199,7 @@
 
 .pop .item>input,
 .pop .item>p {
+    position: relative;
     background-color: var(--clightgray);
     color: var(--cdarkgray);
     padding: 0.2rem;
@@ -251,6 +252,13 @@
 
 .pop .item>p::-webkit-scrollbar {
     height: 5px;
+}
+
+.pop .item>p:empty::after {
+    content: "Nombre del Producto";
+    opacity: .6;
+    color: var(--cblack);
+    font-style: italic;
 }
 
 .pop .item> :last-child {

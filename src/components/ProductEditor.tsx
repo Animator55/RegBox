@@ -20,6 +20,7 @@ let editedEntry: string = "name"
 let changeProductIndex = false
 
 let scrollHeight = 0
+let scrollToIndex: number | undefined = undefined /// when added and scrollHeight is unknown
 let someEdit = false
 let iterationLength = 25
 
@@ -97,12 +98,12 @@ export default function ProductEditor({ initialPage, close }: Props) {
         let ul = document.getElementById("prod-list")
         if (!ul) return
         someEdit = true
-        scrollHeight = 9999999
         let simulateSorted = sortBy[c.config.prodEditorOrder]([...resultProducts[page], Item])
-
+        
         //getting item form sorted array
         let index = -1
         for(let i=0; i<simulateSorted.length; i++) if(simulateSorted[i]._id ===  id) {index = i; break}
+        scrollToIndex = index
 
         lastChanged = index === -1 ? resultProducts[page].length : index
         setLoadedIteration(Math.floor(lastChanged / iterationLength) + 1)
@@ -213,6 +214,12 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
     const setScrollPosition = (element: HTMLUListElement) => {
         if (!element) return
+        if(scrollToIndex !== undefined) {
+            let ul = document.getElementById("prod-list")
+            let added = ul?.children[scrollToIndex] as HTMLDivElement
+            if (added) scrollHeight = added.offsetTop
+            scrollToIndex = undefined
+        } 
         element.scrollTop = scrollHeight
         scrollHeight = 0
     }
@@ -293,7 +300,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                             if (val === "") div.innerHTML = item.name
                             changeProd("name", val, item.type, item._id, j)
                         }}
-                        contentEditable
+                        contentEditable={search === "" || check !== item.name}
                     ></p>
                     <input
                         type='number'
@@ -310,6 +317,8 @@ export default function ProductEditor({ initialPage, close }: Props) {
                             if (j !== renderList.length - 1) changeProductIndex = true
                             changeProd("price", e.currentTarget.value, item.type, item._id, j)
                         }}
+                        
+                        disabled={search !== "" && check === item.name}
                     />
                     <button title='Borrar producto' onClick={() => { deleteProd(item._id, item.type) }}><FontAwesomeIcon icon={faXmark} /></button>
                 </div>)
