@@ -13,6 +13,7 @@ import Discount from './pops/Discount'
 import { calculateTotal, calculateTotalAsNumber } from '../logic/calculateTotal'
 import { html_reciept } from '../defaults/reciept'
 import { stateTraductions } from '../defaults/stateTraductions'
+import CommentTable from './pops/CommentTable'
 
 type Props = {
     currentTable: TableType | undefined
@@ -25,6 +26,7 @@ let scrollHeight = 0
 export default function TableCount({ currentTable, EditTable, addItem, tablesMin}: Props) {
     const [endPop, endTablePop] = React.useState(false)
     const [pop, setPop] = React.useState("")
+    const [selected, setSelected] = React.useState<Item | undefined>(undefined)
 
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
@@ -77,7 +79,7 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
     const List = () => {
         let products: Item[] | undefined = currentTable?.products
 
-        const columns = ["Nombre", "Precio", "Total", "Cantidad", ]
+        const columns = ["", "Nombre", "Precio", "Total", "Cantidad", ]
 
         let isProds = products && products.length !== 0
 
@@ -105,7 +107,10 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
                     return header ? <div className='title' key={Math.random()}>{item.type}</div>
                         :
                         <li title={item.name} id={item._id} key={Math.random()}>
-                            <div><button className='default-button' onClick={()=>{setPop("comment")}}>
+                            <div><button 
+                                className={item.comment && item.comment !== "" ? 'comment-item active' : 'comment-item'} 
+                                onClick={()=>{setPop("comment"); setSelected(item)}}
+                            >
                                 <FontAwesomeIcon icon={faPen}/>
                             </button></div>
                             <div>{item.name}</div>
@@ -189,7 +194,17 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
     const switchTable = (new_id: string, new_number: string)=>{
         EditTable(currentTable?._id, "switch", new_id+"/"+new_number, "Cambiada la mesa con la " + new_number)
     }
+    const addComment = (comment: string)=>{
+        if(!currentTable || !selected) return
+        let item = selected
+        let result = currentTable.products.map(el=>{
+            if(el._id !== item._id) return el
+            else return {...el, comment: comment}
+        })
 
+        EditTable(currentTable?._id, "products", result, "Cambiado el comentario de "+ item?.name)
+        setSelected(undefined)
+    }
 
     React.useEffect(() => {
         if (scrollHeight !== null && scrollHeight !== 0) {
@@ -225,6 +240,13 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
             }}
             close={()=>{endTablePop(false)}}
         />}
+        {pop === "comment" && currentTable && selected &&
+            <CommentTable
+                selected={selected} 
+                close={()=>{setPop("")}}
+                confirm={addComment}
+            />
+        }
         {pop === "switch" && currentTable &&
             <SwitchTable
                 actual={{_id: currentTable?._id, name: currentTable.name}} 
