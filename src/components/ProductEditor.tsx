@@ -9,6 +9,7 @@ import { sortBy } from '../logic/sortListBy'
 import SearchBar from './SearchBar'
 import OrderListPop from './pops/OrderListPop'
 import checkSearch from '../logic/checkSearch'
+import { Item } from '../vite-env'
 
 type Props = {
     close: Function
@@ -37,7 +38,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
 
     const [page, setPage] = React.useState(initialPage !== "" ? initialPage : "")
 
-    const changeProd = (key: string, value: string, page: string, id: string, index: number) => {
+    const changeProd = (key: string, value: any, page: string, id: string, index: number) => {
         if (value === "") return
         let ul = document.getElementById("prod-list")
         if (!ul || !resultProducts[page]) return
@@ -233,6 +234,32 @@ export default function ProductEditor({ initialPage, close }: Props) {
         c.setConfig({ ...c.config, prodsInEditorAsList: !c.config.prodsInEditorAsList })
     }
 
+    const getPresets = (id: string, page: string)=>{
+        let presets: string[] = []
+        for(let i=0; i<resultProducts[page].length; i++){
+            let el = resultProducts[page][i]
+            if(el._id === id) {
+                presets = el.presets ? [...el.presets] : []
+                break
+            }
+        }
+        return presets
+    }
+    const addPreset = (string: string, item_id: string, page: string, index: number)=>{
+        if(string === "") return
+        let presets: string[] = getPresets(item_id, page)
+        if(presets.includes(string))return 
+        presets = [...presets, string]
+        changeProd("presets", presets, page, item_id, index)
+    }
+    const deletePreset = (string: string, item_id: string, page: string, index: number)=>{
+        if(string === "") return
+        let presets: string[] = getPresets(item_id, page)
+        presets = presets.filter(el=>{if(el !== string) return })
+        changeProd("presets", presets, page, item_id, index)
+        
+    }
+
     const orderOptions = ["abc", "abc-r", "def", "def-r"]
     const sortIcons: { [key: string]: any } = {
         "abc-r": faSortAlphaDownAlt,
@@ -280,7 +307,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
         for (let i = 0; i < loadedIteration; i++) {
             for (let j = i * iterationLength; j < i * iterationLength + iterationLength; j++) {
                 if (!renderList[j]) break
-                let item = renderList[j]
+                let item: Item = renderList[j]
                 let check = checkSearch(item.name, search)
                 jsx.push(<div
                     className={search !== "" && check === item.name ? "d-none" : 'item'}
@@ -320,6 +347,21 @@ export default function ProductEditor({ initialPage, close }: Props) {
                         
                         disabled={search !== "" && check === item.name}
                     />
+                    <div className='comment-section'>
+                        <input placeholder='Añadir comentario preestablecido'
+                            onBlur={(e)=>{addPreset(e.currentTarget.value, item._id, item.type, j)}}
+                            onKeyDown={(e)=>{if(e.key === "Enter") addPreset(e.currentTarget.value, item._id, item.type, j)}}
+                        />
+                        {item.presets && item.presets.map(el=>{
+                            return <button 
+                                key={Math.random()}
+                                onClick={()=>{deletePreset(el, item._id, item.type, j)}}
+                            >
+                                <p>{el}</p>
+                                <FontAwesomeIcon icon={faXmark}/>
+                            </button>
+                        })}
+                    </div>
                     <button title='Borrar producto' onClick={() => { deleteProd(item._id, item.type) }}><FontAwesomeIcon icon={faXmark} /></button>
                 </div>)
             }
