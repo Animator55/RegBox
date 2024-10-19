@@ -61,6 +61,8 @@ export type Item = {
     type: string
     amount?: number
     header?: boolean
+    comment?:string 
+    presets?: string[]
 }
 
 export type sessionType = {

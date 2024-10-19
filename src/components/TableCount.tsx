@@ -1,7 +1,7 @@
 import { Item, PayMethod, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faCheckToSlot, faClockRotateLeft, faDollarSign, faMinus, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faCheckToSlot, faClockRotateLeft, faDollarSign, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import { Configuration, Products } from '../roleMains/Main'
@@ -105,6 +105,9 @@ export default function TableCount({ currentTable, EditTable, addItem, tablesMin
                     return header ? <div className='title' key={Math.random()}>{item.type}</div>
                         :
                         <li title={item.name} id={item._id} key={Math.random()}>
+                            <div><button className='default-button' onClick={()=>{setPop("comment")}}>
+                                <FontAwesomeIcon icon={faPen}/>
+                            </button></div>
                             <div>{item.name}</div>
                             <div>${item.price}</div>
                             <div>${item.price*item.amount}</div>
