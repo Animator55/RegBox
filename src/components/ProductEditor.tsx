@@ -255,7 +255,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
     const deletePreset = (string: string, item_id: string, page: string, index: number)=>{
         if(string === "") return
         let presets: string[] = getPresets(item_id, page)
-        presets = presets.filter(el=>{if(el !== string) return })
+        presets = presets.filter(el=>{if(el !== string) return el})
         changeProd("presets", presets, page, item_id, index)
         
     }
@@ -282,7 +282,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
             {types.length > 0 &&
                 <button
                     className={"" === page ? "active" : ""}
-                    onClick={() => { setPage(""); setLoadedIteration(1) }}
+                    onClick={() => {lastChanged=null; setPage(""); setLoadedIteration(1) }}
                 >
                     <p>Todos</p>
                 </button>
@@ -291,7 +291,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                 return <button
                     key={Math.random()}
                     className={type === page ? "active" : ""}
-                    onClick={() => { setPage(type); setLoadedIteration(1) }}
+                    onClick={() => {lastChanged=null; setPage(type); setLoadedIteration(1) }}
                 >
                     <FontAwesomeIcon icon={faCircle} />
                     <p>{type}</p>

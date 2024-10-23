@@ -28,12 +28,11 @@ export default function CommentTable({ selected, close, confirm }: Props) {
             <h2>Añadir comentario</h2>
             <textarea placeholder='Escribe el comentario...' value={value} onChange={(e) => { setValue(e.target.value) }}>
             </textarea>
-            <div>
+            <div className='presets'>
                 {selected.presets && selected.presets.map(el => {
                     return <button
                         key={Math.random()}
-                        onClick={() => { setValue(el) }}
-                        className='preset-tag-adder'>
+                        onClick={() => { setValue(el) }}>
                         {el}
                     </button>
                 })}

@@ -265,6 +265,33 @@
     margin-left: auto;
 }
 
+.pop .item .comment-section {
+    width: 90%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+}
+.pop .item .comment-section input {
+    background-color: var(--clightgray);
+    width: 100%;
+    border-radius: 5px;
+}
+.pop .item .comment-section button {
+    display: flex;
+    padding: .5rem;
+    border-radius: 10px;
+    background-color: var(--cdarkgray);
+    color: var(--cwhite);
+    gap: .7rem;
+    align-items: center;
+    max-width: 100%;
+    word-break: break-all;
+}
+.comment-section button p {
+    margin: 0;
+}
+
 
 .added {
     animation: added 300ms forwards;
