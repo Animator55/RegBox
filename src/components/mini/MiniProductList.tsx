@@ -19,6 +19,7 @@ export default function MiniProductList({Open}: Props) {
     <ul>
       {typeList.map(el=>{
         return <button 
+          title={el}
           key={Math.random()}
           onClick={()=>{Open(el)}}
         >{el}</button>
