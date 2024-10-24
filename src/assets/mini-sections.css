@@ -26,6 +26,9 @@
     margin: 0;
     overflow-y:auto;
     overflow-x: hidden;
+    max-height: calc(100% - 4.8rem);
+}
+.mini-map > ul {
     max-height: calc(100% - 8.8rem);
 }
 .mini-prod-list::after, .mini-map::after {
