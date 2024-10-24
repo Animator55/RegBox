@@ -161,6 +161,10 @@
     padding: 0 calc(0.5rem - 4px) 0 0.5rem;
     position: relative;
 }
+
+.pop .historial-list {
+    max-height: 70vh;
+}
 .pop ul:has(.alert) {
     height: 100%;
 }
