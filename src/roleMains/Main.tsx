@@ -53,9 +53,9 @@ export const Configuration = React.createContext({
             y: 0,
             align: true
         },
-        miniMapOrder: "Creación",
-        prodListOrder: "Creación",
-        prodEditorOrder: "Creación",
+        miniMapOrder: "def",
+        prodListOrder: "def",
+        prodEditorOrder: "def",
     } as configType, setConfig: (val: configType) => { console.log(val) }
 })
 export const Products = React.createContext({

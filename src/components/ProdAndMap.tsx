@@ -28,10 +28,10 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
 
     const setPage = (pageStr: string, sub?: string) => {
         if (page === pageStr) return
-        if(c.config.animations === false) {
+        if (c.config.animations === false) {
             subPage = sub === undefined ? "" : sub
             setPageState(pageStr)
-            return 
+            return
         }
         let container = document.querySelector(".prod-map-container") as HTMLDivElement
         if (!container) return
@@ -63,7 +63,18 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
     }
 
     const setCurrentHandler = (id: string, creating: boolean) => {
-        if (creating) setLoading(id) 
+        if (id === current?._id) {
+            let tbl = document.getElementById(id) as HTMLButtonElement
+            if (tbl) c.setConfig({
+                ...c.config, map: {
+                    ...c.config.map,
+                    x: parseFloat(tbl.style.left),
+                    y: parseFloat(tbl.style.top)
+                }
+            })
+        }
+
+        if (creating) setLoading(id)
         else setCurrentID(id)
     }
     React.useEffect(() => {
@@ -73,7 +84,7 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
             subPage = ""
         }
         if (loading) {
-            if(!c.config.animations) {
+            if (!c.config.animations) {
                 setCurrentID(loading)
                 setLoading("")
                 setPageState("products")
@@ -82,9 +93,9 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
             let container = document.querySelector(".prod-map-container") as HTMLDivElement
             if (!container) return
 
-            if(page !== "products")container.classList.add("change-to-products")
+            if (page !== "products") container.classList.add("change-to-products")
             setTimeout(() => {
-                if(page !== "products") setTimeout(() => {
+                if (page !== "products") setTimeout(() => {
                     container.classList.remove("change-to-products")
                 }, 100)
                 setCurrentID(loading)
@@ -109,11 +120,11 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
                         changeDisplay={changeProdDisplay}
                         addItem={addItem}
                     />
-                    <MiniMap 
+                    <MiniMap
                         openTable={(_id: string, isNew: boolean) => {
                             setCurrentHandler(_id, isNew)
                         }}
-                        Open={()=>{setPage("map")}}
+                        Open={() => { setPage("map") }}
                         tablesOpenMin={tablesMin}
                         current={current}
                     />
