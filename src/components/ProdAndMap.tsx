@@ -63,17 +63,6 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
     }
 
     const setCurrentHandler = (id: string, creating: boolean) => {
-        if (id === current?._id) {
-            let tbl = document.getElementById(id) as HTMLButtonElement
-            if (tbl) c.setConfig({
-                ...c.config, map: {
-                    ...c.config.map,
-                    x: parseFloat(tbl.style.left),
-                    y: parseFloat(tbl.style.top)
-                }
-            })
-        }
-
         if (creating) setLoading(id)
         else setCurrentID(id)
     }
