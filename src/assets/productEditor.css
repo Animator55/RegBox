@@ -179,8 +179,8 @@
 }
 
 .pop .item {
-    display: grid;
-    grid-template-columns: 46% 46% 8%;
+    display: flex;
+    flex-wrap: wrap;
     background-color: transparent;
     padding: 0.5rem 2%;
     align-items: center;
@@ -214,6 +214,13 @@
     height: 1.6rem;
 }
 
+.pop :not(.prod-grid-mode)>.item>p {    
+    width: 100%;
+}
+.pop :not(.prod-grid-mode)>.item>.comment-section {    
+    width: 100%;
+}
+
 .pop .item>input {
     background-color: transparent;
     border-bottom: 1px solid var(--cdarkgray);
@@ -236,9 +243,6 @@
     width: 3rem;
     font-size: 1.2rem;
     transition: right 300ms, opacity 300ms;
-}
-
-.pop .prod-grid-mode .item>button {
     top: 0;
 }
 

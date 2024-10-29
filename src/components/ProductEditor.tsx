@@ -46,7 +46,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
         lastChanged = index
         scrollHeight = ul.scrollTop
         let newValue = key === "price" ? parseFloat(value) : value
-        editedEntry = key === "name" ? "price" : "name"
+        editedEntry = key === "presets" ? "presets" : key === "name" ? "price" : "name"
 
         setResult({
             ...resultProducts, [page]: resultProducts[page].map((el) => {
@@ -171,7 +171,7 @@ export default function ProductEditor({ initialPage, close }: Props) {
                 div = added.firstChild as HTMLDivElement
                 if (div) selectAllText(div)
             }
-            else {
+            else if(editedEntry === "price") {
                 div = added.children[1] as HTMLInputElement
                 if (div && div.select) div.select()
             }
