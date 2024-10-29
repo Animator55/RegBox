@@ -416,6 +416,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         "closesession": <CloseSession close={close} logout={logout_handler} />,
         "account": <AccountPop download={download} OpenPop={OpenPop} close={close} />,
         "historial": <HistorialTableComp
+            setCurrentHandler={setCurrentHandler}
             table={popUp.initialPage === "true" ? currentTableData : undefined}
             close={close}
         />

@@ -1,24 +1,27 @@
 import { HistorialTableType, TableEvents, TableType } from '../vite-env'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faCaretRight, faCircle, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faCaretRight, faCircle, faRotateLeft, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import "../assets/historial.css"
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import fixNum from '../logic/fixDateNumber'
 import { stateTraductions } from '../defaults/stateTraductions'
+import { TablesPlaces } from '../roleMains/Main'
+import createNewTable from '../logic/createNewTable'
 
 type Props = {
+    setCurrentHandler: Function
     table?: TableType
     close: Function
 }
 
-export default function HistorialTableComp({ table, close }: Props) {
+export default function HistorialTableComp({ setCurrentHandler, table, close }: Props) {
     const jump = (index: number) => {
         let ul = document.querySelector(".historial-list")
-        if(ul && ul.children[index]) ul.children[index].scrollIntoView({ block: "start", behavior: "smooth" })
+        if (ul && ul.children[index]) ul.children[index].scrollIntoView({ block: "start", behavior: "smooth" })
     }
     const [selectedTable, setSelected] = React.useState<TableType | TableEvents | undefined>(table)
-    // const tbl = React.useContext(TablesPlaces)
+    const tbl = React.useContext(TablesPlaces)
 
     const ViewTable = () => {
         if (!selectedTable || !selectedTable._id) return
@@ -66,6 +69,28 @@ export default function HistorialTableComp({ table, close }: Props) {
             return list
         }
 
+        const RecreateTable = () => {
+            if (!selectedTable) return
+
+            let tableExists = false
+            for (let i = 0; i < tbl.tables.length; i++) {
+                if (selectedTable._id === tbl.tables[i]._id) {
+                    tableExists = true; break
+                }
+            }
+            return !tableExists && <button
+                className='add-prod'
+                onClick={() => {
+                    let created = createNewTable(selectedTable as TableType)
+                    tbl.set([...tbl.tables, created])
+                    close()
+                    setCurrentHandler(created._id)
+                }}>
+                <FontAwesomeIcon icon={faRotateLeft} />
+                <p>Recrear Mesa</p>
+            </button>
+        }
+
 
         return <>
             <nav className='historial-nav'>
@@ -79,6 +104,7 @@ export default function HistorialTableComp({ table, close }: Props) {
             <div className='product-editor-content'>
                 <div>
                     {selectedTable && <h3>Mesa {selectedTable.name}</h3>}
+                    <RecreateTable />
                 </div>
                 <hr></hr>
                 <ul className='historial-list'>
@@ -108,13 +134,13 @@ export default function HistorialTableComp({ table, close }: Props) {
         });
 
         let date = new Date()
-        let firstTableHour = array.length !== 0 ? array[array.length-1].opened[0] : (fixNum(date.getHours()) +":"+fixNum(date.getMinutes()))
+        let firstTableHour = array.length !== 0 ? array[array.length - 1].opened[0] : (fixNum(date.getHours()) + ":" + fixNum(date.getMinutes()))
         let hoursEntries = []
-        let hourNow = parseInt(fixNum(date.getHours())) 
+        let hourNow = parseInt(fixNum(date.getHours()))
         let firstTableFix = parseInt(firstTableHour.split(":")[0])
-        while(hourNow > firstTableFix) {
+        while (hourNow > firstTableFix) {
             firstTableFix++
-            hoursEntries.unshift(firstTableFix +":00")
+            hoursEntries.unshift(firstTableFix + ":00")
         }
         hoursEntries.push(firstTableHour)
         hoursEntries.unshift("Ahora")
@@ -122,7 +148,7 @@ export default function HistorialTableComp({ table, close }: Props) {
 
         return array && array.length !== 0 ? <>
             <nav className='historial-nav'>
-                {hoursEntries.length!==0 && hoursEntries.map((el, i) => {
+                {hoursEntries.length !== 0 && hoursEntries.map((el, i) => {
                     return <button key={Math.random()} onClick={() => { jump(i) }}>
                         <FontAwesomeIcon icon={faCircle} />
                         <p>{el}</p>

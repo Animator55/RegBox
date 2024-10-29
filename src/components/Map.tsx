@@ -8,6 +8,7 @@ import "../assets/map.css"
 import { colorSelector } from '../logic/colorSelector'
 import { checkTable } from '../logic/checkTableState'
 import { selectAllText } from '../logic/selectAllText'
+import createNewTable from '../logic/createNewTable'
 
 type Props = {
   setCurrentID: Function
@@ -27,32 +28,11 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
   const [deleteMode, setDeleteMode] = React.useState(false)
 
   const addTable = () => {
-    let map = document.querySelector(".draggable") as HTMLDivElement
+    let created = createNewTable()
 
-    let x = 100
-    let y = 100
-    if (map) {
-      x = map.parentElement!.clientWidth / 2 - (parseInt(map.style.left) * parseFloat(map.style.scale)) - 17.5
-      y = map.parentElement!.clientHeight / 2 - (parseInt(map.style.top) * parseFloat(map.style.scale)) - 17.5
-    }
+    autoEditName = created._id
 
-    let newID = `${Math.round((Math.random() * Math.random()) * 10000000000)}`
-    let table: TablePlaceType = {
-      _id: newID,
-      name: `${Math.round(Math.random() * 100)}`,
-      coords: {
-        x: x,
-        y: y,
-      },
-      size: {
-        x: 40,
-        y: 40,
-      }
-    }
-
-    autoEditName = newID
-
-    tdf.set([...tdf.tables, table])
+    tdf.set([...tdf.tables, created])
   }
 
   const Top = () => {
