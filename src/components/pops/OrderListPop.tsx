@@ -1,4 +1,5 @@
 import React from "react"
+import { orderNameTranslations } from "../../defaults/stateTraductions"
 
 type Props = {
     options: string[]
@@ -7,12 +8,6 @@ type Props = {
     confirm:Function
 }
 
-const orderNameTranslations:{[key:string]: string}={
-    abc: "Alfabético",
-    "abc-r": "Alfabético Inverso",
-    def: "Creación",
-    "def-r": "Creación Inverso",
-}
 
 export default function OrderListPop ({options, actual, close, confirm}: Props) {
     const [selected, setSelected] = React.useState(actual)

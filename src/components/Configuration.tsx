@@ -4,6 +4,7 @@ import { faCheckSquare, faSquare, faXmark } from '@fortawesome/free-solid-svg-ic
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Configuration } from '../roleMains/Main'
 import { router } from '../vite-env'
+import { orderNameTranslations } from '../defaults/stateTraductions'
 
 type Props = {
   close: Function
@@ -27,6 +28,9 @@ export default function ConfigurationComp({ close }: Props) {
     "download": "Guardar datos",
     "help": "Ayuda",
     "logout": "Cerrar sesión",
+    miniMapOrder: "Orden de la lista de mesas",
+    prodListOrder: "Orden de los productos en la lista",
+    prodEditorOrder: "Orden de los productos en el editor",
   }
   const setTitle = (val: string) => {
     if (Object.keys(configTitles).includes(val)) return configTitles[val]
@@ -38,6 +42,29 @@ export default function ConfigurationComp({ close }: Props) {
 
   let conf = c.config as router
 
+  const configsOfOrder = [
+    "miniMapOrder","prodListOrder","prodEditorOrder"
+  ] 
+
+  const ListOrdersOptions = [
+    "abc","abc-r","def","def-r"
+  ]
+
+  const Select = ({ val, obj, edit }: { val: string, obj: { [key: string]: any }, edit: Function }) => {
+    return <div className="checkbox">
+      <p>{setTitle(val)}</p>
+      <select defaultValue={obj[val]} onChange={(e)=>{edit(val, e.currentTarget.value)}}>
+        {ListOrdersOptions.map(opt=>{
+          return <option
+            key={Math.random()}
+            value={opt}
+          >
+            {orderNameTranslations[opt]}
+          </option>
+        })}
+      </select>
+    </div>
+  }
   const Color = ({ val, obj, edit }: { val: string, obj: { [key: string]: any }, edit: Function }) => {
     return <div className="checkbox">
       <p>{setTitle(val)}</p>
@@ -94,7 +121,10 @@ export default function ConfigurationComp({ close }: Props) {
             }
 
             if (typeof conf[key] === "boolean") return <CheckBox key={Math.random()} val={key} obj={conf} edit={edit} />
-            else if (typeof conf[key] === "string") return <Color key={Math.random()} val={key} obj={conf} edit={editStr} />
+            else if (typeof conf[key] === "string") {
+              if(configsOfOrder.includes(key)) return <Select key={Math.random()} val={key} obj={conf} edit={editStr}/>
+              else return <Color key={Math.random()} val={key} obj={conf} edit={editStr} />
+            }
             else return <Block key={Math.random()} val={key} />
           })}
         </ul>
