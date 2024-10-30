@@ -75,14 +75,14 @@ export const getDomainData =(dom_id: string)=>{
     return {prods, config, tablePlaces}
 }
 
-export const selectDomainById = (dom_id: string): domainType | undefined=> { // returns domain
+export const selectDomainById = (dom_id: string, returnIndex?: boolean): domainType | number | undefined=> { // returns domain
     let index = -1
     for(let i=0; i<domains.length; i++) {
         if(domains[i]._id === dom_id) {index = i; break}
     }
 
     if(index === -1) return
-    return domains[index]
+    return returnIndex ? index : domains[index]
 }
 const selectDomain = (dom: string): number=> { /// returns index
     let index = -1
@@ -105,8 +105,8 @@ const selectUser = (domIndex: number, username: string)=>{
 }
 
 const checkUser = (user: string, password: string | undefined, domain: string): {type: "error" | "success"| "denied", data: any}=>{
-    let domainIndex = selectDomain(domain)
-    if(domainIndex === -1) return {type: "error", data: "Dominio no encontrado"}
+    let domainIndex = password ? selectDomain(domain) : selectDomainById(domain, true)
+    if(!domainIndex || typeof domainIndex !== "number" || domainIndex === -1) return {type: "error", data: "Dominio no encontrado"}
 
 
     let userIndex = selectUser(domainIndex, user)
@@ -336,6 +336,7 @@ export const back_setTablesPlaces = (tblPlaces: TablePlaceType[])=>{
     if (!stor || stor === "") return responses["error"]
     let session = JSON.parse(stor) as sessionType
     let result = checkUser(session.name, undefined, session.domain)
+    
     let alert = responses[result.type]
     return alert
 }

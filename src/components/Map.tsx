@@ -26,13 +26,21 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
   const [editMode, setEditMode] = React.useState(false)
   const [deleteMode, setDeleteMode] = React.useState(false)
+  const [localMap, setMap] = React.useState<TablePlaceType[]>(tdf.tables)
+
+  const handleSetEditMode = ()=>{
+    if(editMode) tdf.set(localMap)
+    setEditMode(!editMode)
+  }
 
   const addTable = () => {
     let created = createNewTable()
 
     autoEditName = created._id
 
-    tdf.set([...tdf.tables, created])
+    let value = [...localMap, created]
+    if(editMode) setMap(value)
+    else tdf.set(value)
   }
 
   const Top = () => {
@@ -54,7 +62,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             className='default-button-2'
           ><FontAwesomeIcon icon={faPlus} />Añadir</button>}
         </>}
-        <button className='default-button-2' onClick={() => { setEditMode(!editMode) }}>
+        <button className='default-button-2' onClick={() => { handleSetEditMode() }}>
           <FontAwesomeIcon icon={editMode ? faCheck : faPen} />
           {editMode ? "Confirmar" : "Editar"}
         </button>
@@ -64,9 +72,9 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
 
   const getTableFromId = (_id: string) => {
     let tableToEdit: TablePlaceType | undefined
-    for (let i = 0; i < tdf.tables.length; i++) {
-      if (_id === tdf.tables[i]._id) {
-        tableToEdit = tdf.tables[i]
+    for (let i = 0; i < localMap.length; i++) {
+      if (_id === localMap[i]._id) {
+        tableToEdit = localMap[i]
         break
       }
     }
@@ -93,8 +101,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       
       let val = []
 
-      for (let i = 0; i < tdf.tables.length; i++) {
-        if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
+      for (let i = 0; i < localMap.length; i++) {
+        if (localMap[i]._id !== tableToEdit._id) val.push(localMap[i])
         else if (checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
           toast({
             _id: "ibsgnfaig",
@@ -102,11 +110,22 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             content: "La mesa no puede ser eliminada si esta misma esta abierta o no fue cobrada.",
             icon: "xmark"
           })
-          val.push(tdf.tables[i])
+          val.push(localMap[i])
         }
       }
 
-      tdf.set(val)
+      setMap(val)
+    }
+    const editName = (id: string, val: string) => {
+        setMap([...localMap.map((el) => {
+            if (el._id !== id) return el
+            else {
+                return {
+                    ...el,
+                    name: val
+                } as TablePlaceType
+            }
+        })])
     }
 
     const drag = (e: React.MouseEvent) => {
@@ -183,8 +202,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       }
       let val = []
 
-      for (let i = 0; i < tdf.tables.length; i++) {
-        if (tdf.tables[i]._id !== tableToEdit._id) val.push(tdf.tables[i])
+      for (let i = 0; i <localMap.length; i++) {
+        if (localMap[i]._id !== tableToEdit._id) val.push(localMap[i])
         else if (deleteItem && checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
           toast({
             _id: "ibsgnfaig",
@@ -192,7 +211,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             content: "La mesa no puede ser eliminada si esta misma esta abierta o no fue cobrada.",
             icon: "xmark"
           })
-          val.push(tdf.tables[i])
+          val.push(localMap[i])
         }
         else if (deleteItem !== true || checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") val.push({
           _id: tableToEdit._id,
@@ -208,7 +227,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       }
 
       if (x !== tableToEdit[entry === "coords" ? "size" : "coords"].x
-        || y !== tableToEdit[entry === "coords" ? "size" : "coords"].y) tdf.set(val)
+        || y !== tableToEdit[entry === "coords" ? "size" : "coords"].y) setMap(val)
 
       deleteItem = false
 
@@ -411,7 +430,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
           onBlur={(e) => {
             if (deleteMode) return
             if (e.currentTarget.textContent !== null
-              && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+              && e.currentTarget.textContent !== "") editName(tbl._id, e.currentTarget.textContent)
             else e.currentTarget.textContent = tbl.name
           }}
           onKeyDown={(e) => {
@@ -419,7 +438,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             if (e.key !== "Enter") return
             e.preventDefault()
             if (e.currentTarget.textContent !== null
-              && e.currentTarget.textContent !== "") tdf.editName(tbl._id, e.currentTarget.textContent)
+              && e.currentTarget.textContent !== "") editName(tbl._id, e.currentTarget.textContent)
             else e.currentTarget.textContent = tbl.name
           }}
         >{tbl.name}</p>
@@ -442,11 +461,11 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     return <section className='map-display'>
       <Buttons />
       <section className='background' onMouseDown={drag} onTouchStart={drag_Touch} onWheel={(e) => { changeZoom(e.deltaY < 0) }} data-edit={`${editMode}`}>
-        {tdf.tables && tdf.tables.length !== 0 ?
+        {localMap && localMap.length !== 0 ?
           <div className='draggable' style={{
             top: c.config.map.y, left: c.config.map.x, scale: `${c.config.map.zoom}`
           }} >
-            {tdf.tables.map((tbl) => <TableDraggable key={Math.random()} tbl={tbl} />)}
+            {localMap.map((tbl) => <TableDraggable key={Math.random()} tbl={tbl} />)}
           </div> : <Alert />
         }
       </section>

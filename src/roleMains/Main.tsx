@@ -71,7 +71,6 @@ export const ToastActivation = React.createContext((val: {
 export const TablesPlaces = React.createContext({
     tables: [] as TablePlaceType[],
     set: (val: TablePlaceType[]) => { console.log(val) },
-    editName: (id: string, val: string) => { console.log(id, val) },
 })
 
 
@@ -417,21 +416,6 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         setTablesPlaces(val)
     }
 
-    const EditTableName = (id: string, val: string) => {
-        let prev = ""
-        setTablesPlacesHandler([...tablesPlacesPH.map((el) => {
-            if (el._id !== id) return el
-            else {
-                prev = el.name
-                return {
-                    ...el,
-                    name: val
-                } as TablePlaceType
-            }
-        })])
-
-        EditTable(id, "name", val, "Cambio de nombre de mesa de " + prev + " a " + val)
-    }
 
     React.useEffect(()=>{
         if(!config || config.mainColor === "") return
@@ -441,7 +425,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     let animations = config ? config.animations : true
 
     return <main data-animations={`${animations}`}>
-        <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlacesHandler, editName: EditTableName }}>
+        <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlacesHandler }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
                     <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>
