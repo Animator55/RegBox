@@ -14,7 +14,7 @@ import { checkImportancy } from '../logic/checkChangeImportancy'
 import HistorialTableComp from '../components/HistorialTable'
 import CloseSession from '../components/pops/CloseSession'
 import Toast from '../components/pops/Toast'
-import { back_addEventToHistorial, back_addTableOrSwitch_Historial, back_setTablesPlaces, setTableHistorial } from '../logic/API'
+import { back_addEventToHistorial, back_addTableOrSwitch_Historial, back_setProducts, back_setTablesPlaces, setTableHistorial } from '../logic/API'
 import AccountPop from '../components/pops/AccountPop'
 import AccountInfo from '../components/pops/AccountInfo'
 import { defaultConfig } from '../defaults/config'
@@ -296,21 +296,10 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         ///send to db and obtain results
 
         if (!someEdit) return
-        let result = true
-        let toastData = result ? {
-            title: "Productos editados Exitosamente",
-            content: "Los productos fueron editados y actualizados en la base de datos con éxito. Se mostrará la nueva lista editada.",
-            icon: "check",
-            _id: `${Math.random()}`
-        } : {
-            title: "Edición de productos Fallida",
-            content: "La conexión falló y los productos no fueron editados, la lista se mostrará con su estado anterior para evitar errores de sincronización.",
-            icon: "xmark",
-            _id: `${Math.random()}`
-        }
+        let result = back_setProducts(prods)
 
         if (result) setProdsState(prods)
-        setToastAlert(toastData)
+        setToastAlert(result)
     }
 
     let currentTableData: undefined | TableType

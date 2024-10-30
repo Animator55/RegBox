@@ -43,7 +43,7 @@ let domains: domainType[] = [
         name: "TestDomain",
         url: "",
         users: [
-            {_id: "gnidkasgm", name: "Caja", role: "main", password: "1234"}
+            {_id: "trfghdg", name: "Caja", role: "main", password: "1234"}
         ],
         roles: ["main", "pawn", "kitchen"],
         products: ["prods1"],
@@ -104,17 +104,28 @@ const selectUser = (domIndex: number, username: string)=>{
     return index
 }
 
-export function checkUser (user: string, password: string, domain: string): {type: string, data: any} {
-    let session: sessionType = {_id: "", name: "", role: "", opened: "", domain: "", url: ""}
-
+const checkUser = (user: string, password: string | undefined, domain: string): {type: "error" | "success"| "denied", data: any}=>{
     let domainIndex = selectDomain(domain)
     if(domainIndex === -1) return {type: "error", data: "Dominio no encontrado"}
 
-    session.domain = domains[domainIndex]._id
-    session.url = domains[domainIndex].url
 
     let userIndex = selectUser(domainIndex, user)
-    if(userIndex === -1 || domains[domainIndex].users[userIndex].password !== password) return {type: "error", data: "El usuario y la contraseña no coinciden"}
+    if(userIndex === -1 || 
+    (password && domains[domainIndex].users[userIndex].password !== password)) return {type: "error", data: "El usuario y la contraseña no coinciden"}
+
+    return {type: "success", data: {domainIndex, userIndex}}
+}
+
+export function generateSession (user: string, password: string, domain: string): {type: string, data: any} {
+    let session: sessionType = {_id: "", name: "", role: "", opened: "", domain: "", url: ""}
+    let check = checkUser(user, password, domain)
+    if(check.type === "error" || typeof check.data === "string") return check
+
+    let domainIndex = check.data.domainIndex
+    let userIndex = check.data.userIndex
+
+    session.domain = domains[domainIndex]._id
+    session.url = domains[domainIndex].url
 
     let date = new Date()
     session.name = user
@@ -215,8 +226,7 @@ export const back_addEventToHistorial = (
     if(entry === "products" && table) {
         resultChange.products = [...table.products]
     }
-    else if(entry === "discount")resultChange.discount = discount!
-    else if(entry === "discount")resultChange.discountType = discountType!
+    else if(entry === "discount"){resultChange.discount = discount!;resultChange.discountType = discountType!}
     else if (entry === "state" && value) {
         resultChange.state = value
         if (value === "unnactive" && table) {
@@ -301,12 +311,63 @@ export const setTableHistorial = (table_id:string, historialJSONString: string)=
 }
 export const back_setTablesPlaces = (tblPlaces: TablePlaceType[])=>{
     tblPlaces
-    return null
-    // let alert = {
-    //     _id: "gkimnasgkia",
-    //     title: "Error de conexión",
-    //     content: "La conexión con base de datos falló y los datos solo se cargaron en el navegador local.",
-    //     icon: "xmark"
-    // }
-    // return alert
+    // return null
+    const responses = {
+        "success": {
+            title: "Edición de Mapa Exitosa",
+            content: "Las mesas fueron editadas y actualizadas en la base de datos con éxito. Se mostrará el nuevo mapa editado.",
+            icon: "check",
+            _id: `${Math.random()}`
+        }, 
+        "error": {
+            title: "Edición de Mapa Fallida",
+            content: "La conexión falló y el mapa no fue editado, el mismo se mostrará con su estado anterior para evitar errores de sincronización.",
+            icon: "xmark",
+            _id: `${Math.random()}`
+        },
+        "denied": {
+            title: "Edición de Mapa Denegada",
+            content: "No tienes permitido cambiar el mapa en esta sesión y el mismo no fue editado.",
+            icon: "xmark",
+            _id: `${Math.random()}`
+        }
+    } 
+    let stor = window.localStorage.getItem("RegBoxSession")
+    if (!stor || stor === "") return responses["error"]
+    let session = JSON.parse(stor) as sessionType
+    let result = checkUser(session.name, undefined, session.domain)
+    let alert = responses[result.type]
+    return alert
+}
+
+
+export const back_setProducts = (prods: productsType) =>{
+    prods;
+    // return null
+    const responses = {
+        "success": {
+            title: "Productos editados Exitosamente",
+            content: "Los productos fueron editados y actualizados en la base de datos con éxito. Se mostrará la nueva lista editada.",
+            icon: "check",
+            _id: `${Math.random()}`
+        }, 
+        "error": {
+            title: "Edición de productos Fallida",
+            content: "La conexión falló y los productos no fueron editados, la lista se mostrará con su estado anterior para evitar errores de sincronización.",
+            icon: "xmark",
+            _id: `${Math.random()}`
+        },
+        "denied": {
+            title: "Edición de productos Denegada",
+            content: "No tienes permitido cambiar productos en esta sesión y los productos no fueron editados.",
+            icon: "xmark",
+            _id: `${Math.random()}`
+        }
+    } 
+    let stor = window.localStorage.getItem("RegBoxSession")
+    if (!stor || stor === "") return responses["error"]
+    let session = JSON.parse(stor) as sessionType
+    let result = checkUser(session.name, undefined, session.domain)
+    let alert = responses[result.type]
+    return alert
 }
