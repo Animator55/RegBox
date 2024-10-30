@@ -1,7 +1,7 @@
 import React from 'react'
 import { faCircleExclamation, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { checkUser } from '../logic/API'
+import {  generateSession } from '../logic/API'
 import "../assets/auth.css"
 
 type Props = {
@@ -28,7 +28,7 @@ export default function AuthScreen({ setSession }: Props) {
 
         // send request ---- then =>
 
-        let result = checkUser(name, password, domain)
+        let result = generateSession(name, password, domain)
 
         setTimeout(() => {
             submit.classList.remove('loading-button')

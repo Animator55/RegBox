@@ -14,7 +14,7 @@ export default function App() {
   const [initialHistorial, setInitialHistorial] = React.useState<undefined | any>()
   const [ref, refresh] = React.useState(false)
   const logout = () => {
-    window.localStorage.setItem("RegBoxSession", "")
+    window.localStorage.removeItem("RegBoxSession")
     for (const key in window.localStorage) {
       if (key.startsWith("RegBoxID:")) window.localStorage.removeItem(key)
     }

@@ -32,7 +32,7 @@ export default function CommentTable({ selected, close, confirm }: Props) {
                 {selected.presets && selected.presets.map(el => {
                     return <button
                         key={Math.random()}
-                        onClick={() => { setValue(el) }}>
+                        onClick={() => { setValue(value + ", "+el) }}>
                         {el}
                     </button>
                 })}

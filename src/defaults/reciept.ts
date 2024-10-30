@@ -16,7 +16,7 @@ export const html_reciept = (currentTable: TableType, types: string[]) => {
         let el = result[i]
         total += el.price * el.amount!
 
-        let prefix = el.amount === 1 ? "" : `${el.amount + "*$" + el.price + " "}`
+        let prefix = el.amount === 1 ? "" : `(${el.amount + "*$" + el.price + " "})`
 
         prodList.push(`
             <p style="font-size:0.65rem;margin: 3px 0;">${el.name}</p>
@@ -56,7 +56,15 @@ export const html_reciept = (currentTable: TableType, types: string[]) => {
                 <hr />
                 <div style="display: flex;">
                     <p style="font-size: 0.9rem;margin: 3px 0;"><b>Total</b></p>
-                    <p style="margin: 3px 0;margin-left: auto; font-size: 0.9rem;"><b>$${total}</b></p>
+                    <p style="display:flex; align-items:center; gap: 0.7rem; margin: 3px 0;margin-left: auto; font-size: 0.9rem;">
+                        ${currentTable.discount === 0 ? `<b>$${total}</b>`:
+                            `<del>$${total}</del>
+                            <b>$
+                            ${currentTable.discountType === "percent" ? 
+                                (Math.floor(total*(1-(currentTable?.discount/100)))): (total - currentTable.discount)
+                            }</b>`
+                        }
+                    </p>
                 </div>
             </div>
         </div>

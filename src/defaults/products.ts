@@ -15,7 +15,7 @@ export const products1: productsType = {
     { _id: "ent08", name: "Queso Brie con Mermelada de Tomate", price: 1500, type: "Entradas" }
   ],
   "Principales": [
-    { _id: "main01", name: "Bife de Chorizo con Papas Fritas", price: 4000, type: "Principales" },
+    { _id: "main01", name: "Bife de Chorizo con Papas Fritas", price: 4000, type: "Principales", presets:["A punto", "Cocido", "Jugoso"]},
     { _id: "main02", name: "Ravioles de Ricota con Salsa Bolognesa", price: 3500, type: "Principales" },
     { _id: "main03", name: "Suprema de Pollo con Puré", price: 3200, type: "Principales" },
     { _id: "main04", name: "Risotto de Hongos", price: 3700, type: "Principales" },

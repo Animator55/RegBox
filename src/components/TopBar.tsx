@@ -40,18 +40,18 @@ export default function TopBar({ OpenPop, download }: Props) {
       }}><FontAwesomeIcon icon={faClockRotateLeft} />Historial</button>,
   }
   const shortButtons: router = {
-    "information": <button className="option" onClick={() => { OpenPop("information") }}><FontAwesomeIcon icon={faInfoCircle} />
+    "information": <button className="option" title='Información de la sesión' onClick={() => { OpenPop("information") }}><FontAwesomeIcon icon={faInfoCircle} />
     </button>,
-    "configuration": <button className="option" onClick={() => { OpenPop("configuration") }}><FontAwesomeIcon icon={faGear} />
+    "configuration": <button className="option" title='Configuración' onClick={() => { OpenPop("configuration") }}><FontAwesomeIcon icon={faGear} />
     </button>,
-    "download": <button className="option" onClick={() => { download() }}><FontAwesomeIcon icon={faFloppyDisk} />
+    "download": <button className="option" title='Descargar datos locales' onClick={() => { download() }}><FontAwesomeIcon icon={faFloppyDisk} />
     </button>,
-    "help": <button className="option" >
+    "help": <button className="option"  title='Ayuda'>
       <a href='https://github.com/Animator55/RegBox' target='_blank'>
         <FontAwesomeIcon icon={faQuestionCircle} />
       </a>
     </button>,
-    "logout": <button className="option" onClick={() => { OpenPop("closesession") }}><FontAwesomeIcon icon={faRightFromBracket} />
+    "logout": <button className="option" title='Cerrar la sesión' onClick={() => { OpenPop("closesession") }}><FontAwesomeIcon icon={faRightFromBracket} />
     </button>
   }
 
