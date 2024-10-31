@@ -50,7 +50,7 @@ export default function ProdAndMap({ current, setCurrentID, tablesMin, addItem }
 
     const NavBar = () => {
         return <nav id='main-router' className="nav-page">
-            <button className={page === "products" ? "active" : ""} onClick={() => { setPage("products") }}>Productos</button>
+            <button id="prod-list-nav" className={page === "products" ? "active" : ""} onClick={() => { setPage("products") }}>Productos</button>
             <button className={page === "map" ? "active" : ""} onClick={() => { setPage("map") }}>Mapa</button>
         </nav>
     }

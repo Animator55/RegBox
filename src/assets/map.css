@@ -1,3 +1,15 @@
+[data-is-editing="true"]::before {
+    content: "";
+    background-color: rgba(0, 0, 0, 0.35);
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+[data-is-editing="true"]{
+    position: relative;
+    z-index: 10;
+}
+
 .map {
     background-color: var(--corange);
     height: 100%;
@@ -9,6 +21,7 @@
 
 .map-header {
     display: flex;
+    position: relative;
     padding: 0.7rem 1rem 0 .8rem;
 }
 .map-header > select {
@@ -17,11 +30,26 @@
 
 .edit-container {
     display: flex;
-    gap: 1rem;
+    gap: 3%;
     align-items: center;
     margin-left: auto;
     width: 100%;
     justify-content: end;
+}
+.edit-container > button{
+    justify-content: center;
+}
+.edit-container > button > p {
+    margin: 0;
+}
+
+@media (max-width:1100px) {
+    .edit-container > button {
+        width: 2rem;
+    }
+    .edit-container > button > p {
+        display: none;
+    }
 }
 
 .edit-container > button.default-button {
@@ -124,6 +152,7 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    border: 3px solid transparent;
 }
 
 .draggable {
@@ -151,12 +180,17 @@
     inset: -0.35rem;
     pointer-events: none;
 }
+[data-edit="true"] {
+    border-color: var(--cwhite);
+}
 [data-edit="true"] .table {
     cursor: grab;
 }
 [data-edit="true"] .table:focus {
     cursor: grabbing;
 }
+
+
 
 .edit-name {
     position: absolute;

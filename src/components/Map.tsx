@@ -28,8 +28,11 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
   const [deleteMode, setDeleteMode] = React.useState(false)
   const [localMap, setMap] = React.useState<TablePlaceType[]>(tdf.tables)
 
-  const handleSetEditMode = () => {
-    if (editMode) tdf.set(localMap)
+  const handleSetEditMode = (confirm: boolean) => {
+    if (editMode) {
+      if (confirm) tdf.set(localMap)
+      else setMap(tdf.tables)
+    }
     setEditMode(!editMode)
   }
 
@@ -59,15 +62,21 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
           <button
             onClick={() => { setDeleteMode(!deleteMode) }}
             className={deleteMode ? 'default-button-2 active' : 'default-button-2'}
-          ><FontAwesomeIcon icon={faTrash} />{deleteMode ? "Dejar de Borrar" : "Borrar"}</button>
+          ><FontAwesomeIcon icon={faTrash} />
+            <p>{deleteMode ? "Dejar de Borrar" : "Borrar"}</p></button>
           {!deleteMode && <button
             onClick={addTable}
             className='default-button-2'
-          ><FontAwesomeIcon icon={faPlus} />Añadir</button>}
+          ><FontAwesomeIcon icon={faPlus} />
+            <p>Añadir</p></button>}
+          <button className='default-button-2' onClick={() => { handleSetEditMode(false) }}>
+            <FontAwesomeIcon icon={faXmark} />
+            <p>Cancelar</p>
+          </button>
         </>}
-        <button className='default-button-2' onClick={() => { handleSetEditMode() }}>
+        <button className='default-button-2' onClick={() => { handleSetEditMode(true) }}>
           <FontAwesomeIcon icon={editMode ? faCheck : faPen} />
-          {editMode ? "Confirmar" : "Editar"}
+          <p>{editMode ? "Confirmar" : "Editar"}</p>
         </button>
       </section>
     </header>
@@ -144,7 +153,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       }
       const drop = () => {
         let target = document.querySelector(".draggable") as HTMLDivElement
-
+        if(!target) return
         let x = parseInt(target.style.left)
         let y = parseInt(target.style.top)
 
@@ -177,6 +186,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       }
       const drop = () => {
         let target = document.querySelector(".draggable") as HTMLDivElement
+        if(!target) return
 
         let x = parseInt(target.style.left)
         let y = parseInt(target.style.top)
@@ -488,7 +498,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     }
   })
 
-  return <section className='map'>
+  return <section className='map' data-is-editing={`${editMode}`}>
     <Top />
     <MapDisplay />
   </section>

@@ -85,6 +85,8 @@ export default function HistorialTableComp({ setCurrentHandler, table, close }: 
                     tbl.set([...tbl.tables, created])
                     close()
                     setCurrentHandler(created._id)
+                    let btn = document.getElementById("prod-list-nav")
+                    if(btn) btn.click()
                 }}>
                 <FontAwesomeIcon icon={faRotateLeft} />
                 <p>Recrear Mesa</p>
