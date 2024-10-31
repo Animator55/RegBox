@@ -8,7 +8,7 @@ export const defaultConfig: configType = {
         "products": true,
         "historial": true,
         "information": false,
-        "configuration": false,
+        "configuration": true,
         "download": false,
         "help": false,
         "logout": true,

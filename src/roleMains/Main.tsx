@@ -168,7 +168,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
         let { JSONStr, sJSONStr } = back_addTableOrSwitch_Historial(prevData, newTable, isSwitch, prevId)
         if (sJSONStr) {
-            storage.setItem("RegBoxID:" + newTable._id, sJSONStr)
+            storage.setItem("RegBoxID:" + prevId, sJSONStr)
             let result = setTableHistorial(newTable._id, sJSONStr)
 
             if (result) setToastAlert(result)
