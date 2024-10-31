@@ -28,8 +28,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
   const [deleteMode, setDeleteMode] = React.useState(false)
   const [localMap, setMap] = React.useState<TablePlaceType[]>(tdf.tables)
 
-  const handleSetEditMode = ()=>{
-    if(editMode) tdf.set(localMap)
+  const handleSetEditMode = () => {
+    if (editMode) tdf.set(localMap)
     setEditMode(!editMode)
   }
 
@@ -39,8 +39,11 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
     autoEditName = created._id
 
     let value = [...localMap, created]
-    if(editMode) setMap(value)
-    else tdf.set(value)
+    if (editMode) setMap(value)
+    else {
+      tdf.set(value)
+      setMap(value)
+    }
   }
 
   const Top = () => {
@@ -93,12 +96,12 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       deleteItem = false
     }
 
-    const deleteTable = (_id: string)=>{
-      if(!_id) return 
+    const deleteTable = (_id: string) => {
+      if (!_id) return
 
       let tableToEdit: TablePlaceType | undefined = getTableFromId(_id)
       if (!tableToEdit) return
-      
+
       let val = []
 
       for (let i = 0; i < localMap.length; i++) {
@@ -117,15 +120,15 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       setMap(val)
     }
     const editName = (id: string, val: string) => {
-        setMap([...localMap.map((el) => {
-            if (el._id !== id) return el
-            else {
-                return {
-                    ...el,
-                    name: val
-                } as TablePlaceType
-            }
-        })])
+      setMap([...localMap.map((el) => {
+        if (el._id !== id) return el
+        else {
+          return {
+            ...el,
+            name: val
+          } as TablePlaceType
+        }
+      })])
     }
 
     const drag = (e: React.MouseEvent) => {
@@ -202,7 +205,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       }
       let val = []
 
-      for (let i = 0; i <localMap.length; i++) {
+      for (let i = 0; i < localMap.length; i++) {
         if (localMap[i]._id !== tableToEdit._id) val.push(localMap[i])
         else if (deleteItem && checkTable(tableToEdit._id, tablesOpenMin).state !== "unnactive") {
           toast({
@@ -326,7 +329,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
       const movement = (e2: TouchEvent) => {
         let width = e2.touches[0].pageX - origin_x
         let height = e2.touches[0].pageY - origin_y
-        
+
         target.style.width = width < 30 ? "30px" : width + "px"
         target.style.height = height < 30 ? "30px" : height + "px"
       }
@@ -424,7 +427,7 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
           </a> :
           <a className='edit-name delete' onClick={() => { deleteTable(tbl._id) }}>
             <FontAwesomeIcon icon={faXmark} />
-          </a>: null
+          </a> : null
         }
         <p
           onBlur={(e) => {
@@ -442,9 +445,9 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
             else e.currentTarget.textContent = tbl.name
           }}
         >{tbl.name}</p>
-        {editMode && !deleteMode && 
+        {editMode && !deleteMode &&
           <a className='resize' onMouseDown={resize} onTouchStart={resize_Touch}>
-        </a>}
+          </a>}
       </button>
     }
 
