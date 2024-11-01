@@ -1,3 +1,6 @@
+[data-config-blur="true"] [data-is-editing="true"]::before {
+    backdrop-filter: blur(1px);
+}
 [data-is-editing="true"]::before {
     content: "";
     background-color: rgba(0, 0, 0, 0.35);

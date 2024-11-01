@@ -82,6 +82,7 @@ export type userType = {
 
 export type configType = {
     animations: boolean
+    blur: boolean
     mainColor: string
     topBarButtons: {
         [key: string]: boolean

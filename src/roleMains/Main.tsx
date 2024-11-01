@@ -33,6 +33,7 @@ type Props = {
 export const Configuration = React.createContext({
     config: {
         animations: true,
+        blur: false,
         mainColor:"",
         topBarButtons: {
             "notifications": true,
@@ -423,8 +424,9 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     }, [config])
 
     let animations = config ? config.animations : true
+    let blur = config ? config.blur : false
 
-    return <main data-animations={`${animations}`}>
+    return <main data-animations={`${animations}`} data-config-blur={`${blur}`}>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlacesHandler }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>

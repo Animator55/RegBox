@@ -20,6 +20,7 @@ export default function ConfigurationComp({ close }: Props) {
     orderedLists: "Ordenar y dividir los productos sumados",
     prodsInEditorAsList: "Mostrar productos en el editor como lista",
     animations: "Mostrar animaciones",
+    blur: "Difuminar fondos",
     "notifications": "Notificaciones",
     "products": "Productos",
     "historial": "Historial",

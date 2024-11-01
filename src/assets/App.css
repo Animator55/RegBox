@@ -302,6 +302,9 @@ main>.d-flex {
     transition: color 300ms, scale 300ms;
     color: var(--corange);
 }
+[data-config-blur="true"] .back-blur,[data-config-blur="true"] .back {
+    backdrop-filter: blur(1px);
+}
 .back-blur, .back {
     position: fixed;
     z-index: 50;

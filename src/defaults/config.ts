@@ -2,6 +2,7 @@ import { configType } from "../vite-env";
 
 export const defaultConfig: configType = {
     animations: true,
+    blur: false,
     mainColor: "#f07f34",
     topBarButtons: {
         "notifications": true,
