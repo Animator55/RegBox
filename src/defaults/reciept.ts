@@ -1,4 +1,4 @@
-import { selectDomainById } from "../logic/API"
+import { domainType, selectDomainById } from "../logic/API"
 import fixNum from "../logic/fixDateNumber"
 import orderByTypes from "../logic/orderByTypes"
 import { router, sessionType, TableType } from "../vite-env"
@@ -26,7 +26,7 @@ export const html_reciept = (currentTable: TableType, types: string[]) => {
     let stor = window.localStorage.getItem("RegBoxSession")
     let title = "Cuenta"
     if(stor && stor !== "") {
-        let dom = selectDomainById(JSON.parse(stor).domain)
+        let dom = selectDomainById(JSON.parse(stor).domain) as domainType
         if(dom) title = dom.name
     }
 

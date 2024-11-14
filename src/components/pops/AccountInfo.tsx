@@ -1,7 +1,7 @@
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { sessionType } from '../../vite-env'
-import { selectDomainById } from '../../logic/API'
+import { domainType, selectDomainById } from '../../logic/API'
 
 type Props = {
   close: Function
@@ -10,6 +10,8 @@ type Props = {
 export default function AccountInfo({ close }: Props) {
   let session = window.localStorage.getItem("RegBoxSession")
   let parsed: sessionType = session ? JSON.parse(session) : undefined
+
+  let dom = selectDomainById(parsed.domain) as domainType
   return parsed && <section className='back-blur' onClick={(e) => {
     let target = e.target as HTMLDivElement
     if (target.className === "back-blur") close()
@@ -25,7 +27,7 @@ export default function AccountInfo({ close }: Props) {
         <section className='account-info'> 
           <div>
             <label>Dominio</label>
-            <p>{selectDomainById(parsed.domain)?.name}</p>
+            <p>{dom.name}</p>
           </div>
           <div>
             <label>Nombre de Usuario</label>

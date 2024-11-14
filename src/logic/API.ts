@@ -4,7 +4,7 @@ import {  configType, HistorialTableType, sessionType, SingleEvent, TableEvents,
 import { calculateTotal } from "./calculateTotal";
 import fixNum from "./fixDateNumber";
 
-type domainType = {
+export type domainType = {
     _id: string
     name: string
     url: string
