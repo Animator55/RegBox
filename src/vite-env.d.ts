@@ -6,7 +6,7 @@ export type TableType = {
     name: string
     discount: number
     discountType: "percent" | "amount"
-    products: Item[]
+    products: Item[][]
     opened: string[]
     payMethod: PayMethod[] | undefined
     state: "open" | "paying" | "closed" | "unnactive"
@@ -16,7 +16,7 @@ export type TableEvents = {
     name?: string
     discount: number
     discountType: "percent" | "amount"
-    products: Item[],
+    products: Item[][],
     opened: string[]
     total: string
     events: SingleEvent[]
@@ -31,7 +31,7 @@ export type SingleEvent = {
     _id?: string
     name?: string
     accepted?: boolean | undefined /// only for notification events
-    products?: Item[] /// only for notification events
+    products?: Item[][] /// only for notification events
     owner: string
     owner_name?: string /// only for notification events
 }

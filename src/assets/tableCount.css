@@ -124,7 +124,7 @@
 .table-columns {
     display: grid;
     grid-template-columns: 39% 17% 19% 10% 11%;
-    grid-template-columns: 7% 37% 15% 15% 7% 15%;
+    grid-template-columns: 7% 37% 15% 15% 15% 7%;
     gap: 1%;
     padding: 0.1rem 0.5rem;
     background-color: var(--cdarkgray);
@@ -135,10 +135,6 @@
 .table-columns>* {
     text-overflow: ellipsis;
     overflow: hidden;
-}
-
-.table-columns> :nth-child(4) {
-    text-align: right;
 }
 
 .table-columns> :last-child {
@@ -157,14 +153,20 @@
     margin: 0;
 }
 
-.table-list>.title {
+.table-list > section {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.table-list label {
     color: var(--clightgray);
     margin: 0.5rem 0;
     padding-left: 0.5rem;
     border-bottom: 1px solid;
 }
 
-.table-list>li {
+.table-list li {
     display: grid;
     grid-template-columns: 7% 37% 15% 15% 7% 15%;
     gap: 1%;
@@ -172,7 +174,7 @@
     border-radius: 5px;
 }
 
-.table-list>li.added > * {
+.table-list li.added > * {
     animation: added 150ms forwards;
 }
 
@@ -182,7 +184,7 @@
     }
 }
 
-.table-list>li>* {
+.table-list li>* {
     background-color: var(--cwhite);
     color: var(--cblack);
     padding-left: 0.2rem;
@@ -191,14 +193,14 @@
     white-space: nowrap;
 }
 
-.table-list>li> :nth-child(1) {
+.table-list li> :nth-child(1) {
     background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 5px;
 }
-.table-list > li .comment-item {
+.table-list li .comment-item {
     width: 100%;
     height: 100%;
     display: flex;
@@ -207,31 +209,31 @@
     border-radius: 7px;
     background-color: var(--cgray);
 }
-.table-list > li .comment-item.active{
+.table-list li .comment-item.active{
     background-color: var(--corange);
 }
 
-.table-list>li> :nth-child(2) {
+.table-list li> :nth-child(2) {
     border-radius: 5px 0 0 5px;
 }
 
-.table-list>li> :nth-child(5) {
+.table-list li> :nth-child(5) {
     border-radius: 0 5px 5px 0;
     width: calc(320% - 10px);
     text-align: right;
     padding-right: 10px;
 }
 
-.table-list>li:hover> :nth-child(5) {
+.table-list li:hover> :nth-child(5) {
     transition: width 50ms;
     width: calc(97% - 10px);
 }
 
-.table-list>li:hover>.amount-buttons {
+.table-list li:hover>.amount-buttons {
     opacity: 1;
 }
 
-.table-list>li:hover>.amount-buttons>* {
+.table-list li:hover>.amount-buttons>* {
     color: var(--cwhite);
 }
 
@@ -329,6 +331,9 @@
     border-radius: 5px;
     padding: 0.4rem;
     transition: border-color 300ms, background-color 300ms, color 300ms;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .table-commands button div{
     display: flex;

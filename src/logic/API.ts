@@ -230,7 +230,7 @@ export const back_addEventToHistorial = (
     else if (entry === "state" && value) {
         resultChange.state = value
         if (value === "unnactive" && table) {
-            let total = calculateTotal(table.products, 0, table.discountType)
+            let total = calculateTotal(table.products.flat(), 0, table.discountType)
             resultChange.total = total
             resultChange.payMethod = table.payMethod
             resultChange.products = [...table.products]

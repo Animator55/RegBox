@@ -34,7 +34,7 @@ export const Configuration = React.createContext({
     config: {
         animations: true,
         blur: false,
-        mainColor:"",
+        mainColor: "",
         topBarButtons: {
             "notifications": true,
             "products": true,
@@ -81,7 +81,7 @@ let productPickerScroll = 0
 
 let massive: { table_id: string, value: Item[], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
-    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config !== undefined ? initialData.config : defaultConfig: defaultConfig)
+    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config !== undefined ? initialData.config : defaultConfig : defaultConfig)
     const setToastAlert = (val: {
         title: string
         content: string
@@ -91,7 +91,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         let container = document.querySelector(".toast-container")
         if (!container) return
 
-        const colorSelector:router = {
+        const colorSelector: router = {
             "warn": "var(--corange)",
             "xmark": "var(--cred)",
             "check": "var(--cgreen)",
@@ -110,8 +110,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         <p>${val.content}</p>`
         toast.className = "toast"
         container.appendChild(toast)
-        setTimeout(()=>{
-            if(toast) toast.remove()
+        setTimeout(() => {
+            if (toast) toast.remove()
         }, 3300)
     }
 
@@ -121,11 +121,13 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
     const [ProductsState, setProdsState] = React.useState<productsType>(initialData === undefined ? {} : initialData.products)
 
-    const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(initialData !== undefined ?initialData.tablePlaces !== undefined ? initialData.tablePlaces : []:[])
+    const [tablesPlacesPH, setTablesPlaces] = React.useState<TablePlaceType[]>(initialData !== undefined ? initialData.tablePlaces !== undefined ? initialData.tablePlaces : [] : [])
 
     const [tables, setTables] = React.useState<TableType[]>([])
     const [current, setCurrent] = React.useState<string>()
     const [popUp, setCurrentPop] = React.useState({ pop: "", initialPage: "" })
+
+    const [selectedPhase,setSelectedPhase] = React.useState<number>(0)
 
     const close = () => { setCurrentPop({ pop: "", initialPage: "" }) }
     const createTable = (id: string) => {
@@ -141,7 +143,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             name: data.name,
             discount: 0,
             discountType: "percent",
-            products: [],
+            products: [[]],
             opened: opened,
             payMethod: undefined,
             state: "open",
@@ -156,10 +158,11 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             if (tables[i]._id === id) { index = i; break }
         }
         if (index !== -1) setCurrent(id)
-        else {
-            let result = createTable(id)
-            if (result) setCurrent(id)
+            else {
+        let result = createTable(id)
+        if (result) setCurrent(id)
         }
+        setSelectedPhase(0)
     }
 
     const addTableToHistorial = (newTable: TableType, isSwitch: boolean, prevId?: string) => {
@@ -214,17 +217,17 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         }
         ///if is deleting table => after closing table, it must return to "unnactive" state to repeat the process
         else if (entry === "state" && value === "unnactive") {
-            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, table, table.discount)
+            addEventToHistorial(table_id, entry, comment, checkImportancy(entry), value, table, table.discount)
             setTables([...tables.filter(el => { if (el._id !== table._id) return el })])
             setCurrent(undefined)
         }
         ///if is only changing any entry
         else if (table.state !== "closed" && table.state !== "unnactive") {
-            if(entry === "discount" && discountTypeChange){ // edit discount and its type
-                addEventToHistorial(table_id, entry, comment, checkImportancy(entry), isNotProducts ? value : undefined, undefined, value, discountTypeChange)
+            if (entry === "discount" && discountTypeChange) { // edit discount and its type
+                addEventToHistorial(table_id, entry, comment, checkImportancy(entry), value, undefined, value, discountTypeChange)
                 setTables([
                     ...tables.filter(el => { if (el._id !== table._id) return el }),
-                    { ...table, [entry]: value, discountType: discountTypeChange}
+                    { ...table, [entry]: value, discountType: discountTypeChange }
                 ])
             }
             else {
@@ -248,35 +251,36 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         for (let i = 0; i < tables.length; i++) {
             if (tables[i]._id === table_id) table = tables[i]
         }
-        if (!table) return
+        if (!table || true) return /// EDIT MASIVE TO LATER
 
-        if (table.state !== "closed" && table.state !== "unnactive") {
-            let array = [...table.products]
-            for (let i = 0; i < value.length; i++) {
-                let newItem = value[i]
+        if (table.state === "closed" || table.state === "unnactive") return
 
-                /// search if new item already exists
-                let index = -1
-                for (let j = 0; j < array.length; j++) {
-                    if (newItem._id === array[j]._id) {
-                        index = j
-                        break
-                    }
+        let array = [...table.products]
+        for (let i = 0; i < value.length; i++) {
+            let newItem = value[i]
+
+            /// search if new item already exists
+            let index = -1
+            for (let j = 0; j < array.length; j++) {
+                if (newItem._id === array[j]._id) {
+                    index = j
+                    break
                 }
-                if (index === -1) array = [...array, newItem]
-                else array = array.map((el, j) => {
-                    if (j === index) return { ...el, amount: el.amount! + newItem.amount! }
-                    else return el
-                })
             }
-            let editedTable = { ...table, products: array }
-
-            addEventToHistorial(table_id, "products", comment, false, undefined, editedTable)
-            setTables([
-                ...tables.filter(el => { if (el._id !== table._id) return el }),
-                editedTable
-            ])
+            if (index === -1) array = [...array, newItem]
+            else array = array.map((el, j) => {
+                if (j === index) return { ...el, amount: el.amount! + newItem.amount! }
+                else return el
+            })
         }
+        let editedTable = { ...table, products: array }
+
+        addEventToHistorial(table_id, "products", comment, false, undefined, editedTable)
+        setTables([
+            ...tables.filter(el => { if (el._id !== table._id) return el }),
+            editedTable
+        ])
+
     }
 
     const EditMassiveTableHandle = (table_id: string, value: Item[], comment: string) => {
@@ -323,9 +327,10 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         return { _id: tbl._id, name: tbl.name, state: tbl.state }
     })
 
-    const addItem = (item: Item, value?: 1 | -1,) => {
+    const addItem = (item: Item, value?: 1 | -1, phasedef?: number) => {
         if (!currentTableData) return
-        let prods = currentTableData.products
+        let phase = phasedef !== undefined ? phasedef : selectedPhase
+        let prods = currentTableData.products[phase]
 
         let index = -1
         for (let i = 0; i < prods.length; i++) if (prods[i]._id === item._id) { index = i; break }
@@ -335,12 +340,38 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         lastChanged = item._id
         productPickerScroll = value !== undefined ? 0 : document.getElementById("product-picker")?.scrollTop!
 
-        if (item.amount && (item.amount + amount) <= 0) EditTable(currentTableData._id, "products", prods.filter(el => { if (el._id !== item._id) return el }), "Eliminado " + item.name + " (" + item._id + ")")
-        else if (index === -1 && !prods[index]) EditTable(currentTableData._id, "products", [...prods, { ...item, amount: amount }], "Añadido 1 de " + item.name + " (" + item._id + ")")
-        else EditTable(currentTableData?._id, "products", prods.map(el => {
-            if (el._id === item._id) return { ...item, amount: prods[index].amount! + amount }
-            else return el
-        }), word + "1 de " + item.name + " (" + item._id + ")")
+        if (item.amount && (item.amount + amount) <= 0) EditTable(
+            currentTableData._id,
+            "products",
+            Object.values({
+                ...currentTableData.products, [phase]: prods.filter(el => {
+                    if (el._id !== item._id) return el
+                })
+            }),
+            "Eliminado " + item.name + " (" + item._id + ")")
+        else if (index === -1 && !prods[index]) EditTable(
+            currentTableData._id,
+            "products",
+            Object.values({ ...currentTableData.products, [phase]: [...prods, { ...item, amount: amount }] })
+            , "Añadido 1 de " + item.name + " (" + item._id + ")")
+        else EditTable(currentTableData?._id, "products",
+            Object.values({
+                ...currentTableData.products, [phase]: prods.map(el => {
+                    if (el._id === item._id) return { ...item, amount: prods[index].amount! + amount }
+                    else return el
+                })
+            }), word + "1 de " + item.name + " (" + item._id + ")")
+    }
+    const managePhase = (index: number, create: boolean) => {
+        if (!currentTableData) return
+        if (create) EditTable(currentTableData._id, "products",
+            [...currentTableData.products, []],
+            ("Añadida la fase " + currentTableData.products.length)
+        )
+        else EditTable(currentTableData._id, "products",
+            currentTableData.products.filter((el, i)=>{if(i!==index)return el}),
+            ("Añadida la fase " + currentTableData.products.length)
+        )
     }
 
     React.useEffect(() => {
@@ -359,7 +390,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     }, [initialData])
     React.useEffect(() => {
         if (lastChanged !== "") {
-            let item = document.getElementById(lastChanged)
+            let item = document.getElementById(lastChanged+"phase:"+selectedPhase)
             lastChanged = ""
             if (!item) return
             item.classList.add("added")
@@ -411,15 +442,15 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         />
     }
 
-    const setTablesPlacesHandler = (val: TablePlaceType[])=>{
+    const setTablesPlacesHandler = (val: TablePlaceType[]) => {
         let result = back_setTablesPlaces(val)
         if (result) setToastAlert(result)
         setTablesPlaces(val)
     }
 
 
-    React.useEffect(()=>{
-        if(!config || config.mainColor === "") return
+    React.useEffect(() => {
+        if (!config || config.mainColor === "") return
         document.body.style.setProperty("--corange", config.mainColor)
     }, [config])
 
@@ -431,13 +462,13 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
                     <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>
-                        <TopBar OpenPop={OpenPop} download={download}/>
+                        <TopBar OpenPop={OpenPop} download={download} />
                         <section className='d-flex'>
-                            <TableCount currentTable={currentTableData} EditTable={EditTable} addItem={addItem} tablesMin={tablesMin} />
+                            <TableCount selectedPhase={selectedPhase} setSelectedPhase={setSelectedPhase} currentTable={currentTableData} EditTable={EditTable} addItem={addItem} managePhase={managePhase} tablesMin={tablesMin} />
                             <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                         </section>
                         {popUp.pop !== "" && popUps[popUp.pop]}
-                        <Toast/>
+                        <Toast />
                     </Products.Provider>
                 </ToastActivation.Provider>
             </Configuration.Provider>
