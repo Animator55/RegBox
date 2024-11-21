@@ -15,7 +15,7 @@ export const defaultConfig: configType = {
         "logout": true,
     },
     prodsAsList: false,
-    orderedLists: true,
+    orderedLists: false     ,
     prodsInEditorAsList: false,
     map: {
         zoom: 1,

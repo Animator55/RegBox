@@ -1,11 +1,11 @@
 import { Item, PayMethod, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faBars, faCheckToSlot, faClockRotateLeft, faDollarSign, faList, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faBars, faCheckToSlot, faClockRotateLeft, faDollarSign, faList, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import { Configuration, Products } from '../roleMains/Main'
-import { renewedOrderByTypes } from '../logic/orderByTypes'
+import orderByTypes from '../logic/orderByTypes'
 import ConfirmPop from './ConfirmPop'
 import PayMethodsPop from './PayMethodsPop'
 import SwitchTable from './pops/SwitchTable'
@@ -18,7 +18,7 @@ import CommentTable from './pops/CommentTable'
 type Props = {
     currentTable: TableType | undefined
     selectedPhase: number
-    setSelectedPhase:Function
+    setSelectedPhase: Function
     EditTable: Function
     addItem: Function
     managePhase: Function
@@ -85,11 +85,9 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
         const columns = ["", "Nombre", "Precio", "Total", "Cantidad",]
 
         let isProds = products && products.length !== 0
-
+        let titles = c.config.orderedLists
         let totalList = 0
-
-        let titles = c.config.orderedLists /////
-        let reOrdered = titles ? renewedOrderByTypes(products?.flat(), p) : products
+        let reOrdered = products
 
         return <section className={currentTable?.state !== "closed" ? 'content' : "content disabled-c"}>
             <header className='table-columns'>
@@ -104,32 +102,45 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
             </header>
             <ul className='table-list'>
                 {isProds ? reOrdered && reOrdered.map((pha, i) => {
+                    let orderedPha = titles ? orderByTypes(pha, p, true) : pha
+
                     return <section
-                        onClick={()=>{setSelectedPhase(i)}}
+                        className={selectedPhase === i ? "active" : ""}
+                        key={Math.random()}
+                        onClick={() => { setSelectedPhase(i) }}
                     >
-                        <label className={selectedPhase===i?"active": ""}>{titles ? (pha[0].type) : ("Fase "+ (i+1))}</label>
-                        {pha.map(item => {
-                            totalList += item.amount! * item.price
-                            return <li title={item.name} id={item._id+"phase:"+i} key={Math.random()}>
-                                <div><button
-                                    className={item.comment && item.comment !== "" ? 'comment-item active' : 'comment-item'}
-                                    onClick={() => { setPop("comment"); setSelected({ item: item, phase: i }) }}
-                                >
-                                    <FontAwesomeIcon icon={faPen} />
-                                </button></div>
-                                <div>{item.name}</div>
-                                <div>${item.price}</div>
-                                <div>${item.price * item.amount!}</div>
-                                <div>{item.amount}</div>
-                                <div className='amount-buttons'>
-                                    <button onClick={() => { addItem(item, 1, i) }}><FontAwesomeIcon icon={faPlus} /></button>
-                                    <button onClick={() => { addItem(item, -1,i) }}><FontAwesomeIcon icon={faMinus} /></button>
-                                </div>
-                            </li>
+                        <label>
+                            <p>Fase {i + 1}</p>
+                            {pha.length === 0 && selectedPhase === i &&
+                                <button onClick={() => { managePhase(i, false) }}>
+                                    <FontAwesomeIcon icon={faXmark} />
+                                </button>}
+                        </label>
+                        {orderedPha && orderedPha.map(item => {
+                            let header = false
+                            if (titles && item.header) header = true
+                            else totalList += item.amount! * item.price
+                            return header ? <div className='title' key={Math.random()}>{item.type}</div>
+                                : <li title={item.name} id={item._id + "phase:" + i} key={Math.random()}>
+                                    <div><button
+                                        className={item.comment && item.comment !== "" ? 'comment-item active' : 'comment-item'}
+                                        onClick={() => { setPop("comment"); setSelected({ item: item, phase: i }) }}
+                                    >
+                                        <FontAwesomeIcon icon={faPen} />
+                                    </button></div>
+                                    <div>{item.name}</div>
+                                    <div>${item.price}</div>
+                                    <div>${item.price * item.amount!}</div>
+                                    <div>{item.amount}</div>
+                                    <div className='amount-buttons'>
+                                        <button onClick={() => { addItem(item, 1, i) }}><FontAwesomeIcon icon={faPlus} /></button>
+                                        <button onClick={() => { addItem(item, -1, i) }}><FontAwesomeIcon icon={faMinus} /></button>
+                                    </div>
+                                </li>
                         })}
                     </section>
                 })
-                :
+                    :
                     <section className='alert'>
                         <FontAwesomeIcon icon={faWarning} />
                         <h2>{!currentTable ? "No hay mesa seleccionada."
@@ -158,7 +169,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
     }
 
     const TableCommands = () => {
-        let openHour =currentTable ? `Caja abierta a las ${currentTable.opened[0]} ${currentTable.opened[1]}` : ""
+        let openHour = currentTable ? `Caja abierta a las ${currentTable.opened[0]} ${currentTable.opened[1]}` : ""
         return <section className='table-commands'>
             <div>
                 <p title={openHour}>{currentTable ? openHour : ""}</p>
@@ -166,9 +177,9 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                     <FontAwesomeIcon icon={faClockRotateLeft} />Historial
                 </button>
             </div>
-            <div>
-                <button onClick={()=>{managePhase(0, true)}}>
-                    <FontAwesomeIcon icon={faPlus}/>
+            <div className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
+                <button onClick={() => { managePhase(0, true) }}>
+                    <FontAwesomeIcon icon={faPlus} />
                     Añadir Fase
                 </button>
             </div>

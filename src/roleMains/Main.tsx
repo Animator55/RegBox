@@ -127,7 +127,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     const [current, setCurrent] = React.useState<string>()
     const [popUp, setCurrentPop] = React.useState({ pop: "", initialPage: "" })
 
-    const [selectedPhase,setSelectedPhase] = React.useState<number>(0)
+    const [selectedPhase, setSelectedPhase] = React.useState<number>(0)
 
     const close = () => { setCurrentPop({ pop: "", initialPage: "" }) }
     const createTable = (id: string) => {
@@ -158,9 +158,9 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             if (tables[i]._id === id) { index = i; break }
         }
         if (index !== -1) setCurrent(id)
-            else {
-        let result = createTable(id)
-        if (result) setCurrent(id)
+        else {
+            let result = createTable(id)
+            if (result) setCurrent(id)
         }
         setSelectedPhase(0)
     }
@@ -364,12 +364,15 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     }
     const managePhase = (index: number, create: boolean) => {
         if (!currentTableData) return
-        if (create) EditTable(currentTableData._id, "products",
-            [...currentTableData.products, []],
-            ("Añadida la fase " + currentTableData.products.length)
-        )
+        if (create) {
+            EditTable(currentTableData._id, "products",
+                [...currentTableData.products, []],
+                ("Añadida la fase " + currentTableData.products.length)
+            )
+            setSelectedPhase(currentTableData.products.length)
+        }
         else EditTable(currentTableData._id, "products",
-            currentTableData.products.filter((el, i)=>{if(i!==index)return el}),
+            currentTableData.products.filter((el, i) => { if (i !== index) return el }),
             ("Añadida la fase " + currentTableData.products.length)
         )
     }
@@ -390,7 +393,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     }, [initialData])
     React.useEffect(() => {
         if (lastChanged !== "") {
-            let item = document.getElementById(lastChanged+"phase:"+selectedPhase)
+            let item = document.getElementById(lastChanged + "phase:" + selectedPhase)
             lastChanged = ""
             if (!item) return
             item.classList.add("added")

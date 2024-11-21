@@ -16,6 +16,7 @@
     margin-bottom: 0.5rem;
     z-index: 1;
 }
+
 .table-head:has(.expand-list.expanded) {
     border-bottom-left-radius: 0;
 }
@@ -53,6 +54,7 @@
     color: var(--cwhite);
     margin-left: 0.5rem;
 }
+
 .table-head>.expand-list {
     position: absolute;
     background-color: var(--cdarkgray);
@@ -74,7 +76,8 @@
     border-bottom: 5px solid var(--cwhite);
     padding: 0.5rem;
 }
-.table-head>.expand-list > button {
+
+.table-head>.expand-list>button {
     background-color: transparent;
     color: var(--cwhite);
     padding: 0.5rem .5rem 0.5rem 2.55rem;
@@ -87,7 +90,7 @@
     justify-content: space-between;
 }
 
-.table-head>.expand-list > button:hover {
+.table-head>.expand-list>button:hover {
     background-color: var(--corange);
 }
 
@@ -113,17 +116,18 @@
     padding: 2rem 1.5rem;
     text-align: center;
 }
+
 .alert * {
     color: var(--cwhite);
 }
-.alert > :first-child {
+
+.alert> :first-child {
     font-size: 4rem;
 }
 
 
 .table-columns {
     display: grid;
-    grid-template-columns: 39% 17% 19% 10% 11%;
     grid-template-columns: 7% 37% 15% 15% 15% 7%;
     gap: 1%;
     padding: 0.1rem 0.5rem;
@@ -151,19 +155,52 @@
     height: 100%;
     padding: 0;
     margin: 0;
+    gap: .5rem;
 }
 
-.table-list > section {
+
+.table-list>section:not(.active):hover label {
+    background-color: var(--cgray);
+    color: var(--cwhite);
+}
+
+.table-list>section.active label {
+    background-color: var(--corange);
+    color: var(--cwhite);
+}
+
+.table-list>section {
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 2px;
 }
 
 .table-list label {
     color: var(--clightgray);
-    margin: 0.5rem 0;
     padding-left: 0.5rem;
     border-bottom: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.table-list .title {
+    color: var(--clightgray);
+    margin-left: 1rem;
+    border-bottom: 1px solid;
+}
+
+.table-list label>p {
+    margin: 0;
+}
+
+.table-list label>button {
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cwhite);
+    font-size: 1.2rem;
+    padding: 0 .5rem;
 }
 
 .table-list li {
@@ -174,7 +211,7 @@
     border-radius: 5px;
 }
 
-.table-list li.added > * {
+.table-list li.added>* {
     animation: added 150ms forwards;
 }
 
@@ -200,6 +237,7 @@
     justify-content: center;
     border-radius: 5px;
 }
+
 .table-list li .comment-item {
     width: 100%;
     height: 100%;
@@ -209,7 +247,8 @@
     border-radius: 7px;
     background-color: var(--cgray);
 }
-.table-list li .comment-item.active{
+
+.table-list li .comment-item.active {
     background-color: var(--corange);
 }
 
@@ -283,7 +322,8 @@
     padding: 0.5rem 3rem 0 1.5rem;
     color: var(--cwhite);
 }
-.total > div {
+
+.total>div {
     display: flex;
     gap: 1rem;
 }
@@ -335,7 +375,8 @@
     white-space: nowrap;
     overflow: hidden;
 }
-.table-commands button div{
+
+.table-commands button div {
     display: flex;
     align-items: center;
     gap: .5rem;
@@ -351,6 +392,7 @@
 .table-commands button.confirm {
     background-color: var(--cred);
 }
+
 .table-commands button.confirm:hover {
     background-color: transparent;
     border-color: var(--cred);
@@ -364,7 +406,9 @@
 .reciept {
     display: none;
 }
-.discount-pop, .switch-pop {
+
+.discount-pop,
+.switch-pop {
     padding: 1rem;
 }
 
@@ -372,22 +416,27 @@
     display: flex;
     flex-direction: column;
 }
-.switch-pop > h2 {
+
+.switch-pop>h2 {
     margin: 0.5rem 0.5rem 0;
 }
-.switch-pop > .actual {
+
+.switch-pop>.actual {
     background-color: var(--corange);
     border-radius: 5px;
     color: var(--cwhite);
     padding: 0.4rem;
     text-align: center;
 }
-.switch-pop > .switch-icon {
+
+.switch-pop>.switch-icon {
     text-align: center;
 }
-.switch-pop > .switch-icon svg {
+
+.switch-pop>.switch-icon svg {
     font-size: 1.5rem;
 }
+
 .switch-pop select {
     padding: 0.5rem;
     font-size: 1rem;
@@ -395,7 +444,7 @@
     text-align: center;
 }
 
-.discount-pop > h2 {
+.discount-pop>h2 {
     margin: 0.3rem;
 }
 
@@ -413,18 +462,19 @@
     padding: 0.5rem;
     width: 100%;
 }
+
 .discount-pop .pagging button.active {
     border-radius: 5px 5px 0 0;
     background-color: var(--corange);
 }
 
-.discount-pop > div:has(.discount-input){
+.discount-pop>div:has(.discount-input) {
     position: relative;
     border-radius: 0 0 5px 5px;
     background-color: var(--corange);
 }
 
-.discount-pop > div:has(.discount-input)::after{
+.discount-pop>div:has(.discount-input)::after {
     content: "%";
     position: absolute;
     right: 3rem;
@@ -432,7 +482,8 @@
     font-size: 1.3rem;
     color: var(--cgray);
 }
-.discount-pop > div:has(.discount-input.amount)::after{
+
+.discount-pop>div:has(.discount-input.amount)::after {
     content: "$";
 }
 

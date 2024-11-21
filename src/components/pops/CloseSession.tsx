@@ -45,7 +45,7 @@ export default function CloseSession({ close, logout }: Props) {
             if(el.payMethod && el.payMethod?.length !== 0) for (let i = 0; i < el.payMethod?.length; i++) {
                 payMethodsObj[el.payMethod[i].type] += parseFloat(el.payMethod[i].amount)
             }
-            compiledProdList.push(el.products)
+            compiledProdList.push(el.products.flat())
         }
     }
     let combinedArray = compiledProdList.flat().reduce((acc: Item[], curr) => {

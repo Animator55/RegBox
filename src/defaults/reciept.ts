@@ -1,6 +1,6 @@
 import { domainType, selectDomainById } from "../logic/API"
 import fixNum from "../logic/fixDateNumber"
-import orderByTypes from "../logic/orderByTypes"
+import { renewedOrderByTypes } from "../logic/orderByTypes"
 import { router, sessionType, TableType } from "../vite-env"
 
 
@@ -9,7 +9,7 @@ export const html_reciept = (currentTable: TableType, types: string[]) => {
     let total = 0
     let date = new Date()
 
-    let result = orderByTypes(currentTable.products, types, false)
+    let result = renewedOrderByTypes(currentTable.products.flat(), types).flat()
 
     let prodList = []
     if (result) for (let i = 0; i < result.length; i++) {
