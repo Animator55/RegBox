@@ -1,22 +1,22 @@
 import { faCheck, faCircleNotch, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { getNotificationsGeneral } from '../logic/API'
+// import { getNotificationsGeneral } from '../logic/API'
 import React from 'react'
 import { SingleEvent } from '../vite-env'
 
 type Props = {
   close: Function
   EditMassiveTable: Function
+  notis: SingleEvent[]
 }
 
-export default function Notifications({ close, EditMassiveTable }: Props) {
+export default function Notifications({ close, notis, EditMassiveTable }: Props) {
   const [list, setList] = React.useState<SingleEvent[] | undefined>(undefined)
 
   const [pop, OpenPop] = React.useState<SingleEvent | undefined>()
 
   const requestNotifications = () => {
-    let data = getNotificationsGeneral()
-    setList(data)
+    setList(notis)
   }
 
   React.useEffect(() => {
@@ -54,9 +54,17 @@ export default function Notifications({ close, EditMassiveTable }: Props) {
             <FontAwesomeIcon icon={faXmark} />
           </button>
         </>,
+        "null": <>
+          <button onClick={() => { action(true) }}>
+            <FontAwesomeIcon icon={faCheck} />
+          </button>
+          <button onClick={() => { action(false) }}>
+            <FontAwesomeIcon icon={faXmark} />
+          </button>
+        </>,
         "true": <FontAwesomeIcon icon={faCheck} />,
         "false": <FontAwesomeIcon icon={faXmark} />,
-      }
+      } 
 
       ul.push(<li
         className='notification-item'

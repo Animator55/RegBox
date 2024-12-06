@@ -53,11 +53,11 @@ export default function App() {
     }
 
     ///getting prods 
-    let {prods, config, tablePlaces} = getDomainData(val.domain)
+    let {prods, config, tablePlacesA} = getDomainData(val.domain)
     let initial = {
       products: prods, 
       config: config,
-      tablePlaces: tablePlaces, 
+      tablePlaces: tablePlacesA, 
     }
     setSession(val)
     setInitialData(initial)

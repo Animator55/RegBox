@@ -1,5 +1,6 @@
 import { defaultConfig } from "../defaults/config";
 import { products, products1, productsType } from "../defaults/products";
+import { tablePlaces } from "../defaults/tablePlaces";
 import {  configType, HistorialTableType, sessionType, SingleEvent, TableEvents, TablePlaceType, TableType, userType } from "../vite-env";
 import { calculateTotal } from "./calculateTotal";
 import fixNum from "./fixDateNumber";
@@ -65,14 +66,14 @@ let domains: domainType[] = [
 export const getDomainData =(dom_id: string)=>{
     let prods: productsType = {}
     let config: configType = defaultConfig
-    let tablePlaces: TablePlaceType[] = []
+    let tablePlacesA: TablePlaceType[] = tablePlaces
     for(let i=0; i<productsD.length; i++){
         if(productsD[i]._domId === dom_id ){
             prods = productsD[i].list
             break
         }
     }
-    return {prods, config, tablePlaces}
+    return {prods, config, tablePlacesA}
 }
 
 export const selectDomainById = (dom_id: string, returnIndex?: boolean): domainType | number | undefined=> { // returns domain

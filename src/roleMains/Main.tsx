@@ -2,7 +2,7 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import TableCount from '../components/TableCount'
 import ProdAndMap from '../components/ProdAndMap'
-import { HistorialTableType, Item, TablePlaceType, TableType, configType, router } from '../vite-env'
+import { HistorialTableType, Item, SingleEvent, TablePlaceType, TableType, configType, router } from '../vite-env'
 import getTableData from '../logic/getTableData'
 import fixNum from '../logic/fixDateNumber'
 import { productsType } from '../defaults/products'
@@ -18,6 +18,7 @@ import { back_addEventToHistorial, back_addTableOrSwitch_Historial, back_setProd
 import AccountPop from '../components/pops/AccountPop'
 import AccountInfo from '../components/pops/AccountInfo'
 import { defaultConfig } from '../defaults/config'
+import Peer, { DataConnection } from 'peerjs'
 
 type Props = {
     initialData?: {
@@ -75,12 +76,81 @@ export const TablesPlaces = React.createContext({
 })
 
 
+const userData = {
+    _id: "main-1",
+    peers: ["pawn-1"]
+}
+let peer: Peer | undefined = undefined
+let conn: DataConnection | undefined = undefined
+
+let notis: SingleEvent[] = []
 
 let lastChanged = ""
 let productPickerScroll = 0
 
 let massive: { table_id: string, value: Item[], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
+    const [peers, setPeers] = React.useState<string[]>([])
+    const [notisRefresh, setNotis] = React.useState<number>(0)
+    notisRefresh;
+
+    const connectToPeers = (chats: string[]) => { // trys to connect to peers, if chat is undefined, func will loop
+        if (conn !== undefined) return
+
+        function closeConn() {
+            console.log('you changed the chat')
+            conn = undefined
+        }
+        for (let i = 0; i < chats.length; i++) {
+            let id = chats[i]
+            if (!peer) return
+            console.log('Trying to connect to ' + id)
+            conn = peer.connect(id)
+            conn.on('close', closeConn)
+        }
+    }
+    function connection(id: string): undefined | string { //crea tu session
+        peer = new Peer(id);
+        if (peer === undefined) return
+
+        peer.on('error', function (err) {
+            switch (err.type) {
+                case 'unavailable-id':
+                    console.log(id + ' is taken')
+                    peer = undefined
+                    break
+                case 'peer-unavailable':
+                    console.log('user offline')
+                    break
+                default:
+                    conn = undefined
+                    console.log('an error happened')
+            }
+            return false;
+        })
+        peer.on('open', function (id: string) {
+            if (peer === undefined || peer.id === undefined) return
+            console.log('Hi ' + id)
+            connectToPeers(userData.peers)
+        })
+        if (conn !== undefined) return
+
+        peer.on("connection", function (conn) {
+            setPeers([...peers, conn.peer])
+            conn.on("data", function (data: any) { //RECIEVED DATA
+                let message = data as SingleEvent
+                notis.push(message)
+                setNotis(Math.random())
+            })
+
+            conn.on('close', function () {
+                setPeers(peers.filter(el => { if (el !== conn.peer) return el }))
+                console.log('connection was closed by ' + conn.peer)
+                conn.close()
+            })
+        });
+    }
+
     const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config !== undefined ? initialData.config : defaultConfig : defaultConfig)
     const setToastAlert = (val: {
         title: string
@@ -389,6 +459,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 icon: "check",
                 _id: `${Math.random()}`
             })
+            if (!userData) return
+            if (!peer) connection(userData._id)
         }
     }, [initialData])
     React.useEffect(() => {
@@ -435,7 +507,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
         "configuration": <ConfigurationComp close={close} />,
         "information": <AccountInfo close={close} />,
-        "notifications": <Notifications close={close} EditMassiveTable={EditMassiveTableHandle} />,
+        "notifications": <Notifications close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} />,
         "closesession": <CloseSession close={close} logout={logout_handler} />,
         "account": <AccountPop download={download} OpenPop={OpenPop} close={close} />,
         "historial": <HistorialTableComp
@@ -461,6 +533,9 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     let blur = config ? config.blur : false
 
     return <main data-animations={`${animations}`} data-config-blur={`${blur}`}>
+        <ul style={{background: "grey", position: 'fixed', right: 10}}>
+            {peers.map(el=>{return <li key={Math.random()}>{el}</li>})}
+        </ul>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlacesHandler }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
