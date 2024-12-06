@@ -7,10 +7,11 @@ import { SingleEvent } from '../vite-env'
 type Props = {
   close: Function
   EditMassiveTable: Function
+  setNotis: Function
   notis: SingleEvent[]
 }
 
-export default function Notifications({ close, notis, EditMassiveTable }: Props) {
+export default function Notifications({ close, notis, setNotis, EditMassiveTable }: Props) {
   const [list, setList] = React.useState<SingleEvent[] | undefined>(undefined)
 
   const [pop, OpenPop] = React.useState<SingleEvent | undefined>()
@@ -38,10 +39,12 @@ export default function Notifications({ close, notis, EditMassiveTable }: Props)
       // if(i === 10) break
       let el = list[i]
       const action = (boolean: boolean) => {
-        setList([...list.map(item => {
+        let val = [...list.map(item => {
           if (el === item) return { ...el, accepted: boolean }
           else return item
-        })])
+        })]
+        setList(val)
+        setNotis(val)
         if (boolean) EditMassiveTable(el._id, el.products, el.comment)
       }
 

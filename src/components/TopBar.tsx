@@ -9,9 +9,10 @@ import Logo from "../assets/logo.png"
 type Props = {
   OpenPop: Function
   download: Function
+  notisAmount: number
 }
 
-export default function TopBar({ OpenPop, download }: Props) {
+export default function TopBar({ OpenPop, download, notisAmount }: Props) {
 
   const c = React.useContext(Configuration)
   const topButtons = c.config.topBarButtons
@@ -19,10 +20,16 @@ export default function TopBar({ OpenPop, download }: Props) {
   const textButtons: router = {
     notifications: <button
       className='text-button notifications-pop-button'
+      title={notisAmount !== 0 ? (notisAmount + " notificaciones") : "No hay notificaciones"}
       style={topButtons.notifications ? {}: {display: "none"}}
       onClick={() => {
         OpenPop("notifications")
-      }}><FontAwesomeIcon icon={faBell} />Notificaciones</button>,
+      }}>
+        <div>
+          <FontAwesomeIcon icon={faBell} />
+          {notisAmount !== 0&&<div></div>}
+        </div>
+        Notificaciones</button>,
     products: <button
       className='text-button prod-edit-pop-button'
       data-page={""}

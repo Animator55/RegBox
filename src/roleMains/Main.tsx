@@ -511,7 +511,10 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
         "configuration": <ConfigurationComp close={close} />,
         "information": <AccountInfo close={close} />,
-        "notifications": <Notifications close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} />,
+        "notifications": <Notifications setNotis={(val:SingleEvent[])=>{
+            notis= val
+            setNotis(Math.random())
+        }} close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} />,
         "closesession": <CloseSession close={close} logout={logout_handler} />,
         "account": <AccountPop download={download} OpenPop={OpenPop} close={close} />,
         "historial": <HistorialTableComp
@@ -535,6 +538,14 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
     let animations = config ? config.animations : true
     let blur = config ? config.blur : false
+
+    const checkAmountOfNotReadedNotis = ()=>{
+        let index = 0
+        for(let i=0; i<notis.length;i++){
+            if(notis[i].accepted === undefined|| notis[i].accepted === null) index++
+        }
+        return index
+    }
 
     return <main data-animations={`${animations}`} data-config-blur={`${blur}`}>
         <ul style={{background: "grey", position: 'fixed', right: 10}}>
@@ -572,7 +583,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
                     <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>
-                        <TopBar OpenPop={OpenPop} download={download} />
+                        <TopBar OpenPop={OpenPop} download={download} notisAmount={checkAmountOfNotReadedNotis()} />
                         <section className='d-flex'>
                             <TableCount selectedPhase={selectedPhase} setSelectedPhase={setSelectedPhase} currentTable={currentTableData} EditTable={EditTable} addItem={addItem} managePhase={managePhase} tablesMin={tablesMin} />
                             <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />

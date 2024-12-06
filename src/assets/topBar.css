@@ -51,3 +51,29 @@ hr {
     color: var(--corange);
     font-size: 2rem;
 }
+
+.notifications-pop-button >div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.notifications-pop-button >div>div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--cred);
+    width: .7rem;
+    height: .7rem;
+    max-width: .7rem;
+    max-height: .7rem;
+    border-radius: 50%;
+    color: var(--cwhite);
+    position: absolute;
+    right: -.3rem;
+    top: 0;
+    font-size: .5rem;
+}
+.notifications-pop-button svg {
+    font-size: 1.3rem;
+}
