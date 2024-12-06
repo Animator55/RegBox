@@ -85,10 +85,22 @@ let conn: DataConnection | undefined = undefined
 
 let notis: SingleEvent[] = []
 
+const checkNoti = (_id: string | undefined)=>{
+    let boolean = false
+    if(!_id) return boolean
+    for(let i=0; i<notis.length; i++) {
+        if(notis[i].notification_id === _id) {
+            boolean = true
+            break
+        }
+    }
+    return boolean
+}
+
 let lastChanged = ""
 let productPickerScroll = 0
 
-let massive: { table_id: string, value: Item[], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
+let massive: { table_id: string, value: Item[][], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
     const [peers, setPeers] = React.useState<string[]>([])
     const [notisRefresh, setNotis] = React.useState<number>(0)
@@ -138,15 +150,27 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         peer.on("connection", function (conn) {
             setPeers([...peers, conn.peer])
             conn.on("data", function (data: any) { //RECIEVED DATA
+                console.log("a")
+                let sendButton = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
+                if(!sendButton) return
+                if(data.type === "request-historial") {
+                    sendButton.dataset.action = "historial"
+                    sendButton.click()
+                    return 
+                }
                 let message = data as SingleEvent
+                if(checkNoti(message.notification_id)) return
                 notis.push(message)
                 setNotis(Math.random())
+                sendButton.dataset.action = "confirm"
+                sendButton.click()
             })
 
             conn.on('close', function () {
                 setPeers(peers.filter(el => { if (el !== conn.peer) return el }))
                 console.log('connection was closed by ' + conn.peer)
                 conn.close()
+                conn = undefined!
             })
         });
     }
@@ -200,7 +224,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     const [selectedPhase, setSelectedPhase] = React.useState<number>(0)
 
     const close = () => { setCurrentPop({ pop: "", initialPage: "" }) }
-    const createTable = (id: string) => {
+    const createTable = (id: string, defaultProds?: Item[][]) => {
         let date = new Date()
         let data = getTableData(id, tablesPlacesPH)
         if (!data) return false
@@ -213,7 +237,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             name: data.name,
             discount: 0,
             discountType: "percent",
-            products: [[]],
+            products: defaultProds !== undefined ? defaultProds:[[]],
             opened: opened,
             payMethod: undefined,
             state: "open",
@@ -316,34 +340,16 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             ])
         }
     }
-    const EditMassiveTable = (table_id: string, value: Item[], comment: string) => {
+    const EditMassiveTable = (table_id: string, value: Item[][], comment: string) => {
         let table
         for (let i = 0; i < tables.length; i++) {
             if (tables[i]._id === table_id) table = tables[i]
         }
-        if (!table || true) return /// EDIT MASIVE TO LATER
-
+        if (!table) return
         if (table.state === "closed" || table.state === "unnactive") return
 
-        let array = [...table.products]
-        for (let i = 0; i < value.length; i++) {
-            let newItem = value[i]
-
-            /// search if new item already exists
-            let index = -1
-            for (let j = 0; j < array.length; j++) {
-                if (newItem._id === array[j]._id) {
-                    index = j
-                    break
-                }
-            }
-            if (index === -1) array = [...array, newItem]
-            else array = array.map((el, j) => {
-                if (j === index) return { ...el, amount: el.amount! + newItem.amount! }
-                else return el
-            })
-        }
-        let editedTable = { ...table, products: array }
+        let newProds = [...table.products, ...value]
+        let editedTable = { ...table, products: newProds }
 
         addEventToHistorial(table_id, "products", comment, false, undefined, editedTable)
         setTables([
@@ -353,14 +359,13 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
     }
 
-    const EditMassiveTableHandle = (table_id: string, value: Item[], comment: string) => {
+    const EditMassiveTableHandle = (table_id: string, value: Item[][], comment: string) => {
         let table
         for (let i = 0; i < tables.length; i++) {
             if (tables[i]._id === table_id) table = tables[i]
         }
         if (!table) {
-            let result = createTable(table_id)
-            if (result) massive = { table_id, value, comment }
+            createTable(table_id, value)
         }
         else EditMassiveTable(table_id, value, comment)
     }
@@ -380,7 +385,6 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     for (let i = 0; i < tables.length; i++) {
         if (tables[i]._id === current) { currentTableData = tables[i]; break }
     }
-
 
     const logout_handler = () => {
         if (tables.length !== 0) {
@@ -536,6 +540,34 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         <ul style={{background: "grey", position: 'fixed', right: 10}}>
             {peers.map(el=>{return <li key={Math.random()}>{el}</li>})}
         </ul>
+        <button data-action={"historial"} id="sendHistorialToPawn" onClick={()=>{
+            if(!conn) return
+            let button = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
+            let action = button.dataset.action
+            if(!button || !action) return
+            let defaultHistorialParsed = {}
+            for (const key in window.localStorage) {
+                if (key.startsWith("RegBoxID:")) {
+                    let stor: HistorialTableType = JSON.parse(window.localStorage[key])
+                    defaultHistorialParsed = { ...defaultHistorialParsed, [stor._id]: stor }
+                }
+            }
+
+            const messages: router = {
+                "historial": {type: "historial", data: defaultHistorialParsed},
+                "confirm": {type: "confirm", data: "El mensaje fue enviado con éxito."},
+            }
+
+            let message = messages[action]
+
+            if(!conn.open && peer) {
+                conn = peer?.connect(conn.peer)
+                setTimeout(()=>{
+                    if(conn)conn.send(message)
+                }, 3000)
+            }
+            else conn.send(message)
+        }}></button>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlacesHandler }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>
