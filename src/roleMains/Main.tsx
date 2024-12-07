@@ -2,7 +2,7 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import TableCount from '../components/TableCount'
 import ProdAndMap from '../components/ProdAndMap'
-import { HistorialTableType, Item, SingleEvent, TablePlaceType, TableType, configType, router } from '../vite-env'
+import { HistorialTableType, Item, SingleEvent, TablePlaceType, TableType, configType, histStructure, router } from '../vite-env'
 import getTableData from '../logic/getTableData'
 import fixNum from '../logic/fixDateNumber'
 import { productsType } from '../defaults/products'
@@ -153,10 +153,11 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 console.log("a")
                 let sendButton = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
                 if (!sendButton) return
-                if (data.type === "request-historial") {
-                    sendButton.dataset.action = "historial"
+                if (data.type === "request-historial" || data.type === "request-notification") {
+                    sendButton.dataset.action = data.type.split("-")[1]
                     sendButton.dataset.connectionid = conn.connectionId
                     sendButton.dataset.peerCon = conn.peer
+                    if(data.type === "request-notification") sendButton.dataset.parameter = data.data
                     sendButton.click()
                     return
                 }
@@ -549,11 +550,23 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         return index
     }
 
+    const getHistorial = ():histStructure =>{
+        let defaultHistorialParsed: histStructure = {}
+        for (const key in window.localStorage) {
+            if (key.startsWith("RegBoxID:")) {
+                let stor: HistorialTableType = JSON.parse(window.localStorage[key])
+                defaultHistorialParsed = { ...defaultHistorialParsed, [stor._id]: stor }
+            }
+        }
+        return defaultHistorialParsed
+    }
+
     return <main data-animations={`${animations}`} data-config-blur={`${blur}`}>
         <button
             data-action={"historial"}
             data-connectionid={""}
             data-peer={""}
+            data-parameter={""}
             id="sendHistorialToPawn"
             style={{ display: "none" }}
             onClick={() => {
@@ -561,17 +574,18 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 let action = button.dataset.action
                 let connectionId = button.dataset.connectionid
                 let peerCon = button.dataset.peerCon
+                let parameter = button.dataset.parameter
                 if (!button || !action || !connectionId) return
-                let defaultHistorialParsed = {}
-                for (const key in window.localStorage) {
-                    if (key.startsWith("RegBoxID:")) {
-                        let stor: HistorialTableType = JSON.parse(window.localStorage[key])
-                        defaultHistorialParsed = { ...defaultHistorialParsed, [stor._id]: stor }
-                    }
-                }
+                let data = undefined
+                if(action === "historial") data = getHistorial()
+                else if(action === "notification") data = checkNoti(parameter)
+                
                 const messages: router = {
-                    "historial": { type: "historial", data: defaultHistorialParsed },
+                    "historial": { type: "historial", data: data },
                     "confirm": { type: "confirm", data: "El mensaje fue enviado con éxito." },
+                    "notification": { type: data ? "confirm" : "error", 
+                    data: data ? "El mensaje fue enviado con éxito. Conexión recuperada.":
+                    "El mensaje no fue enviado, la reconexión fue realizada, reinténtelo." },
                 }
                 let message = messages[action]
                 if (!conn || connectionId !== conn.connectionId || (!conn.open && peer)) {
