@@ -175,7 +175,7 @@ export default function CloseSession({ close, logout }: Props) {
                         {headers && headers.map(el => {
                             return el.header ? <label key={Math.random()}>{el.type}</label> :
                                 <li key={Math.random()}>
-                                    <div>{el.name}</div>
+                                    <div title={el.name}>{el.name}</div>
                                     <div>${el.price}</div>
                                     <div>{el.amount}</div>
                                 </li>

@@ -119,7 +119,7 @@ export default function Notifications({ close, notis, setNotis, EditMassiveTable
               </div>
               <ul className='result-prod-list'>
                 {pop.products && pop.products.map((pha, i) => {
-                  return <section
+                  return <React.Fragment
                     key={Math.random()}
                   >
                     <label>Fase {i + 1}</label>
@@ -127,13 +127,13 @@ export default function Notifications({ close, notis, setNotis, EditMassiveTable
                       {pha.map(el => {
                         return el.header ? <label key={Math.random()}>{el.type}</label> :
                           <li key={Math.random()}>
-                            <div>{el.name}</div>
+                            <div title={el.name}>{el.name}</div>
                             <div>${el.price}</div>
                             <div>{el.amount}</div>
                           </li>
                       })}
                     </ul>
-                  </section>
+                  </React.Fragment>
                 })}
               </ul>
             </div>

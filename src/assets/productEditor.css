@@ -568,12 +568,17 @@ main:has(.notifications) .notifications-pop-button {
     display: grid;
     grid-template-columns: 60% 25% 15%;
 }
-.result-prod-list >label {
+.result-prod-list label {
     color: var(--cwhite);
     padding: 0.3rem 0.5rem;
     border-bottom: 1px solid var(--clightgray);
 }
-.result-prod-list >li {
+.result-prod-list li>div {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.result-prod-list li {
     color: var(--clightgray);
     padding: 0.2rem 0.5rem;
     padding-left: 1rem;

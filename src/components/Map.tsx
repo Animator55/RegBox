@@ -428,7 +428,8 @@ export default function Map({ current, setCurrentID, tablesOpenMin }: Props) {
           height: tbl.size.y,
           top: tbl.coords.y,
           left: tbl.coords.x,
-          backgroundColor: color
+          borderColor: color,
+          color: color,
         }}
       >
         {editMode ? !deleteMode ?

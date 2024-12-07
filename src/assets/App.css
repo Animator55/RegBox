@@ -3,6 +3,7 @@
 body {
     margin: 0;
     --cblack: #0c0a09;
+    --cdarker: #1b1b1b;
     --cdarkgray: #242424;
     --cgray: #6d655f;
     --clightgray: #cfcbc7;
