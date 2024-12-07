@@ -155,6 +155,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 if(!sendButton) return
                 if(data.type === "request-historial") {
                     sendButton.dataset.action = "historial"
+                    sendButton.dataset.connectionId = conn.connectionId
+                    sendButton.dataset.peerCon= conn.peer
                     sendButton.click()
                     return 
                 }
@@ -551,11 +553,12 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         <ul style={{background: "grey", position: 'fixed', right: 10}}>
             {peers.map(el=>{return <li key={Math.random()}>{el}</li>})}
         </ul>
-        <button data-action={"historial"} id="sendHistorialToPawn" onClick={()=>{
-            if(!conn) return
+        <button data-action={"historial"} data-connectionId={""} data-peer={""} id="sendHistorialToPawn" onClick={()=>{
             let button = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
             let action = button.dataset.action
-            if(!button || !action) return
+            let connectionId = button.dataset.connectionId
+            let peerCon = button.dataset.peerCon
+            if(!button || !action || !connectionId) return
             let defaultHistorialParsed = {}
             for (const key in window.localStorage) {
                 if (key.startsWith("RegBoxID:")) {
@@ -571,11 +574,26 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
             let message = messages[action]
 
-            if(!conn.open && peer) {
-                conn = peer?.connect(conn.peer)
-                setTimeout(()=>{
-                    if(conn)conn.send(message)
-                }, 3000)
+
+            if(!conn || connectionId !== conn.connectionId || (!conn.open && peer)) {
+                conn = peer?.connect(peerCon as string)
+                let count = 0
+                let interval = setInterval(()=>{
+                    if(conn && conn.open){
+                        conn.send(message)
+                        clearInterval(interval)
+                    }
+                    else count++
+                    if(count > 15) {
+                        clearInterval(interval)
+                        setToastAlert({
+                            title: "Falló la conexión",
+                            content: "No se pudo establecer la conexión con un peón ("+ peerCon+").",
+                            icon: "xmark",
+                            _id: `${Math.random()}`
+                        })
+                    }
+                }, 500)
             }
             else conn.send(message)
         }}></button>
