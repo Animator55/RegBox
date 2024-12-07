@@ -85,11 +85,11 @@ let conn: DataConnection | undefined = undefined
 
 let notis: SingleEvent[] = []
 
-const checkNoti = (_id: string | undefined)=>{
+const checkNoti = (_id: string | undefined) => {
     let boolean = false
-    if(!_id) return boolean
-    for(let i=0; i<notis.length; i++) {
-        if(notis[i].notification_id === _id) {
+    if (!_id) return boolean
+    for (let i = 0; i < notis.length; i++) {
+        if (notis[i].notification_id === _id) {
             boolean = true
             break
         }
@@ -152,16 +152,16 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             conn.on("data", function (data: any) { //RECIEVED DATA
                 console.log("a")
                 let sendButton = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
-                if(!sendButton) return
-                if(data.type === "request-historial") {
+                if (!sendButton) return
+                if (data.type === "request-historial") {
                     sendButton.dataset.action = "historial"
-                    sendButton.dataset.connectionId = conn.connectionId
-                    sendButton.dataset.peerCon= conn.peer
+                    sendButton.dataset.connectionid = conn.connectionId
+                    sendButton.dataset.peerCon = conn.peer
                     sendButton.click()
-                    return 
+                    return
                 }
                 let message = data as SingleEvent
-                if(checkNoti(message.notification_id)) return
+                if (checkNoti(message.notification_id)) return
                 notis.push(message)
                 setNotis(Math.random())
                 sendButton.dataset.action = "confirm"
@@ -239,7 +239,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             name: data.name,
             discount: 0,
             discountType: "percent",
-            products: defaultProds !== undefined ? defaultProds:[[]],
+            products: defaultProds !== undefined ? defaultProds : [[]],
             opened: opened,
             payMethod: undefined,
             state: "open",
@@ -512,9 +512,9 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     const popUps: { [key: string]: any } = {
         "products": <ProductEditor initialPage={popUp.initialPage} close={close} />,
         "configuration": <ConfigurationComp close={close} />,
-        "information": <AccountInfo close={close} />,
-        "notifications": <Notifications setNotis={(val:SingleEvent[])=>{
-            notis= val
+        "information": <AccountInfo peers={peers} close={close} />,
+        "notifications": <Notifications setNotis={(val: SingleEvent[]) => {
+            notis = val
             setNotis(Math.random())
         }} close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} />,
         "closesession": <CloseSession close={close} logout={logout_handler} />,
@@ -541,62 +541,61 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
     let animations = config ? config.animations : true
     let blur = config ? config.blur : false
 
-    const checkAmountOfNotReadedNotis = ()=>{
+    const checkAmountOfNotReadedNotis = () => {
         let index = 0
-        for(let i=0; i<notis.length;i++){
-            if(notis[i].accepted === undefined|| notis[i].accepted === null) index++
+        for (let i = 0; i < notis.length; i++) {
+            if (notis[i].accepted === undefined || notis[i].accepted === null) index++
         }
         return index
     }
 
     return <main data-animations={`${animations}`} data-config-blur={`${blur}`}>
-        <ul style={{background: "grey", position: 'fixed', right: 10}}>
-            {peers.map(el=>{return <li key={Math.random()}>{el}</li>})}
-        </ul>
-        <button data-action={"historial"} data-connectionId={""} data-peer={""} id="sendHistorialToPawn" onClick={()=>{
-            let button = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
-            let action = button.dataset.action
-            let connectionId = button.dataset.connectionId
-            let peerCon = button.dataset.peerCon
-            if(!button || !action || !connectionId) return
-            let defaultHistorialParsed = {}
-            for (const key in window.localStorage) {
-                if (key.startsWith("RegBoxID:")) {
-                    let stor: HistorialTableType = JSON.parse(window.localStorage[key])
-                    defaultHistorialParsed = { ...defaultHistorialParsed, [stor._id]: stor }
+        <button
+            data-action={"historial"}
+            data-connectionid={""}
+            data-peer={""}
+            id="sendHistorialToPawn"
+            style={{ display: "none" }}
+            onClick={() => {
+                let button = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
+                let action = button.dataset.action
+                let connectionId = button.dataset.connectionid
+                let peerCon = button.dataset.peerCon
+                if (!button || !action || !connectionId) return
+                let defaultHistorialParsed = {}
+                for (const key in window.localStorage) {
+                    if (key.startsWith("RegBoxID:")) {
+                        let stor: HistorialTableType = JSON.parse(window.localStorage[key])
+                        defaultHistorialParsed = { ...defaultHistorialParsed, [stor._id]: stor }
+                    }
                 }
-            }
-
-            const messages: router = {
-                "historial": {type: "historial", data: defaultHistorialParsed},
-                "confirm": {type: "confirm", data: "El mensaje fue enviado con éxito."},
-            }
-
-            let message = messages[action]
-
-
-            if(!conn || connectionId !== conn.connectionId || (!conn.open && peer)) {
-                conn = peer?.connect(peerCon as string)
-                let count = 0
-                let interval = setInterval(()=>{
-                    if(conn && conn.open){
-                        conn.send(message)
-                        clearInterval(interval)
-                    }
-                    else count++
-                    if(count > 15) {
-                        clearInterval(interval)
-                        setToastAlert({
-                            title: "Falló la conexión",
-                            content: "No se pudo establecer la conexión con un peón ("+ peerCon+").",
-                            icon: "xmark",
-                            _id: `${Math.random()}`
-                        })
-                    }
-                }, 500)
-            }
-            else conn.send(message)
-        }}></button>
+                const messages: router = {
+                    "historial": { type: "historial", data: defaultHistorialParsed },
+                    "confirm": { type: "confirm", data: "El mensaje fue enviado con éxito." },
+                }
+                let message = messages[action]
+                if (!conn || connectionId !== conn.connectionId || (!conn.open && peer)) {
+                    conn = peer?.connect(peerCon as string)
+                    let count = 0
+                    let interval = setInterval(() => {
+                        if (conn && conn.open) {
+                            conn.send(message)
+                            clearInterval(interval)
+                        }
+                        else count++
+                        if (count > 15) {
+                            clearInterval(interval)
+                            setToastAlert({
+                                title: "Falló la conexión",
+                                content: "No se pudo establecer la conexión con un peón (" + peerCon + ").",
+                                icon: "xmark",
+                                _id: `${Math.random()}`
+                            })
+                        }
+                    }, 500)
+                }
+                else conn.send(message)
+            }}></button>
         <TablesPlaces.Provider value={{ tables: tablesPlacesPH, set: setTablesPlacesHandler }}>
             <Configuration.Provider value={{ config: config, setConfig: setConfigHandle }}>
                 <ToastActivation.Provider value={setToastAlert}>

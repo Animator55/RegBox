@@ -610,3 +610,23 @@ main:has(.notifications) .notifications-pop-button {
     background-color: var(--clightgray);
     padding-left: 1rem;
 }
+
+.users-connected {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+    width: 100%!important;
+}
+.users-connected > li {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 2px 2px 8px var(--clightgray);
+    transition: border-color 100ms;
+    border: 3px solid transparent;
+}
+.users-connected > li:hover {
+    transition: background-color 100ms;
+    border-color: var(--corange);
+}

@@ -8,7 +8,7 @@ export const defaultConfig: configType = {
         "notifications": true,
         "products": true,
         "historial": true,
-        "information": false,
+        "information": true,
         "configuration": true,
         "download": false,
         "help": false,
