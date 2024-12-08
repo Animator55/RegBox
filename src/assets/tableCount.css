@@ -181,7 +181,7 @@
     border-bottom: 1px solid;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.5rem;
 }
 .table-list .title {
     color: var(--clightgray);
@@ -191,8 +191,12 @@
 
 .table-list label>p {
     margin: 0;
+    margin-right: auto;
 }
 
+.table-list label>button:last-child {
+    margin-right: 0.5rem;
+}
 .table-list label>button {
     background-color: transparent;
     display: flex;
@@ -200,7 +204,7 @@
     justify-content: center;
     color: var(--cwhite);
     font-size: 1.2rem;
-    padding: 0 .5rem;
+    padding: 0 .25rem;
 }
 
 .table-list li {

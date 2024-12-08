@@ -120,7 +120,9 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                                 </button>
                             </>}
                             {pha.length === 0 && selectedPhase === i &&
-                                <button onClick={() => { managePhase(i, false) }}>
+                                <button onClick={() => {
+                                    managePhase(i, false) 
+                                }}>
                                     <FontAwesomeIcon icon={faXmark} />
                                 </button>}
                         </label>
