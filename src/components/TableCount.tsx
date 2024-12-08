@@ -1,7 +1,7 @@
 import { Item, PayMethod, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faBars, faCheckToSlot, faClockRotateLeft, faDollarSign, faList, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faBars, faCaretDown, faCaretUp, faCheckToSlot, faClockRotateLeft, faDollarSign, faList, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import { Configuration, Products } from '../roleMains/Main'
@@ -111,6 +111,14 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                     >
                         <label>
                             <p>Fase {i + 1}</p>
+                            {pha.length > 0 && selectedPhase === i && <>
+                                <button onClick={()=>{console.log("move")}}>
+                                    <FontAwesomeIcon icon={faCaretUp} />
+                                </button>
+                                <button onClick={()=>{console.log("move")}}>
+                                    <FontAwesomeIcon icon={faCaretDown} />
+                                </button>
+                            </>}
                             {pha.length === 0 && selectedPhase === i &&
                                 <button onClick={() => { managePhase(i, false) }}>
                                     <FontAwesomeIcon icon={faXmark} />
