@@ -159,12 +159,12 @@
 }
 
 
-.table-list>section:not(.active):hover label {
+.table-list>section:not(.active):hover .label {
     background-color: var(--cgray);
     color: var(--cwhite);
 }
 
-.table-list>section.active label {
+.table-list>section.active .label {
     background-color: var(--corange);
     color: var(--cwhite);
 }
@@ -173,9 +173,11 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    position: relative;
 }
 
-.table-list label {
+.table-list .label {
+    position: relative;
     color: var(--clightgray);
     padding-left: 0.5rem;
     border-bottom: 1px solid;
@@ -187,17 +189,19 @@
     color: var(--clightgray);
     margin-left: 1rem;
     border-bottom: 1px solid;
+    max-height: 100px;
+    overflow: hidden;
 }
 
-.table-list label>p {
+.table-list .label>p {
     margin: 0;
     margin-right: auto;
 }
 
-.table-list label>button:last-child {
+.table-list .label>button:last-child {
     margin-right: 0.5rem;
 }
-.table-list label>button {
+.table-list .label>button {
     background-color: transparent;
     display: flex;
     align-items: center;
@@ -213,11 +217,38 @@
     gap: 1%;
     padding: 0.1rem 0.5rem;
     border-radius: 5px;
+    max-height: 100px;
 }
 
 .table-list li.added>* {
     animation: added 150ms forwards;
 }
+
+section:has(>.slide-to-down) li, 
+section:has(>.slide-to-up) li,
+section:has(>.slide-to-down) .title, 
+section:has(>.slide-to-up) .title {
+    max-height: 0px;
+    transition: max-height 100ms;
+    border-bottom: 0px;
+}
+.slide-to-down {
+    animation: slide-to-down 400ms 100ms forwards;
+}
+
+@keyframes slide-to-down {
+    from {top: 0;}
+    to {top: 2.5rem;}
+}
+.slide-to-up {
+    animation: slide-to-up 400ms 100ms forwards;
+}
+
+@keyframes slide-to-up {
+    from {top: 0;}
+    to {top: -2.5rem;}
+}
+
 
 @keyframes added {
     50% {

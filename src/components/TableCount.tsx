@@ -63,6 +63,44 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
 
         element.click()
     }
+    //// dom animation
+    const switchPhasesAnimation = (index: number, toIndex: number) => {
+        let target = document.getElementById("phase_" + index) as HTMLButtonElement
+        let target2 = document.getElementById("phase_" + toIndex) as HTMLButtonElement
+        if (!target || !target2) return
+        let toRight = index < toIndex
+        target.classList.remove("selected")
+        target.classList.add(toRight ? "slide-to-down" : "slide-to-up")
+        target2.classList.add(!toRight ? "slide-to-down" : "slide-to-up")
+    }
+
+    const movePhase = (index: number, toIndex: number) => {
+        if (index === undefined || toIndex === undefined || !currentTable) return
+        let value: Item[] | undefined = undefined
+        let newResult = currentTable.products.map((el, i) => {
+            if (i === index) {
+                value = el
+                return "PH"
+            }
+            else return el
+        })
+        if (value === undefined) return
+        let checkedToIndex = toIndex < index ? toIndex : toIndex + 1
+        newResult.splice(checkedToIndex, 0, value)
+        let preFilter = newResult
+        let settedValue = []
+        for (let i = 0; i < preFilter.length; i++) {
+            if (typeof preFilter[i] !== "string") settedValue.push(preFilter[i])
+        }
+        switchPhasesAnimation(index, toIndex)
+        setTimeout(() => {
+            if (selectedPhase === index) setSelectedPhase(toIndex)
+            else if (selectedPhase === toIndex) setSelectedPhase(index)
+            EditTable(currentTable._id, "products", settedValue as Item[][],
+                ("Cambiada de lugar la fase " + index + " a " + toIndex)
+            )
+        }, 500)
+    }
 
     const Top = () => {
         return <header className='table-head'>
@@ -109,23 +147,24 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                         key={Math.random()}
                         onClick={() => { setSelectedPhase(i) }}
                     >
-                        <label>
+                        <div className='label' id={'phase_' + i}>
                             <p>Fase {i + 1}</p>
                             {pha.length > 0 && selectedPhase === i && <>
-                                <button onClick={()=>{console.log("move")}}>
+                                {i > 0 && <button onClick={() => { if (i > 0) movePhase(i, (i - 1)) }}>
                                     <FontAwesomeIcon icon={faCaretUp} />
-                                </button>
-                                <button onClick={()=>{console.log("move")}}>
+                                </button>}
+                                {(currentTable && i !== currentTable.products.length - 1) && <button
+                                    onClick={() => { if (i !== currentTable.products.length - 1) movePhase(i, (i + 1)) }}>
                                     <FontAwesomeIcon icon={faCaretDown} />
-                                </button>
+                                </button>}
                             </>}
                             {pha.length === 0 && selectedPhase === i &&
                                 <button onClick={() => {
-                                    managePhase(i, false) 
+                                    managePhase(i, false)
                                 }}>
                                     <FontAwesomeIcon icon={faXmark} />
                                 </button>}
-                        </label>
+                        </div>
                         {orderedPha && orderedPha.map(item => {
                             let header = false
                             if (titles && item.header) header = true

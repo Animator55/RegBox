@@ -99,6 +99,7 @@ const checkNoti = (_id: string | undefined) => {
 
 let lastChanged = ""
 let productPickerScroll = 0
+let tableScroll = 0
 
 let massive: { table_id: string, value: Item[][], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
@@ -260,6 +261,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             if (result) setCurrent(id)
         }
         setSelectedPhase(0)
+        tableScroll = 0
     }
 
     const addTableToHistorial = (newTable: TableType, isSwitch: boolean, prevId?: string) => {
@@ -415,6 +417,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         let amount = value !== undefined ? value : 1
         let word = amount === 1 ? "Añadido" : "Subtraido"
         lastChanged = item._id
+        tableScroll = value !== undefined ? document.querySelector(".table-list")?.scrollTop! : 0
         productPickerScroll = value !== undefined ? 0 : document.getElementById("product-picker")?.scrollTop!
 
         if (item.amount && (item.amount + amount) <= 0) EditTable(
@@ -439,7 +442,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 })
             }), word + "1 de " + item.name + " (" + item._id + ")")
     }
-    const managePhase = (index: number, create: boolean) => {
+    const managePhase = (index: number, create: boolean) => { ///  "create" could be => 'create' or 'delete'
         if (!currentTableData) return
         if (create) {
             EditTable(currentTableData._id, "products",
@@ -447,11 +450,18 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 ("Añadida la fase " + currentTableData.products.length)
             )
             setSelectedPhase(currentTableData.products.length)
+            tableScroll = 999999999
         }
         else EditTable(currentTableData._id, "products",
             currentTableData.products.filter((el, i) => { if (i !== index) return el }),
-            ("Añadida la fase " + currentTableData.products.length)
+            ("Borrada la fase " + index)
         )
+    }
+
+    const setSelectedPhaseHandler = (val: number)=>{
+        let scroll = document.querySelector(".table-list")?.scrollTop!
+        tableScroll = scroll
+        setSelectedPhase(val)
     }
 
     React.useEffect(() => {
@@ -480,6 +490,11 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             if (!ul) return
             ul.scrollTo({ top: item.offsetTop - 211 })
         }
+        if (tableScroll !== 0) {
+            let ul = document.querySelector(".table-list")
+            ul?.scrollTo({ top: tableScroll, })
+            console.log(ul)
+        }
         if (productPickerScroll !== 0) {
             let ul = document.getElementById("product-picker")
             ul?.scrollTo({ top: productPickerScroll, })
@@ -488,7 +503,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             EditMassiveTable(massive.table_id, massive.value, massive.comment)
             massive = undefined
         }
-    }, [tables])
+    }, [tables, selectedPhase])
 
     const OpenPop = (pop: string, initialPage?: string) => {
         let init = initialPage === undefined ? "" : initialPage
@@ -616,7 +631,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                     <Products.Provider value={{ list: ProductsState, setProds: editProdsHandle }}>
                         <TopBar OpenPop={OpenPop} download={download} notisAmount={checkAmountOfNotReadedNotis()} />
                         <section className='d-flex'>
-                            <TableCount selectedPhase={selectedPhase} setSelectedPhase={setSelectedPhase} currentTable={currentTableData} EditTable={EditTable} addItem={addItem} managePhase={managePhase} tablesMin={tablesMin} />
+                            <TableCount selectedPhase={selectedPhase} setSelectedPhase={setSelectedPhaseHandler} currentTable={currentTableData} EditTable={EditTable} addItem={addItem} managePhase={managePhase} tablesMin={tablesMin} />
                             <ProdAndMap tablesMin={tablesMin} current={currentTableData} setCurrentID={setCurrentHandler} addItem={addItem} />
                         </section>
                         {popUp.pop !== "" && popUps[popUp.pop]}
