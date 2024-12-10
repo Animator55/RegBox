@@ -29,6 +29,7 @@ export default function ConfigurationComp({ close }: Props) {
     "download": "Guardar datos",
     "help": "Ayuda",
     "logout": "Cerrar sesión",
+    "autoAcceptNotis": "Aceptar automáticamente las notificaciones",
     miniMapOrder: "Orden de la lista de mesas",
     prodListOrder: "Orden de los productos en la lista",
     prodEditorOrder: "Orden de los productos en el editor",

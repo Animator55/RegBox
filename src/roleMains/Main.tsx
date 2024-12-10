@@ -55,6 +55,7 @@ export const Configuration = React.createContext({
             y: 0,
             align: true
         },
+        autoAcceptNotis: false,
         miniMapOrder: "def",
         prodListOrder: "def",
         prodEditorOrder: "def",
@@ -101,9 +102,12 @@ let lastChanged = ""
 let productPickerScroll = 0
 let tableScroll = 0
 
+let notification: SingleEvent | undefined = undefined
+
 let massive: { table_id: string, value: Item[][], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
     const [peers, setPeers] = React.useState<string[]>([])
+    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config !== undefined ? initialData.config : defaultConfig : defaultConfig)
     const [notisRefresh, setNotis] = React.useState<number>(0)
     notisRefresh;
 
@@ -158,16 +162,21 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                     sendButton.dataset.action = data.type.split("-")[1]
                     sendButton.dataset.connectionid = conn.connectionId
                     sendButton.dataset.peerCon = conn.peer
-                    if(data.type === "request-notification") sendButton.dataset.parameter = data.data
+                    if (data.type === "request-notification") sendButton.dataset.parameter = data.data
                     sendButton.click()
                     return
                 }
-                let message = data as SingleEvent
+                let message = config.autoAcceptNotis ? { ...data, accepted: true } as SingleEvent : data as SingleEvent
                 if (checkNoti(message.notification_id)) return console.log("SEEE")
                 notis.push(message)
                 setNotis(Math.random())
                 sendButton.dataset.action = "confirm"
                 sendButton.click()
+
+                if (config.autoAcceptNotis && message._id && message.products) {
+                    notification = message
+                    setNotis(Math.random())
+                }
             })
 
             conn.on('close', function () {
@@ -179,7 +188,6 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         });
     }
 
-    const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config !== undefined ? initialData.config : defaultConfig : defaultConfig)
     const setToastAlert = (val: {
         title: string
         content: string
@@ -375,6 +383,13 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         else EditMassiveTable(table_id, value, comment)
     }
 
+    const AutoNotificationHandler = () => {
+        if (notification === undefined || !notification._id || !notification.products) return console.log("nt")
+        if (notification.type === "products") EditMassiveTable(notification._id, notification.products, notification.comment)
+        else if (notification.type === "replace") EditTable(notification._id, "products", notification.products, notification.comment)
+        notification = undefined
+    }
+
 
     const editProdsHandle = (prods: productsType, someEdit: boolean) => {
         ///send to db and obtain results
@@ -458,7 +473,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         )
     }
 
-    const setSelectedPhaseHandler = (val: number)=>{
+    const setSelectedPhaseHandler = (val: number) => {
         let scroll = document.querySelector(".table-list")?.scrollTop!
         tableScroll = scroll
         setSelectedPhase(val)
@@ -504,6 +519,10 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         }
     }, [tables, selectedPhase])
 
+    React.useEffect(()=>{
+        AutoNotificationHandler()
+    }, [notification])
+
     const OpenPop = (pop: string, initialPage?: string) => {
         let init = initialPage === undefined ? "" : initialPage
         setCurrentPop({ pop: pop, initialPage: init })
@@ -531,7 +550,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         "notifications": <Notifications setNotis={(val: SingleEvent[]) => {
             notis = val
             setNotis(Math.random())
-        }} close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} EditTable={EditTable}/>,
+        }} close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} EditTable={EditTable} />,
         "closesession": <CloseSession close={close} logout={logout_handler} />,
         "account": <AccountPop download={download} OpenPop={OpenPop} close={close} />,
         "historial": <HistorialTableComp
@@ -564,7 +583,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         return index
     }
 
-    const getHistorial = ():histStructure =>{
+    const getHistorial = (): histStructure => {
         let defaultHistorialParsed: histStructure = {}
         for (const key in window.localStorage) {
             if (key.startsWith("RegBoxID:")) {
@@ -591,15 +610,17 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 let parameter = button.dataset.parameter
                 if (!button || !action || !connectionId) return
                 let data = undefined
-                if(action === "historial") data = getHistorial()
-                else if(action === "notification") data = checkNoti(parameter)
-                
+                if (action === "historial") data = getHistorial()
+                else if (action === "notification") data = checkNoti(parameter)
+
                 const messages: router = {
                     "historial": { type: "historial", data: data },
                     "confirm": { type: "confirm", data: "El mensaje fue enviado con éxito." },
-                    "notification": { type: data ? "confirm" : "error", 
-                    data: data ? "El mensaje fue enviado con éxito. Conexión recuperada.":
-                    "El mensaje no fue enviado, la reconexión fue realizada, reinténtelo." },
+                    "notification": {
+                        type: data ? "confirm" : "error",
+                        data: data ? "El mensaje fue enviado con éxito. Conexión recuperada." :
+                            "El mensaje no fue enviado, la reconexión fue realizada, reinténtelo."
+                    },
                 }
                 let message = messages[action]
                 if (!conn || connectionId !== conn.connectionId || (!conn.open && peer)) {
