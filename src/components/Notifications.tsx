@@ -7,11 +7,12 @@ import { SingleEvent } from '../vite-env'
 type Props = {
   close: Function
   EditMassiveTable: Function
+  EditTable: Function
   setNotis: Function
   notis: SingleEvent[]
 }
 
-export default function Notifications({ close, notis, setNotis, EditMassiveTable }: Props) {
+export default function Notifications({ close, notis, setNotis, EditMassiveTable, EditTable }: Props) {
   const [list, setList] = React.useState<SingleEvent[] | undefined>(undefined)
 
   const [pop, OpenPop] = React.useState<SingleEvent | undefined>()
@@ -45,7 +46,9 @@ export default function Notifications({ close, notis, setNotis, EditMassiveTable
         })]
         setList(val)
         setNotis(val)
-        if (boolean) EditMassiveTable(el._id, el.products, el.comment)
+        if (!boolean) return
+        if (el.type === "products") EditMassiveTable(el._id, el.products, el.comment)
+        else if (el.type === "replace") EditTable(el._id, "products", el.products, el.comment)
       }
 
       const actionZone = {
@@ -67,7 +70,7 @@ export default function Notifications({ close, notis, setNotis, EditMassiveTable
         </>,
         "true": <FontAwesomeIcon icon={faCheck} />,
         "false": <FontAwesomeIcon icon={faXmark} />,
-      } 
+      }
 
       ul.push(<li
         className='notification-item'

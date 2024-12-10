@@ -163,7 +163,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                     return
                 }
                 let message = data as SingleEvent
-                if (checkNoti(message.notification_id)) return
+                if (checkNoti(message.notification_id)) return console.log("SEEE")
                 notis.push(message)
                 setNotis(Math.random())
                 sendButton.dataset.action = "confirm"
@@ -493,7 +493,6 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         if (tableScroll !== 0) {
             let ul = document.querySelector(".table-list")
             ul?.scrollTo({ top: tableScroll, })
-            console.log(ul)
         }
         if (productPickerScroll !== 0) {
             let ul = document.getElementById("product-picker")
@@ -532,7 +531,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         "notifications": <Notifications setNotis={(val: SingleEvent[]) => {
             notis = val
             setNotis(Math.random())
-        }} close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} />,
+        }} close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} EditTable={EditTable}/>,
         "closesession": <CloseSession close={close} logout={logout_handler} />,
         "account": <AccountPop download={download} OpenPop={OpenPop} close={close} />,
         "historial": <HistorialTableComp
