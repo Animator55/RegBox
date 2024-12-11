@@ -99,14 +99,14 @@ const checkNoti = (_id: string | undefined) => {
 }
 
 let lastChanged = ""
-let productPickerScroll = 0
-let tableScroll = 0
+let productPickerScroll = 0 // productList picker scrollheight
+let tableScroll = 0 // selected table scrollheight
 
 let notification: SingleEvent | undefined = undefined
+let peers: string[] = [] // list of peers connected
 
 let massive: { table_id: string, value: Item[][], comment: string } | undefined = undefined ///when massiveChange happens and the table is not created yet. 
 export default function Main({ initialData, initialHistorial, logout }: Props) {
-    const [peers, setPeers] = React.useState<string[]>([])
     const [config, setConfig] = React.useState(initialData !== undefined ? initialData.config !== undefined ? initialData.config : defaultConfig : defaultConfig)
     const [notisRefresh, setNotis] = React.useState<number>(0)
     notisRefresh;
@@ -153,7 +153,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         if (conn !== undefined) return
 
         peer.on("connection", function (conn) {
-            setPeers([...peers, conn.peer])
+            peers.push(conn.peer)
+            setNotis(Math.random())
             conn.on("data", function (data: any) { //RECIEVED DATA
                 console.log("a")
                 let sendButton = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
@@ -182,7 +183,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             })
 
             conn.on('close', function () {
-                setPeers(peers.filter(el => { if (el !== conn.peer) return el }))
+                peers.splice(peers.indexOf(conn.peer), 1)
+                setNotis(Math.random())
                 console.log('connection was closed by ' + conn.peer)
                 conn.close()
                 conn = undefined!
