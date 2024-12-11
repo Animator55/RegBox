@@ -166,17 +166,15 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                     sendButton.click()
                     return
                 }
-                let message = config.autoAcceptNotis ? { ...data, accepted: true } as SingleEvent : data as SingleEvent
+                let message = data as SingleEvent
                 if (checkNoti(message.notification_id)) return console.log("SEEE")
                 notis.push(message)
                 setNotis(Math.random())
                 sendButton.dataset.action = "confirm"
                 sendButton.click()
 
-                if (config.autoAcceptNotis && message._id && message.products) {
-                    notification = message
-                    setNotis(Math.random())
-                }
+                notification = message
+                setNotis(Math.random())
             })
 
             conn.on('close', function () {
@@ -387,6 +385,10 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         if (notification === undefined || !notification._id || !notification.products) return console.log("nt")
         if (notification.type === "products") EditMassiveTable(notification._id, notification.products, notification.comment)
         else if (notification.type === "replace") EditTable(notification._id, "products", notification.products, notification.comment)
+        notis = [...notis.map(item => {
+            if (notification === item) return { ...notification, accepted: true }
+            else return item
+        })]
         notification = undefined
     }
 
@@ -519,8 +521,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         }
     }, [tables, selectedPhase])
 
-    React.useEffect(()=>{
-        AutoNotificationHandler()
+    React.useEffect(() => {
+        if (config.autoAcceptNotis) AutoNotificationHandler()
     }, [notification])
 
     const OpenPop = (pop: string, initialPage?: string) => {
