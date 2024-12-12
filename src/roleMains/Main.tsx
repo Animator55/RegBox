@@ -389,7 +389,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
     const AutoNotificationHandler = () => {
         if (notification === undefined || !notification._id || !notification.products) return console.log("nt")
-        if (notification.type === "products") EditMassiveTable(notification._id, notification.products, notification.comment)
+        
+        if (notification.type === "products") EditMassiveTableHandle(notification._id, notification.products, notification.comment)
         else if (notification.type === "replace") EditTable(notification._id, "products", notification.products, notification.comment)
         notis = [...notis.map(item => {
             if (notification === item) return { ...notification, accepted: true }
