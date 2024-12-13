@@ -14,6 +14,7 @@ import { calculateTotal, calculateTotalAsNumber } from '../logic/calculateTotal'
 import { html_reciept } from '../defaults/reciept'
 import { stateTraductions } from '../defaults/stateTraductions'
 import CommentTable from './pops/CommentTable'
+import PrintCommand from './pops/PrintCommand'
 
 type Props = {
     currentTable: TableType | undefined
@@ -34,9 +35,9 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
 
-    const print = () => {
+    const print = (defaultValue?: TableType ) => {
         if (currentTable?.state !== "closed") return
-        let html = html_reciept(currentTable, p)
+        let html = html_reciept(defaultValue !== undefined ? defaultValue : currentTable, p)
         if (!html) return
         var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
         if (!WinPrint) return
@@ -246,8 +247,13 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                 </button>
             </div>
             <div className={currentTable ? "" : 'disabled'}>
-                <button className={!currentTable || currentTable && currentTable?.state === "closed" ? "" : 'disabled'}
-                    onClick={print}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
+                <button className={!currentTable || currentTable 
+                && (currentTable?.state === "closed" || currentTable?.state === "open") ? "" : 'disabled'}
+                    onClick={() => {
+                        if(!currentTable) return
+                        if (currentTable?.state === "open") setPop("print")
+                        else if (currentTable?.state === "closed") print()
+                    }}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
                 <button className={currentTable?.state !== "closed" ? "" : "confirm"} onClick={() => {
                     if (currentTable?.state !== "unnactive") endTablePop(true)
                 }}><FontAwesomeIcon icon={faCheckToSlot} />
@@ -327,6 +333,12 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                 tablesMin={tablesMin.map(el => { return el._id })}
                 close={() => { setPop("") }}
                 confirm={(id: string, num: string) => { switchTable(id, num); setPop("") }}
+            />
+        }
+        {pop === "print" && currentTable &&
+            <PrintCommand
+                close={() => { setPop("") }}
+                confirm={(result) => { print(result) }}
             />
         }
         {pop === "discount" && currentTable &&
