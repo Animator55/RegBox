@@ -559,7 +559,9 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         "notifications": <Notifications setNotis={(val: SingleEvent[]) => {
             notis = val
             setNotis(Math.random())
-        }} close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} EditTable={EditTable} />,
+        }} 
+        autoNotis={config.autoAcceptNotis}
+         close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} EditTable={EditTable} />,
         "closesession": <CloseSession close={close} logout={logout_handler} />,
         "account": <AccountPop download={download} OpenPop={OpenPop} close={close} />,
         "historial": <HistorialTableComp

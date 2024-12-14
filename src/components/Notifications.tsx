@@ -9,10 +9,11 @@ type Props = {
   EditMassiveTable: Function
   EditTable: Function
   setNotis: Function
+  autoNotis:boolean
   notis: SingleEvent[]
 }
 
-export default function Notifications({ close, notis, setNotis, EditMassiveTable, EditTable }: Props) {
+export default function Notifications({ close, notis, setNotis, EditMassiveTable, EditTable, autoNotis }: Props) {
   const [list, setList] = React.useState<SingleEvent[] | undefined>(undefined)
 
   const [pop, OpenPop] = React.useState<SingleEvent | undefined>()
@@ -83,7 +84,7 @@ export default function Notifications({ close, notis, setNotis, EditMassiveTable
         <p>Mesa {el.name}</p>
         <p className='owner-tag'>{el.timestamp}</p>
 
-        <div className='accept-zone'>{actionZone[`${el.accepted}`]}</div>
+        <div className='accept-zone'>{actionZone[`${autoNotis ? true : el.accepted}`]}</div>
       </li>)
     }
 
