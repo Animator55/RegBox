@@ -635,3 +635,53 @@ main:has(.notifications) .notifications-pop-button {
     transition: background-color 100ms;
     border-color: var(--corange);
 }
+
+/**/
+
+.print-pop {
+    padding: 0;
+}
+
+.print-pop >header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+}
+.print-pop >header> h2 {
+    margin: 0;
+}
+.print-pop > header >button {
+    background-color: transparent;
+    font-size: 1.8rem ;
+}
+
+.print-command-divisor{
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.print-command-divisor > nav {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;  
+}
+.print-command-divisor > nav> div> button {
+    display: flex;
+} 
+.print-command-divisor > nav> div {
+    gap: 1.5rem;
+}
+
+.command-preview {
+    width: 50dvw;
+    max-width: 50dvw;
+    height: 70vh;
+    max-height: 70vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 2rem;
+    background-color: var(--cwhite);
+    box-shadow: 2px 2px 10px var(--cgray);
+}

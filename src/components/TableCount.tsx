@@ -141,8 +141,9 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
             </header>
             <ul className='table-list'>
                 {isProds ? reOrdered && reOrdered.map((pha, i) => {
+                    console.log(pha)
                     let orderedPha = titles ? orderByTypes(pha, p, true) : pha
-
+                    console.log(orderedPha)
                     return <section
                         className={selectedPhase === i ? "active" : ""}
                         key={Math.random()}
@@ -166,7 +167,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                                     <FontAwesomeIcon icon={faXmark} />
                                 </button>}
                         </div>
-                        {orderedPha && orderedPha.map(item => {
+                        {orderedPha && orderedPha.length > 0 && orderedPha.map(item => {
                             let header = false
                             if (titles && item.header) header = true
                             else totalList += item.amount! * item.price
@@ -287,6 +288,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
     }
 
     React.useEffect(() => {
+        console.log(scrollHeight)
         if (scrollHeight !== null && scrollHeight !== 0) {
             let ul = document.querySelector(".table-list")
             ul?.scrollTo({ top: scrollHeight })
@@ -337,6 +339,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
         }
         {pop === "print" && currentTable &&
             <PrintCommand
+                current={currentTable}
                 close={() => { setPop("") }}
                 confirm={(result) => { print(result) }}
             />
