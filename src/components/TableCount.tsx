@@ -278,11 +278,20 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
         if (!currentTable || !selected) return
         let item = selected
         let name = ""
-        let result = currentTable.products[item.phase].map(el => {
-            if (el._id !== item.item._id) return el
-            else { name = el.name; return { ...el, comment: comment } }
-        })
+        let result = []
 
+        for(let i=0; i<currentTable.products.length;i++){
+            if(i !== item.phase) result.push(currentTable.products[i])
+            else {
+                let newPhase = []
+                for(let j=0; j<currentTable.products[i].length; j++){
+                    let el = currentTable.products[i][j]
+                    if (el._id !== item.item._id) newPhase.push(el)
+                    else { name = el.name; newPhase.push({ ...el, comment: comment }) }
+                }
+                result.push(newPhase)
+            }
+        }
         EditTable(currentTable?._id, "products", result, "Cambiado el comentario de " + name)
         setSelected(undefined)
     }
