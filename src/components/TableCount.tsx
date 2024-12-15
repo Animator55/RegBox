@@ -35,9 +35,11 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
 
-    const print = (defaultValue?: TableType ) => {
+    const print = (defaultValue?: Item[][] ) => {
         if (currentTable?.state !== "closed") return
-        let html = html_reciept(defaultValue !== undefined ? defaultValue : currentTable, p)
+
+        //make print the command type structure
+        let html = html_reciept(defaultValue !== undefined ? {...currentTable, products: defaultValue} : currentTable, p)
         if (!html) return
         var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
         if (!WinPrint) return
@@ -350,7 +352,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
             <PrintCommand
                 current={currentTable}
                 close={() => { setPop("") }}
-                confirm={(result) => { print(result) }}
+                confirm={(result: Item[][]) => { print(result) }}
             />
         }
         {pop === "discount" && currentTable &&

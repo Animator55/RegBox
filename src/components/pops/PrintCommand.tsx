@@ -1,7 +1,7 @@
 import { faCheckSquare, faSquare, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
-import { Configuration, Products } from '../../roleMains/Main'
+import { Configuration } from '../../roleMains/Main'
 import { TableType } from '../../vite-env'
 
 type Props = {
@@ -28,6 +28,18 @@ export default function PrintCommand({ current, close, confirm }: Props) {
             if (el !== val) return el
         }))
         else setSelectedTypes([...selectedTypes, val])
+    }
+
+    let list = []
+
+    for(let i=0; i<current.products.length; i++){
+        let pha = current.products[i]
+        let result = []
+        if(pha.length === 0) continue
+        for(let j=0; j<pha.length;j++){
+            if(selectedTypes.includes(pha[j].type)) result.push(pha[j])
+        }
+        list.push(result)
     }
 
     return <section className='back-blur' onClick={(e) => {
@@ -59,7 +71,7 @@ export default function PrintCommand({ current, close, confirm }: Props) {
                                 {pha.map(el => {
                                     return selectedTypes.includes(el.type) &&
                                         <li key={Math.random()}>
-                                            {el.amount!} X {el.name}
+                                            {el.amount!} X {el.name} {el.comment && "("+el.comment+")"}
                                         </li>
                                 })}
                             </div>
@@ -67,6 +79,7 @@ export default function PrintCommand({ current, close, confirm }: Props) {
                     })}
                 </section>
             </section>
+            <button className='default-button' onClick={()=>{confirm(list)}}>Imprimir</button>
         </section>
     </section>
 }
