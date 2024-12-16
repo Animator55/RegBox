@@ -3,7 +3,42 @@ import fixNum from "../logic/fixDateNumber"
 import { renewedOrderByTypes } from "../logic/orderByTypes"
 import { router, sessionType, TableType } from "../vite-env"
 
+export const html_command = (currentTable: TableType) => {
+    if (!currentTable) return
+    let date = new Date()
 
+    let result = currentTable.products
+
+    let prodList = []
+    if (result) for (let i = 0; i < result.length; i++) {
+        let pha = result[i]
+        for(let j=0; j<pha.length; j++){
+            let el = pha[j]
+            prodList.push(`
+                <p style="font-size:0.65rem;margin: 3px 0;"><b>${el.amount!}</b> X ${el.name} ${el.comment ? `<i>(${el.comment})</i>` : ""}</p>
+            `)
+        }
+        if(i === result.length-1) break
+        prodList.push(`
+            <hr></hr>
+        `)
+    }
+
+    let HTML = `<div className='reciept' style="font-family:'Kanit', sans-serif;">
+            <div className='content-reciept'>
+                <header style="display: flex;justify-content:space-between; align-items: center;">
+                    <h4 style="margin: 0.4rem 0">${currentTable.name}</h4>
+                    <p style="margin: 0.4rem 0">${fixNum(date.getHours()) + ":" + fixNum(date.getMinutes())}</p>
+                </header>
+                <hr></hr>
+                <div>
+                    ${prodList.join("")}
+                </div>
+            </div>
+        </div>
+    `
+    return HTML
+}
 export const html_reciept = (currentTable: TableType, types: string[]) => {
     if (!currentTable) return
     let total = 0

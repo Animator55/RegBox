@@ -11,7 +11,7 @@ import PayMethodsPop from './PayMethodsPop'
 import SwitchTable from './pops/SwitchTable'
 import Discount from './pops/Discount'
 import { calculateTotal, calculateTotalAsNumber } from '../logic/calculateTotal'
-import { html_reciept } from '../defaults/reciept'
+import { html_command, html_reciept } from '../defaults/reciept'
 import { stateTraductions } from '../defaults/stateTraductions'
 import CommentTable from './pops/CommentTable'
 import PrintCommand from './pops/PrintCommand'
@@ -35,11 +35,10 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
 
-    const print = (defaultValue?: Item[][] ) => {
-        if (currentTable?.state !== "closed") return
-
+    const print_func = (defaultValue?: Item[][] ) => {
+        if (currentTable?.state !== "closed" && currentTable?.state !== "open") return
         //make print the command type structure
-        let html = html_reciept(defaultValue !== undefined ? {...currentTable, products: defaultValue} : currentTable, p)
+        let html =defaultValue !== undefined ? html_command({...currentTable, products: defaultValue}) : html_reciept(currentTable, p)
         if (!html) return
         var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
         if (!WinPrint) return
@@ -143,9 +142,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
             </header>
             <ul className='table-list'>
                 {isProds ? reOrdered && reOrdered.map((pha, i) => {
-                    console.log(pha)
                     let orderedPha = titles ? orderByTypes(pha, p, true) : pha
-                    console.log(orderedPha)
                     return <section
                         className={selectedPhase === i ? "active" : ""}
                         key={Math.random()}
@@ -255,7 +252,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                     onClick={() => {
                         if(!currentTable) return
                         if (currentTable?.state === "open") setPop("print")
-                        else if (currentTable?.state === "closed") print()
+                        else if (currentTable?.state === "closed") print_func()
                     }}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
                 <button className={currentTable?.state !== "closed" ? "" : "confirm"} onClick={() => {
                     if (currentTable?.state !== "unnactive") endTablePop(true)
@@ -299,7 +296,6 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
     }
 
     React.useEffect(() => {
-        console.log(scrollHeight)
         if (scrollHeight !== null && scrollHeight !== 0) {
             let ul = document.querySelector(".table-list")
             ul?.scrollTo({ top: scrollHeight })
@@ -352,7 +348,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
             <PrintCommand
                 current={currentTable}
                 close={() => { setPop("") }}
-                confirm={(result: Item[][]) => { print(result) }}
+                confirm={(result: Item[][]) => { print_func(result) }}
             />
         }
         {pop === "discount" && currentTable &&

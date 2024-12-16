@@ -32,12 +32,12 @@ export default function PrintCommand({ current, close, confirm }: Props) {
 
     let list = []
 
-    for(let i=0; i<current.products.length; i++){
+    for (let i = 0; i < current.products.length; i++) {
         let pha = current.products[i]
         let result = []
-        if(pha.length === 0) continue
-        for(let j=0; j<pha.length;j++){
-            if(selectedTypes.includes(pha[j].type)) result.push(pha[j])
+        if (pha.length === 0) continue
+        for (let j = 0; j < pha.length; j++) {
+            if (selectedTypes.includes(pha[j].type)) result.push(pha[j])
         }
         list.push(result)
     }
@@ -49,7 +49,7 @@ export default function PrintCommand({ current, close, confirm }: Props) {
         <section className='pop print-pop'>
             <header>
                 <h2>Imprimir Comanda</h2>
-                <button onClick={() => { close() }}><FontAwesomeIcon icon={faXmark} /></button> 
+                <button onClick={() => { close() }}><FontAwesomeIcon icon={faXmark} /></button>
             </header>
             <section className='print-command-divisor'>
                 <nav>
@@ -66,12 +66,12 @@ export default function PrintCommand({ current, close, confirm }: Props) {
                     {current.products.map((pha, i) => {
                         if (pha.length === 0) return null
                         return <div key={Math.random()}>
-                            <label>Tiempo {i}</label>
+                            <label>Tiempo {i + 1}</label>
                             <div>
                                 {pha.map(el => {
                                     return selectedTypes.includes(el.type) &&
                                         <li key={Math.random()}>
-                                            {el.amount!} X {el.name} {el.comment && "("+el.comment+")"}
+                                            {el.amount!} X {el.name} {el.comment && "(" + el.comment + ")"}
                                         </li>
                                 })}
                             </div>
@@ -79,7 +79,7 @@ export default function PrintCommand({ current, close, confirm }: Props) {
                     })}
                 </section>
             </section>
-            <button className='default-button' onClick={()=>{confirm(list)}}>Imprimir</button>
+            <button className='default-button' onClick={() => { confirm(list) }}>Imprimir</button>
         </section>
     </section>
 }
