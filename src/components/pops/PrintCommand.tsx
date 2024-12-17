@@ -12,6 +12,7 @@ type Props = {
 
 export default function PrintCommand({ current, close, confirm }: Props) {
     const c = React.useContext(Configuration)
+    const [selected, setSelected] = React.useState<string | undefined>(undefined)
 
     let types: string[] = []
 
@@ -63,12 +64,18 @@ export default function PrintCommand({ current, close, confirm }: Props) {
             </header>
             <section className='print-command-divisor'>
                 <nav>
-                    <div className="checkbox" onClick={() => { selectAll() }}>
+                    <div className="checkbox select-all" onClick={() => { selectAll() }}>
                         <p>Seleccionar todos</p>
                     </div>
                     {types && types.length !== 0 && types.map(el => {
-                        return <div className="checkbox" key={Math.random()} onClick={() => { handleCheck(el) }}>
-                            <p>{el}</p>
+                        return <div className="checkbox" 
+                        key={Math.random()} 
+                        onMouseOver={()=>{setSelected(el)}} 
+                        onMouseLeave={()=>{setSelected(undefined)}} 
+                        onMouseOut={()=>{setSelected(undefined)}} 
+                        onClick={() => { handleCheck(el) }}
+                        >
+                            <p title={el}>{el}</p>
                             <button style={{ color: c.config.printCommand.includes(el) ? "var(--corange)" : "var(--cblack)" }}>
                                 <FontAwesomeIcon icon={c.config.printCommand.includes(el) ? faCheckSquare : faSquare} />
                             </button>
@@ -83,8 +90,9 @@ export default function PrintCommand({ current, close, confirm }: Props) {
                             <div>
                                 {pha.map(el => {
                                     return c.config.printCommand.includes(el.type) &&
-                                        <li key={Math.random()}>
-                                            {el.amount!} X {el.name} {el.comment && "(" + el.comment + ")"}
+                                        <li className={selected === el.type ? "active" : ""} key={Math.random()}>
+                                            <div><b>{el.amount!}</b> X</div>  
+                                            <div>{el.name} {el.comment && "(" + el.comment + ")"}</div>
                                         </li>
                                 })}
                             </div>
