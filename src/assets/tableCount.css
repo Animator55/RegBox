@@ -374,8 +374,24 @@ section:has(>.slide-to-up) .title {
     margin-top: 0.5rem;
 }
 
+.table-commands .compressor {
+    background-color: var(--cgray)!important;
+    font-size: 1.3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    border: none!important;
+    font-size: 1.5rem;
+}
+.table-commands .compressor:hover {
+    background-color: var(--cdarker)!important;
+    color: var(--cwhite);
+}
+
 .table-commands p {
     margin: 0;
+    max-width: 1000px;
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 100%;
@@ -391,11 +407,16 @@ section:has(>.slide-to-up) .title {
     justify-content: space-between;
     gap: 0.5rem;
 }
-
-.table-commands>div:first-child {
-    margin-right: auto;
+.table-commands.compressed > div {
+    flex-direction: row;
 }
 
+.table-commands>div:first-of-type {
+    margin-right: auto;
+}
+.table-commands.compressed button:not(.compressor) {
+    font-size: 1.2rem;
+} 
 .table-commands button {
     display: flex;
     gap: 0.5rem;

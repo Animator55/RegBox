@@ -36,6 +36,7 @@ export const Configuration = React.createContext({
         animations: true,
         blur: false,
         mainColor: "",
+        compressToolBar: false,
         topBarButtons: {
             "notifications": true,
             "products": true,

@@ -4,6 +4,7 @@ export const defaultConfig: configType = {
     animations: true,
     blur: false,
     mainColor: "#f07f34",
+    compressToolBar: false,
     topBarButtons: {
         "notifications": true,
         "products": true,

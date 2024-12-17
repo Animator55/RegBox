@@ -1,7 +1,7 @@
 import { Item, PayMethod, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faBars, faCaretDown, faCaretUp, faCheckToSlot, faClockRotateLeft, faDollarSign, faList, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faBars, faCaretDown, faCaretSquareUp, faCaretUp, faCheckToSlot, faClockRotateLeft, faDollarSign, faList, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import { Configuration, Products } from '../roleMains/Main'
@@ -15,6 +15,7 @@ import { html_command, html_reciept } from '../defaults/reciept'
 import { stateTraductions } from '../defaults/stateTraductions'
 import CommentTable from './pops/CommentTable'
 import PrintCommand from './pops/PrintCommand'
+import { faCaretSquareDown } from '@fortawesome/free-solid-svg-icons/faCaretSquareDown'
 
 type Props = {
     currentTable: TableType | undefined
@@ -220,22 +221,27 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
 
     const TableCommands = () => {
         let openHour = currentTable ? `Caja abierta a las ${currentTable.opened[0]} ${currentTable.opened[1]}` : ""
-        return <section className='table-commands'>
+        return <section className={c.config.compressToolBar ? 'table-commands compressed' : 'table-commands'}>
+            <button className='compressor' onClick={()=>{c.setConfig({...c.config, compressToolBar: !c.config.compressToolBar})}}>
+                <FontAwesomeIcon icon={c.config.compressToolBar ? faCaretUp: faCaretDown}/>
+            </button>
             <div>
                 <p title={openHour}>{currentTable ? openHour : ""}</p>
                 <button className={currentTable ? "" : 'disabled'} onClick={() => { openPop() }}>
-                    <FontAwesomeIcon icon={faClockRotateLeft} />Historial
+                    <FontAwesomeIcon icon={faClockRotateLeft} />
+                    {c.config.compressToolBar ? "" : "Historial"}
                 </button>
             </div>
             <div className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
                 <button onClick={() => { managePhase(0, true) }}>
                     <FontAwesomeIcon icon={faPlus} />
-                    Añadir Fase
+                    {c.config.compressToolBar ? "" : "Añadir Fase"}
                 </button>
             </div>
             <div className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
                 <button onClick={() => { if (currentTable?.state === "open") setPop("switch") }}>
-                    <FontAwesomeIcon icon={faArrowRightArrowLeft} />Cambiar
+                    <FontAwesomeIcon icon={faArrowRightArrowLeft} />
+                    {c.config.compressToolBar ? "" : "Cambiar"}
                 </button>
                 <button style={currentTable?.discount ? { background: "var(--cwhite)" } : {}} onClick={() => { if (currentTable?.state === "open") setPop("discount") }}>
                     <div>
@@ -243,7 +249,7 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                         {currentTable?.discount}
                     </div>
                     {currentTable?.discountType === "percent" && <FontAwesomeIcon icon={faPercentage} />}
-                    Descuento
+                    {c.config.compressToolBar ? "" : "Descuento"}
                 </button>
             </div>
             <div className={currentTable ? "" : 'disabled'}>
@@ -253,11 +259,11 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
                         if(!currentTable) return
                         if (currentTable?.state === "open") setPop("print")
                         else if (currentTable?.state === "closed") print_func()
-                    }}><FontAwesomeIcon icon={faReceipt} />Imprimir</button>
+                    }}><FontAwesomeIcon icon={faReceipt} />{c.config.compressToolBar ? "" : "Imprimir"}</button>
                 <button className={currentTable?.state !== "closed" ? "" : "confirm"} onClick={() => {
                     if (currentTable?.state !== "unnactive") endTablePop(true)
                 }}><FontAwesomeIcon icon={faCheckToSlot} />
-                    {currentTable?.state !== "closed" ? "Cerrar" : "Cobrar"}
+                    {c.config.compressToolBar ? "" : currentTable?.state !== "closed" ? "Cerrar" : "Cobrar"}
                 </button>
             </div>
         </section>

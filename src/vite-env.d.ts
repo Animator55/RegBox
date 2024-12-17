@@ -88,6 +88,7 @@ export type configType = {
     animations: boolean
     blur: boolean
     mainColor: string
+    compressToolBar: boolean,
     topBarButtons: {
         [key: string]: boolean
     }
