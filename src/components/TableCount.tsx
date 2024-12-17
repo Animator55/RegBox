@@ -1,7 +1,7 @@
 import { Item, PayMethod, TableType } from '../vite-env'
 import "../assets/tableCount.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightArrowLeft, faBars, faCaretDown, faCaretSquareUp, faCaretUp, faCheckToSlot, faClockRotateLeft, faDollarSign, faList, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightArrowLeft, faBars, faCaretDown, faCaretUp, faCheckToSlot, faClockRotateLeft, faDollarSign, faList, faMinus, faPen, faPercentage, faPlus, faReceipt, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { colorSelector } from '../logic/colorSelector'
 import React from 'react'
 import { Configuration, Products } from '../roleMains/Main'
@@ -15,7 +15,6 @@ import { html_command, html_reciept } from '../defaults/reciept'
 import { stateTraductions } from '../defaults/stateTraductions'
 import CommentTable from './pops/CommentTable'
 import PrintCommand from './pops/PrintCommand'
-import { faCaretSquareDown } from '@fortawesome/free-solid-svg-icons/faCaretSquareDown'
 
 type Props = {
     currentTable: TableType | undefined
