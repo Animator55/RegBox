@@ -1,4 +1,4 @@
-import { faCheckSquare, faSquare, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCheckSquare, faPrint, faSquare, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Configuration } from '../../roleMains/Main'
@@ -79,7 +79,12 @@ export default function PrintCommand({ current, close, confirm }: Props) {
                     })}
                 </section>
             </section>
-            <button className='default-button' onClick={() => { confirm(list) }}>Imprimir</button>
+            <footer>
+                <button className='default-button' onClick={() => { confirm(list) }}>
+                    <FontAwesomeIcon icon={faPrint}/>
+                    Imprimir
+                </button>
+            </footer>
         </section>
     </section>
 }

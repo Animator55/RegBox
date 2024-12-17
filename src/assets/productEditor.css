@@ -638,6 +638,13 @@ main:has(.notifications) .notifications-pop-button {
 
 /**/
 
+.print-pop footer {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding: 1rem;
+    padding-top: 0;
+}
 .print-pop {
     padding: 0;
 }
@@ -677,8 +684,8 @@ main:has(.notifications) .notifications-pop-button {
 .command-preview {
     width: 50dvw;
     max-width: 50dvw;
-    height: 70vh;
-    max-height: 70vh;
+    height: 60vh;
+    max-height: 60vh;
     overflow-x: hidden;
     overflow-y: scroll;
     padding: 2rem;
