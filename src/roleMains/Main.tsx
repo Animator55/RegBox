@@ -55,6 +55,7 @@ export const Configuration = React.createContext({
             y: 0,
             align: true
         },
+        printCommand: [],
         autoAcceptNotis: false,
         miniMapOrder: "def",
         prodListOrder: "def",

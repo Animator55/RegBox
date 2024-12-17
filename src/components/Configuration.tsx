@@ -10,7 +10,7 @@ type Props = {
   close: Function
 }
 
-let bannedConfigs = ["map"]
+let bannedConfigs = ["map", "printCommand"]
 
 export default function ConfigurationComp({ close }: Props) {
   const configTitles: router = {

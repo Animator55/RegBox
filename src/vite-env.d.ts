@@ -100,6 +100,7 @@ export type configType = {
         zoom: number
         align: boolean
     }
+    printCommand: string[]
     autoAcceptNotis: boolean
     miniMapOrder: "abc"|"abc-r"|"def"|"def-r"
     prodListOrder: "abc"|"abc-r"|"def"|"def-r"

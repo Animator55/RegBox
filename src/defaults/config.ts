@@ -23,6 +23,7 @@ export const defaultConfig: configType = {
         y: 0,
         align: true
     },
+    printCommand: [],
     autoAcceptNotis: false,
     miniMapOrder: "def",
     prodListOrder: "def",

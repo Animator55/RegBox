@@ -22,12 +22,22 @@ export default function PrintCommand({ current, close, confirm }: Props) {
         }
     }
 
-    const [selectedTypes, setSelectedTypes] = React.useState<string[]>(types)
     const handleCheck = (val: string) => {
-        if (selectedTypes.includes(val)) setSelectedTypes(selectedTypes.filter((el) => {
-            if (el !== val) return el
-        }))
-        else setSelectedTypes([...selectedTypes, val])
+        if (c.config.printCommand.includes(val)) c.setConfig({
+            ...c.config, printCommand: c.config.printCommand.filter((el) => {
+                if (el !== val) return el
+            })
+        })
+        else c.setConfig({ ...c.config, printCommand: [...c.config.printCommand, val] })
+    }
+
+    const selectAll = ()=>{
+        let add: string[] = []
+        for(let i=0; i<types.length;i++){
+            if(c.config.printCommand.includes(types[i])) continue
+            add.push(types[i])
+        }
+        c.setConfig({...c.config, printCommand: [...c.config.printCommand, ...add]})
     }
 
     let list = []
@@ -37,7 +47,7 @@ export default function PrintCommand({ current, close, confirm }: Props) {
         let result = []
         if (pha.length === 0) continue
         for (let j = 0; j < pha.length; j++) {
-            if (selectedTypes.includes(pha[j].type)) result.push(pha[j])
+            if (c.config.printCommand.includes(pha[j].type)) result.push(pha[j])
         }
         list.push(result)
     }
@@ -53,11 +63,14 @@ export default function PrintCommand({ current, close, confirm }: Props) {
             </header>
             <section className='print-command-divisor'>
                 <nav>
+                    <div className="checkbox" onClick={() => { selectAll() }}>
+                        <p>Seleccionar todos</p>
+                    </div>
                     {types && types.length !== 0 && types.map(el => {
-                        return <div className="checkbox" onClick={() => { handleCheck(el) }}>
+                        return <div className="checkbox" key={Math.random()} onClick={() => { handleCheck(el) }}>
                             <p>{el}</p>
-                            <button style={{ color: selectedTypes.includes(el) ? "var(--corange)" : "var(--cblack)" }}>
-                                <FontAwesomeIcon icon={selectedTypes.includes(el) ? faCheckSquare : faSquare} />
+                            <button style={{ color: c.config.printCommand.includes(el) ? "var(--corange)" : "var(--cblack)" }}>
+                                <FontAwesomeIcon icon={c.config.printCommand.includes(el) ? faCheckSquare : faSquare} />
                             </button>
                         </div>
                     })}
@@ -69,7 +82,7 @@ export default function PrintCommand({ current, close, confirm }: Props) {
                             <label>Tiempo {i + 1}</label>
                             <div>
                                 {pha.map(el => {
-                                    return selectedTypes.includes(el.type) &&
+                                    return c.config.printCommand.includes(el.type) &&
                                         <li key={Math.random()}>
                                             {el.amount!} X {el.name} {el.comment && "(" + el.comment + ")"}
                                         </li>
@@ -81,7 +94,7 @@ export default function PrintCommand({ current, close, confirm }: Props) {
             </section>
             <footer>
                 <button className='default-button' onClick={() => { confirm(list) }}>
-                    <FontAwesomeIcon icon={faPrint}/>
+                    <FontAwesomeIcon icon={faPrint} />
                     Imprimir
                 </button>
             </footer>
