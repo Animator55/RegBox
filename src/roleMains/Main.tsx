@@ -135,7 +135,6 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         peer.on('error', function (err) {
             switch (err.type) {
                 case 'unavailable-id':
-                    console.log(id + ' is taken')
                     setToastAlert({
                         _id: `${Math.random()}`, title: "Error al iniciar",
                         content: "Error al iniciar sesión, pruebe reiniciando RegBox.",
