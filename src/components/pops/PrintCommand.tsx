@@ -50,6 +50,7 @@ export default function PrintCommand({ current, close, confirm }: Props) {
         for (let j = 0; j < pha.length; j++) {
             if (c.config.printCommand.includes(pha[j].type)) result.push(pha[j])
         }
+        if(result.length === 0) continue
         list.push(result)
     }
 

@@ -18,6 +18,7 @@ export default function ConfigurationComp({ close }: Props) {
     topBarButtons: "Atajos",
     prodsAsList: "Mostrar productos como lista",
     orderedLists: "Ordenar y dividir los productos sumados",
+    compressToolBar: "Comprimir la barra de funciones de mesa",
     prodsInEditorAsList: "Mostrar productos en el editor como lista",
     animations: "Mostrar animaciones",
     blur: "Difuminar fondos",

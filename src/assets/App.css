@@ -59,6 +59,7 @@ main {
     width: 100%;
     display: flex;
     flex-direction: column;
+    max-height: 100dvh;
 }
 
 [data-animations="false"] *{
@@ -102,6 +103,7 @@ button:not(.disabled) {
 main>.d-flex {
     height: 100%;
     padding: 1%;
+    max-height: calc(100dvh - 4.7rem);
 }
 
 .prod-map-container {

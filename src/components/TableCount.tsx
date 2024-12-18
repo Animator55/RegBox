@@ -35,10 +35,10 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
     const c = React.useContext(Configuration)
     const p = Object.keys(React.useContext(Products).list)
 
-    const print_func = (defaultValue?: Item[][] ) => {
+    const print_func = (defaultValue?: Item[][]) => {
         if (currentTable?.state !== "closed" && currentTable?.state !== "open") return
         //make print the command type structure
-        let html =defaultValue !== undefined ? html_command({...currentTable, products: defaultValue}) : html_reciept(currentTable, p)
+        let html = defaultValue !== undefined ? html_command({ ...currentTable, products: defaultValue }) : html_reciept(currentTable, p)
         if (!html) return
         var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
         if (!WinPrint) return
@@ -219,47 +219,50 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
     }
 
     const TableCommands = () => {
-        let openHour = currentTable ? `Caja abierta a las ${currentTable.opened[0]} ${currentTable.opened[1]}` : ""
+        let openHour = currentTable ? c.config.compressToolBar ? 
+            `Abierta a las ${currentTable.opened[0]}`:
+            `Caja abierta a las ${currentTable.opened[0]} ${currentTable.opened[1]}`
+            : ""
         return <section className={c.config.compressToolBar ? 'table-commands compressed' : 'table-commands'}>
-            <button className='compressor' onClick={()=>{c.setConfig({...c.config, compressToolBar: !c.config.compressToolBar})}}>
-                <FontAwesomeIcon icon={c.config.compressToolBar ? faCaretUp: faCaretDown}/>
+            <button className='compressor' onClick={() => { c.setConfig({ ...c.config, compressToolBar: !c.config.compressToolBar }) }}>
+                <FontAwesomeIcon icon={c.config.compressToolBar ? faCaretUp : faCaretDown} />
             </button>
             <div>
                 <p title={openHour}>{currentTable ? openHour : ""}</p>
-                <button className={currentTable ? "" : 'disabled'} onClick={() => { openPop() }}>
+                <button title='Historial' className={currentTable ? "" : 'disabled'} onClick={() => { openPop() }}>
                     <FontAwesomeIcon icon={faClockRotateLeft} />
                     {c.config.compressToolBar ? "" : "Historial"}
                 </button>
             </div>
-            <div className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
+            <div title='Añadir Fase' className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
                 <button onClick={() => { managePhase(0, true) }}>
                     <FontAwesomeIcon icon={faPlus} />
                     {c.config.compressToolBar ? "" : "Añadir Fase"}
                 </button>
             </div>
-            <div className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
+            <div title='Cambiar mesa' className={currentTable?.state !== "closed" && currentTable ? "" : 'disabled'}>
                 <button onClick={() => { if (currentTable?.state === "open") setPop("switch") }}>
                     <FontAwesomeIcon icon={faArrowRightArrowLeft} />
                     {c.config.compressToolBar ? "" : "Cambiar"}
                 </button>
-                <button style={currentTable?.discount ? { background: "var(--cwhite)" } : {}} onClick={() => { if (currentTable?.state === "open") setPop("discount") }}>
-                    <div>
+                <button title='Descuento' style={currentTable?.discount ? { background: "var(--cwhite)" } : {}} onClick={() => { if (currentTable?.state === "open") setPop("discount") }}>
+                    {currentTable?.discount !== undefined && <div>
                         {currentTable?.discountType === "amount" && <FontAwesomeIcon icon={faDollarSign} />}
                         {currentTable?.discount}
-                    </div>
-                    {currentTable?.discountType === "percent" && <FontAwesomeIcon icon={faPercentage} />}
+                    </div>}
+                    {(!currentTable || currentTable?.discountType === "percent") && <FontAwesomeIcon icon={faPercentage} />}
                     {c.config.compressToolBar ? "" : "Descuento"}
                 </button>
             </div>
             <div className={currentTable ? "" : 'disabled'}>
-                <button className={!currentTable || currentTable 
-                && (currentTable?.state === "closed" || currentTable?.state === "open") ? "" : 'disabled'}
+                <button title='Imprimir' className={!currentTable || currentTable
+                    && (currentTable?.state === "closed" || currentTable?.state === "open") ? "" : 'disabled'}
                     onClick={() => {
-                        if(!currentTable) return
+                        if (!currentTable) return
                         if (currentTable?.state === "open") setPop("print")
                         else if (currentTable?.state === "closed") print_func()
                     }}><FontAwesomeIcon icon={faReceipt} />{c.config.compressToolBar ? "" : "Imprimir"}</button>
-                <button className={currentTable?.state !== "closed" ? "" : "confirm"} onClick={() => {
+                <button title={currentTable?.state !== "closed" ? "Cerrar" : "Cobrar"} className={currentTable?.state !== "closed" ? "" : "confirm"} onClick={() => {
                     if (currentTable?.state !== "unnactive") endTablePop(true)
                 }}><FontAwesomeIcon icon={faCheckToSlot} />
                     {c.config.compressToolBar ? "" : currentTable?.state !== "closed" ? "Cerrar" : "Cobrar"}
@@ -284,11 +287,11 @@ export default function TableCount({ currentTable, EditTable, addItem, managePha
         let name = ""
         let result = []
 
-        for(let i=0; i<currentTable.products.length;i++){
-            if(i !== item.phase) result.push(currentTable.products[i])
+        for (let i = 0; i < currentTable.products.length; i++) {
+            if (i !== item.phase) result.push(currentTable.products[i])
             else {
                 let newPhase = []
-                for(let j=0; j<currentTable.products[i].length; j++){
+                for (let j = 0; j < currentTable.products[i].length; j++) {
                     let el = currentTable.products[i][j]
                     if (el._id !== item.item._id) newPhase.push(el)
                     else { name = el.name; newPhase.push({ ...el, comment: comment }) }

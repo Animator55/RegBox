@@ -136,6 +136,11 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
             switch (err.type) {
                 case 'unavailable-id':
                     console.log(id + ' is taken')
+                    setToastAlert({
+                        _id: `${Math.random()}`, title: "Error al iniciar",
+                        content: "Error al iniciar sesión, pruebe reiniciando RegBox.",
+                        icon: "xmark"
+                    })
                     peer = undefined
                     break
                 case 'peer-unavailable':
@@ -161,7 +166,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 console.log("a")
                 let sendButton = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
                 if (!sendButton) return
-                if (data.type === "request-historial" 
+                if (data.type === "request-historial"
                     || data.type === "request-notification"
                     || data.type === "request-tables"
                     || data.type === "request-products"
@@ -391,7 +396,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
 
     const AutoNotificationHandler = () => {
         if (notification === undefined || !notification._id || !notification.products) return console.log("nt")
-        
+
         if (notification.type === "products") EditMassiveTableHandle(notification._id, notification.products, notification.comment)
         else if (notification.type === "replace") EditTable(notification._id, "products", notification.products, notification.comment)
         notis = [...notis.map(item => {
@@ -443,8 +448,8 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         let amount = value !== undefined ? value : 1
         let word = amount === 1 ? "Añadido" : "Subtraido"
         lastChanged = item._id
-        tableScroll = value !== undefined ? document.querySelector(".table-list")?.scrollTop! : 0
-        productPickerScroll = value !== undefined ? 0 : document.getElementById("product-picker")?.scrollTop!
+        tableScroll = document.querySelector(".table-list")?.scrollTop!
+        productPickerScroll = document.getElementById("product-picker")?.scrollTop!
 
         if (item.amount && (item.amount + amount) <= 0) EditTable(
             currentTableData._id,
@@ -561,9 +566,9 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
         "notifications": <Notifications setNotis={(val: SingleEvent[]) => {
             notis = val
             setNotis(Math.random())
-        }} 
-        autoNotis={config.autoAcceptNotis}
-         close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} EditTable={EditTable} />,
+        }}
+            autoNotis={config.autoAcceptNotis}
+            close={close} notis={notis} EditMassiveTable={EditMassiveTableHandle} EditTable={EditTable} />,
         "closesession": <CloseSession close={close} logout={logout_handler} />,
         "account": <AccountPop download={download} OpenPop={OpenPop} close={close} />,
         "historial": <HistorialTableComp
