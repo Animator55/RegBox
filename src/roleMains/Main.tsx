@@ -166,6 +166,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 let sendButton = document.getElementById("sendHistorialToPawn") as HTMLButtonElement
                 if (!sendButton) return
                 if (data.type === "request-historial"
+                    || data.type === "request-historial_products_tables"
                     || data.type === "request-notification"
                     || data.type === "request-tables"
                     || data.type === "request-products"
@@ -628,12 +629,18 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 if (!button || !action || !connectionId) return
                 let data = undefined
                 if (action === "historial") data = getHistorial()
+                else if (action === "historial_products_tables") data = {
+                    historial: getHistorial(),
+                    tables: tablesPlacesPH,
+                    "prods": ProductsState
+                }
                 else if (action === "tables") data = tablesPlacesPH
                 else if (action === "products") data = ProductsState
                 else if (action === "notification") data = checkNoti(parameter)
 
                 const messages: router = {
                     "historial": { type: "historial", data: data },
+                    "historial_products_tables": { type: "historial_products_tables", data: data },
                     "tables": { type: "tables", data: data },
                     "products": { type: "prods", data: data },
                     "confirm": { type: "confirm", data: "El mensaje fue enviado con éxito." },
