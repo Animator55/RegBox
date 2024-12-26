@@ -44,7 +44,7 @@ let domains: domainType[] = [
         name: "TestDomain",
         url: "",
         users: [
-            {_id: "trfghdg", name: "Caja", role: "main", password: "1234"}
+            {_id: "main-1", name: "Caja", role: "main", password: "1234"}
         ],
         roles: ["main", "pawn", "kitchen"],
         products: ["prods1"],
