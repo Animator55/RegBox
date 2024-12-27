@@ -636,6 +636,13 @@ main:has(.notifications) .notifications-pop-button {
     border-color: var(--corange);
 }
 
+.qr-pop {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /**/
 
 .print-pop footer {

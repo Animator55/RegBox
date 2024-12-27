@@ -15,7 +15,7 @@ const QRPop = (val: string, close: Function) => {
     let target = e.target as HTMLDivElement
     if (target.className === "back-blur confirm-specific") close()
   }}>
-    <section className='pop'>
+    <section className='pop qr-pop'>
       <QRCodeCanvas value={val} />
     </section>
   </section>
