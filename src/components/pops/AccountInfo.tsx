@@ -2,20 +2,21 @@ import { faQrcode, faWarning, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { sessionType } from '../../vite-env'
 import { domainType, selectDomainById } from '../../logic/API'
-import React from 'react'
+import React from "react";
+import { QRCodeCanvas } from 'qrcode.react';
 
 type Props = {
   close: Function
   peers: string[]
 }
 
-const QRPop = (val: any, close: Function) => {
+const QRPop = (val: string, close: Function) => {
   return <section className='back-blur confirm-specific' onClick={(e) => {
     let target = e.target as HTMLDivElement
     if (target.className === "back-blur confirm-specific") close()
   }}>
     <section className='pop'>
-        QR
+      <QRCodeCanvas value={val} />
     </section>
   </section>
 }
@@ -31,7 +32,7 @@ export default function AccountInfo({ close, peers }: Props) {
     let target = e.target as HTMLDivElement
     if (target.className === "back-blur") close()
   }}>
-    {qr && QRPop(qr, ()=>{setQr(false)})}
+    {qr && QRPop(parsed._id, ()=>{setQr(false)})}
     <section className='pop'>
       <header>
         <div className='pop-top'>
