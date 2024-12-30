@@ -168,13 +168,15 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 if (data.type === "request-historial"
                     || data.type === "request-historial_products_tables"
                     || data.type === "request-notification"
+                    || data.type === "request-notification_state"
                     || data.type === "request-tables"
                     || data.type === "request-products"
                 ) {
                     sendButton.dataset.action = data.type.split("-")[1]
                     sendButton.dataset.connectionid = conn.connectionId
                     sendButton.dataset.peerCon = conn.peer
-                    if (data.type === "request-notification") sendButton.dataset.parameter = data.data
+                    if (data.type === "request-notification_state" 
+                        ||data.type === "request-notification") sendButton.dataset.parameter = data.data
                     sendButton.click()
                     return
                 }
@@ -636,7 +638,7 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                 }
                 else if (action === "tables") data = tablesPlacesPH
                 else if (action === "products") data = ProductsState
-                else if (action === "notification") data = checkNoti(parameter)
+                else if (action === "notification" || action === "notification_state") data = checkNoti(parameter)
 
                 const messages: router = {
                     "historial": { type: "historial", data: data },
@@ -645,9 +647,15 @@ export default function Main({ initialData, initialHistorial, logout }: Props) {
                     "products": { type: "prods", data: data },
                     "confirm": { type: "confirm", data: "El mensaje fue enviado con éxito." },
                     "notification": {
-                        type: data ? "confirm" : "error",
+                        type: "notification",
+                        _id: parameter,
+                        state: data,
                         data: data ? "El mensaje fue enviado con éxito. Conexión recuperada." :
                             "El mensaje no fue enviado, la reconexión fue realizada, reinténtelo."
+                    },
+                    "notification_state": {
+                        type: "notification_state",
+                        data: {_id: parameter, state: data}
                     },
                 }
                 let message = messages[action]

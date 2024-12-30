@@ -32,7 +32,7 @@ export default function AccountInfo({ close, peers }: Props) {
     let target = e.target as HTMLDivElement
     if (target.className === "back-blur") close()
   }}>
-    {qr && QRPop(parsed._id, ()=>{setQr(false)})}
+    {qr && QRPop(parsed._id, () => { setQr(false) })}
     <section className='pop'>
       <header>
         <div className='pop-top'>
@@ -51,17 +51,25 @@ export default function AccountInfo({ close, peers }: Props) {
             <p>{parsed.opened}</p>
           </div>
           <div>
-            <label>Usuarios Conectados</label>
+            <label>
+              Usuarios Conectados
+
+              <button className='default-button-2' onClick={() => { setQr(true) }}>
+                <FontAwesomeIcon icon={faQrcode} />
+              </button>
+            </label>
             <ul className='users-connected'>
-              {peers.length !== 0 ? peers.map(el => {
-                return <li key={Math.random()}>
-                  {el}
-                </li>
-              }) :
+              {peers.length !== 0 ? <>
+                {peers.map(el => {
+                  return <li key={Math.random()}>
+                    {el.split("&%_/")[0]}
+                  </li>
+                })}
+              </> :
                 <section className='alert'>
                   <FontAwesomeIcon icon={faWarning} />
                   <h3>No hay usuarios conectados.</h3>
-                  <button className='default-button' onClick={()=>{setQr(true)}}>
+                  <button className='default-button' onClick={() => { setQr(true) }}>
                     <FontAwesomeIcon icon={faQrcode} /> Generar QR
                   </button>
                 </section>}
